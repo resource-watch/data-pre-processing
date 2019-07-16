@@ -3,7 +3,7 @@
 This calculation was done using Google Earth Engine, a free geospatial analysis system by Google. The code itself can be found [here](https://code.earthengine.google.com/34fc95dd936fbdc29f3e623ffdae89af). While the sytem is free you need to sign up with a Google account, which can be done [here](https://earthengine.google.com/). 
 
 The code is shown below:
-'''
+```
 var female = ee.Image('projects/resource-watch-gee/soc_075_female_male_populations/female_density')
 var male = ee.Image('projects/resource-watch-gee/soc_075_female_male_populations/male_density')
 Map.addLayer(female)
@@ -34,4 +34,4 @@ Export.image.toAsset({
   assetId: 'projects/resource-watch-gee/soc_075_female_male_populations/male_female_ratio_density', 
   scale: scale, 
   maxPixels:1e13})
-'''
+```
