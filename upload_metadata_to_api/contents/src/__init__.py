@@ -9,7 +9,7 @@ import pandas as pd
 logging.basicConfig(stream=sys.stderr, level=logging.INFO)
 
 
-# Launch Metadata
+# Pull in metadata
 r = req.get(os.getenv('METADATA_SHEET'))
 current_mdata = pd.read_csv(pd.compat.StringIO(r.text), header=0)
 
