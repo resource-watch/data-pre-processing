@@ -10,8 +10,8 @@ logging.basicConfig(stream=sys.stderr, level=logging.INFO)
 
 
 # Pull in metadata
-r = req.get(os.getenv('METADATA_SHEET'))
-current_mdata = pd.read_csv(pd.compat.StringIO(r.text), header=0)
+r = req.get(os.getenv('METADATA_SHEET')).content
+current_mdata = pd.read_csv(pd.compat.StringIO(r.decode('utf-8')), header=0)
 
 # Continue with the metadata that matches elements in the tracking sheet
 ids_on_backoffice = pd.notnull(current_mdata["RW ID"])
@@ -55,18 +55,29 @@ def create_headers():
 
 
 def process_description(metadata):
-    processed_description = ''
-    if type(metadata["Overview"]) == str:
-        processed_description = processed_description + '### Overview  \n  \n' + metadata["Overview"]
-        if type(metadata["Methodology"]) == str:
-            processed_description = processed_description + '  \n  \n### Methodology  \n  \n' + metadata["Methodology"]
-        if type(metadata["Data shown on Resource Watch Map"]) == str:
-            processed_description = processed_description + '  \n  \n### Data shown on Resource Watch Map  \n  \n' + \
-                                    metadata["Data shown on Resource Watch Map"]
-        if type(metadata["Disclaimer"]) == str:
-            processed_description = processed_description + '  \n  \n### Disclaimer  \n  \n' + metadata["Disclaimer"]
+    #first, deal with Archived datasets
+    processed_description=''
+    if type(metadata['Redirect Dataset ID (archived)'])!=float:
+        if metadata['Redirect Dataset ID (archived)']=='X':
+            processed_description = processed_description+'_**This dataset has been archived, and we will no longer ' \
+                                                          'be updating or maintaining it.**_\n  \n'
+        else:
+            processed_description = processed_description+'_**This dataset has been archived, and we will no longer ' \
+                                                          'be updating or maintaining it. We recommend using [this dataset]' \
+                                                          '({}) as a replacement.**_\n  \n'.format(metadata['Redirect Dataset ID (archived)'])
+    if type(metadata["Overview"])==str:
+        processed_description = processed_description+'### Overview  \n  \n'+metadata["Overview"]
+        if type(metadata["Methodology"])==str:
+            processed_description = processed_description+'  \n  \n### Methodology  \n  \n'+metadata["Methodology"]
+        if type(metadata["Data shown on Resource Watch Map"])==str:
+            processed_description = processed_description+'  \n  \n### Data shown on Resource Watch Map  \n  \n'+metadata["Data shown on Resource Watch Map"]
+        if type(metadata["Disclaimer"])==str:
+            processed_description = processed_description+'  \n  \n### Disclaimer  \n  \n'+ metadata["Disclaimer"]
     else:
-        processed_description = clean_nulls(metadata["Description"])
+        if clean_nulls(metadata["Description"])!=None:
+            processed_description = processed_description+clean_nulls(metadata["Description"])
+        else:
+            processed_description = clean_nulls(metadata["Description"])
     return processed_description
 
 
