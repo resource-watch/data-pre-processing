@@ -1,5 +1,5 @@
 
-## This file describes the data pre-processing that was done to create the dataset Peatlands
+## This file describes the data pre-processing that was done to [the PEATMAP dataset](http://archive.researchdata.leeds.ac.uk/251/) for [display on Resource Watch](https://resourcewatch.org/data/explore/for019-Peatland-SEA).
 
 
 The Peatlands dataset comes in zipped files for each of the following continents: Africa, Asia, Europe, North America, Oceania, and South America. For some continents, a single shapefile was provided for the entire continent. For others, several shapefiles at a finer level, such as at the national level, were provided. For example, the zipped file for North America includes shapefiles for Canada, the United States, and other North American peatlands.
@@ -30,4 +30,4 @@ You can view the processed, global peatland dataset [here](https://resourcewatch
 
 You can also download original dataset, by region, [directly through Resource Watch](http://wri-public-data.s3.amazonaws.com/resourcewatch/for_029_peatlands.zip), or [from the source website](http://archive.researchdata.leeds.ac.uk/251/).
 
-###### Note: This dataset processing was done by [Tina Huang](https://www.wri.org/profile/tina-huang), and QC'ed by [Amelia Snyder](https://www.wri.org/profile/amelia-snyder).
+###### Note: This dataset processing was done by [Tina Huang](https://www.wri.org/profile/tina-huang), and QC'd by [Amelia Snyder](https://www.wri.org/profile/amelia-snyder).
