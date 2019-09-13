@@ -1,0 +1,10 @@
+The original dataset is a zipped file with three csv files for urban, rural and total population from 1990 to 2015 for 216 country
+The name of the three files are: 
+API_SH.H2O.SMDW.UR.ZS_DS2_en_csv_v2_66888.csv , 
+API_SH.H2O.SMDW.RU.ZS_DS2_en_csv_v2_105014.csv ,
+API_SH.H2O.SMDW.ZS_DS2_en_csv_v2_60074.csv.
+We first compile data into one single csv file with columns broken down by region and year.
+For example, urban_1990, urban 1991, rural_1992, total_1993. 
+Country name and country code columns are retained. We then added a column named year and organized the data according to three columns: urban, rural and total.
+The edited csv has 5616 rows, covering urban, rural and total data from 1990 to 2015, spanning 26 years
+This data-precessing steps are documentated by Tina Huang 
