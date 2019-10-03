@@ -175,11 +175,11 @@ if __name__ == '__main__':
                 'indicators': ['SL.UEM.TOTL.ZS'],
                 'columns': ['unemployment'],
                 'units': ['% of total labor force']},
-            'ene_012a_electricity_access' : {
+            'ene_012a_electricity_access_edited' : {
                 'indicators': ['EG.ELC.ACCS.ZS','EG.ELC.ACCS.UR.ZS','EG.ELC.ACCS.RU.ZS'],
                 'columns': ['total','urban','rural'],
                 'units': ['% of population','% of urban pop','% of rural pop']},
-            'wat_005a_improved_water_access' : {
+            'wat_005a_improved_water_access_edited' : {
                 'indicators': ['SH.H2O.SMDW.ZS','SH.H2O.SMDW.UR.ZS','SH.H2O.SMDW.RU.ZS'],
                 'columns': ['total','urban','rural'],
                 'units': ['% of population','% of urban pop','% of rural pop']}  
