@@ -182,7 +182,11 @@ if __name__ == '__main__':
             'wat_005a_improved_water_access_edited' : {
                 'indicators': ['SH.H2O.SMDW.ZS','SH.H2O.SMDW.UR.ZS','SH.H2O.SMDW.RU.ZS'],
                 'columns': ['total','urban','rural'],
-                'units': ['% of population','% of urban pop','% of rural pop']}  
+                'units': ['% of population','% of urban pop','% of rural pop']},
+            'soc_040_improved_sanitation' : {
+                'indicators': ['SH.STA.SMSS.ZS','SH.STA.SMSS.UR.ZS','SH.STA.SMSS.RU.ZS'],
+                'columns': ['total_data','urban_data','rural_data'],
+                'units': ['% of population','% of urban pop','% of rural pop']} 
             }
     
         
