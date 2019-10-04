@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 if __name__ == '__main__':
     import pandas as pd
     import os
@@ -190,7 +190,7 @@ if __name__ == '__main__':
             }
     
         
-
+        carto_table_names = carto.getTables()
         # Write to S3 and Carto the individual data sets
         #for code, info in data_codes_and_names.items():
         for tablename, info in data_codes_and_names.items():
@@ -253,7 +253,8 @@ if __name__ == '__main__':
 
             ### 1. Check if table exists and create table, if it does, drop and replace
             #dest_ids = []
-            if not carto.tableExists(CARTO_TABLE):
+            table_in_carto = table in carto_table_names
+            if not table_in_carto:
                 logging.info('Table {} does not exist'.format(CARTO_TABLE))
                 carto.createTable(CARTO_TABLE, CARTO_SCHEMA)
             else:
