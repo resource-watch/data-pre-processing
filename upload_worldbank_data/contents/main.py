@@ -1,10 +1,12 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 if __name__ == '__main__':
     import pandas as pd
     import os
     import logging
     import sys
     import glob
+    import time
+    
     logging.basicConfig(stream=sys.stderr, level=logging.INFO)
 
     import requests as req
@@ -261,7 +263,8 @@ if __name__ == '__main__':
                 logging.info('Table {} does exist'.format(CARTO_TABLE))
                 carto.dropTable(CARTO_TABLE)
                 carto.createTable(CARTO_TABLE, CARTO_SCHEMA)
-
+            
+            time.sleep(60)
             ### 2. Insert new observations
             # https://stackoverflow.com/questions/19585280/convert-a-row-in-pandas-into-list
             rows = long_form.values.tolist()
@@ -269,5 +272,5 @@ if __name__ == '__main__':
             logging.info(rows[:10])
             if len(rows):
                 carto.blockInsertRows(CARTO_TABLE, CARTO_SCHEMA, rows)
-
+            time.sleep(120)
     main()
