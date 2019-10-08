@@ -188,7 +188,23 @@ if __name__ == '__main__':
             'soc_040_improved_sanitation' : {
                 'indicators': ['SH.STA.SMSS.ZS','SH.STA.SMSS.UR.ZS','SH.STA.SMSS.RU.ZS'],
                 'columns': ['total_data','urban_data','rural_data'],
-                'units': ['% of population','% of urban pop','% of rural pop']} 
+                'units': ['% of population','% of urban pop','% of rural pop']},
+            'wps_006_inflation' : {
+                'indicators': ['FP.CPI.TOTL.ZG'],
+                'columns': ['inflation'],
+                'units': ['annual %']},
+            'wps_007_unemployment' : {
+                'indicators': ['SL.UEM.TOTL.ZS'],
+                'columns': ['unemployment'],
+                'units': ['% of total labor force']},
+            'wps_008_poverty320' : {
+                'indicators': ['SI.POV.LMIC'],
+                'columns': ['poverty_headcount'],
+                'units': ['% of population']}
+            'soc_008_gdp_per_capita_edit' : {
+                'indicators': ['NY.GDP.PCAP.PP.CD'],
+                'columns': ['gdp_per_capita'],
+                'units': ['current international $']}
             }
     
         
