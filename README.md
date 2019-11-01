@@ -22,6 +22,8 @@ Repository
 #### Contents of README.md
 If the pre-processing was done in Excel, and functions used should be clearly described. If it was done in Carto, any SQL statements should be included as code snippets. For datasets that were processed in Google Earth Engine (GEE), a link to the GEE script should be included, AND the code should be included in the README.md file as a code snippet for users who do not have access to Google Earth Engine.
 
+If the pre-processing was done using a script that has been uploaded to Github, the readme should still be included and describe the general steps that were taken - which datasets were used, how were they modified, etc.
+
 #### Contents of script, if included
 If a script was used to process the dataset, the code should be uploaded to this Github. This code should be thoroughly commented so that readers unfamiliar with the coding language can still follow the process.
 
