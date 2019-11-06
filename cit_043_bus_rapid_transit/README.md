@@ -21,4 +21,4 @@ You can view the processed Global Bus Rapid Transit (BRT) dataset [on Resource W
 
 You can also access the original dataset [on the source website](https://brtdata.org/indicators/systems/year_system_commenced).
 
-###### Note: This dataset processing was done by [Ken Wakabayashi](https://www.wri.org/profile/ken-wakabayashi), and QC'd by [Liz Saccoccia](https://www.wri.org/profile/liz-saccoccia).
+###### Note: This dataset processing was done by [Ken Wakabayashi](https://www.wri.org/profile/ken-wakabayashi), and QC'd by [Amelia Snyder](https://www.wri.org/profile/amelia-snyder).
