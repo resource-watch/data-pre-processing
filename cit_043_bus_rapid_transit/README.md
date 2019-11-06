@@ -6,7 +6,7 @@ The Global Bus Rapid Transit (BRT) dataset includes the name of the BRT system, 
 While this dataset be viewed on the source website, it is not directly downloadable there. In order to display the BRT data on Resource Watch, the dataset was copied from the source website and joined with the city centroid coordinates from [Natural Earth's Populated Places dataset](https://www.naturalearthdata.com/downloads/110m-cultural-vectors/110m-populated-places/) for mapping purposes. 
 
 Below, we describe the actions taken to upload the dataset and join it to city coordinates:
-1. Copy and paste the data table from the source website into Excel. Upload this Excel spreadsheet to Carto as a table named "cit_043_bus_rapid_transit".
+1. Copy and paste the data table from the source website into Excel. Upload this Excel spreadsheet to Carto as a table named "cit_043_bus_rapid_transit."
 2. Join the Global Bus Rapid Transit data (“cit_043_bus_rapid_transit”) with the Populated Places dataset ("city_centroid"), which had previously been uploaded to the Resource Watch Carto account. These tables should be joined on the “city” column in each dataset, using the following SQL statement:
 ```
 SELECT city_centroid.city, cit_043_cities_with_bus_rapid_transit.city, city_centroid.the_geom, 
