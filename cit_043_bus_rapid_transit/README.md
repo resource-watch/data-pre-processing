@@ -6,16 +6,19 @@ The Global Bus Rapid Transit (BRT) data can be found on the source website. The 
 Because we wanted to display the data on Resource Watch for all the BRT systems, a complete dataset was compiled from the data found on the source website and joined with the city centroid coordinates from [Natural Earth's Populated Places dataset](https://www.naturalearthdata.com/downloads/110m-cultural-vectors/110m-populated-places/) for mapping purposes. 
 
 Below, we describe the actions taken to compile a complete dataset and join coordinates to the cities:
-1. Copy and paste the data table from the source website to an Excel table.
-2. Join the Global Bus Rapid Transit data (“cit_043_bus_rapid_transit”) with the Populated Places Dataset("city_centroid") dataset on Resource Watch’s Carto account over the “city” column with the following SQL statement:
+1. Copy and paste the data table from the source website into Excel. Upload this Excel spreadsheet to Carto as a table named cit_043_bus_rapid_transit.
+2. Join the Global Bus Rapid Transit data (“cit_043_bus_rapid_transit”) with the Populated Places dataset ("city_centroid"), which had previously been uploaded to the Resource Watch Carto account. These tables should be joined on the “city” column in each dataset, using the following SQL statement:
 ```
-SELECT city_centroid.city, cit_043_cities_with_bus_rapid_transit.city, city_centroid.the_geom, cit_043_cities_with_bus_rapid_transit.source, cit_043_cities_with_bus_rapid_transit.value, cit_043_cities_with_bus_rapid_transit.country
-FROM "wri-rw".city_centroid
-INNER JOIN cit_043_cities_with_bus_rapid_transit ON city_centroid.city= cit_043_cities_with_bus_rapid_transit.city;
+SELECT city_centroid.city, cit_043_cities_with_bus_rapid_transit.city, city_centroid.the_geom, 
+cit_043_cities_with_bus_rapid_transit.source, cit_043_cities_with_bus_rapid_transit.value, 
+cit_043_cities_with_bus_rapid_transit.country
 
+FROM "wri-rw".city_centroid
+
+INNER JOIN cit_043_cities_with_bus_rapid_transit ON city_centroid.city = cit_043_cities_with_bus_rapid_transit.city
 ```
 You can view the processed Global Bus Rapid Transit (BRT) dataset [on Resource Watch](https://resourcewatch.org/data/explore/Cities-with-Bus-Rapid-Transit).
 
-You can also download original dataset [from the source website](https://brtdata.org/indicators/systems/year_system_commenced).
+You can also access the original dataset [on the source website](https://brtdata.org/indicators/systems/year_system_commenced).
 
 ###### Note: This dataset processing was done by [Ken Wakabayashi](https://www.wri.org/profile/ken-wakabayashi), and QC'd by [Liz Saccoccia](https://www.wri.org/profile/liz-saccoccia).
