@@ -1,11 +1,11 @@
 ## Global Bus Rapid Transit Dataset Pre-processing
 This file describes the data pre-processing that was done to [the Global Bus Rapid Transit](https://brtdata.org/indicators/systems/year_system_commenced) for [display on Resource Watch](https://resourcewatch.org/data/explore/Cities-with-Bus-Rapid-Transit).
 
-The Global Bus Rapid Transit (BRT) data can be found on the source website. The data is, however, not downloadable from the source website. The data includes the name of the BRT system, the year it commenced, the location of the BRT (city and region), and the source. Each of these values are provided for BRT systems launched between 1986 and 2019. 
+The Global Bus Rapid Transit (BRT) dataset includes the name of the BRT system, the year it commenced, the location of the BRT (city and region), and the source. Each of these values are provided for BRT systems launched between 1986 and 2019. 
 
-Because we wanted to display the data on Resource Watch for all the BRT systems, a complete dataset was compiled from the data found on the source website and joined with the city centroid coordinates from [Natural Earth's Populated Places dataset](https://www.naturalearthdata.com/downloads/110m-cultural-vectors/110m-populated-places/) for mapping purposes. 
+While this dataset be viewed on the source website, it is not directly downloadable there. In order to display the BRT data on Resource Watch, the dataset was copied from the source website and joined with the city centroid coordinates from [Natural Earth's Populated Places dataset](https://www.naturalearthdata.com/downloads/110m-cultural-vectors/110m-populated-places/) for mapping purposes. 
 
-Below, we describe the actions taken to compile a complete dataset and join coordinates to the cities:
+Below, we describe the actions taken to upload the dataset and join it to city coordinates:
 1. Copy and paste the data table from the source website into Excel. Upload this Excel spreadsheet to Carto as a table named cit_043_bus_rapid_transit.
 2. Join the Global Bus Rapid Transit data (“cit_043_bus_rapid_transit”) with the Populated Places dataset ("city_centroid"), which had previously been uploaded to the Resource Watch Carto account. These tables should be joined on the “city” column in each dataset, using the following SQL statement:
 ```
