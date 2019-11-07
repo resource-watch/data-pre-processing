@@ -7,7 +7,7 @@ Because we wanted to display the data on Resource Watch for all the BRT systems,
 
 Below, we describe the actions taken to compile a complete dataset and join coordinates to the cities:
 1. Copy and paste the data table from the source website to an Excel table.
-2. Join the Global Bus Rapid Transit data (“cit_043_bus_rapid_transit”) with the [Populated Places Dataset](https://www.naturalearthdata.com/downloads/110m-cultural-vectors/110m-populated-places/) dataset on Resource Watch’s Carto account over the “city” column with the following SQL statement:
+2. Join the Global Bus Rapid Transit data (“cit_043_bus_rapid_transit”) with the Populated Places Dataset("city_centroid") dataset on Resource Watch’s Carto account over the “city” column with the following SQL statement:
 ```
 SELECT city_centroid.city, cit_043_cities_with_bus_rapid_transit.city, city_centroid.the_geom, cit_043_cities_with_bus_rapid_transit.source, cit_043_cities_with_bus_rapid_transit.value, cit_043_cities_with_bus_rapid_transit.country
 FROM "wri-rw".city_centroid
