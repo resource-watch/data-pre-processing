@@ -277,7 +277,7 @@ if __name__ == '__main__':
                 carto.createTable(CARTO_TABLE, CARTO_SCHEMA)
             else:
                 logging.info('Table {} does exist'.format(CARTO_TABLE))
-                carto.dropTable(CARTO_TABLE)
+                carto.deleteRows(CARTO_TABLE, 'cartodb_id IS NOT NULL')
                 carto.createTable(CARTO_TABLE, CARTO_SCHEMA)
             
             time.sleep(60)
