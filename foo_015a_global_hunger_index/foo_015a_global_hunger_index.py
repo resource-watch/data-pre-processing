@@ -2,11 +2,16 @@ import os
 import pandas as pd
 import urllib.request
 import tabula
+from carto.datasets import DatasetManager
+from carto.auth import APIKeyAuthClient
+
+# name of table on Carto where you want to upload data
+# this should be a table name that is not currently in use
+dataset_name = 'foo_015a_global_hunger_index' #check
 
 # first, set the directory that you are working in with the path variable
 # you can use an environmental variable, as we did, or directly enter the directory name as a string
 # example: path = '/home/foo_015a_global_hunger_index'
-dataset_name = 'foo_015a_global_hunger_index' #check
 path = os.getenv('PROCESSING_DIR')+dataset_name
 os.chdir(path)
 
@@ -16,10 +21,12 @@ if not os.path.exists(data_dir):
     os.mkdir(data_dir)
 
 # Download data from the 2019 Global Hunger Index report and save to your data dir
-pdf_loc = data_dir+'report.pdf'
-urllib.request.urlretrieve('https://www.globalhungerindex.org/pdf/en/2019.pdf', pdf_loc) #check
+url = 'https://www.globalhungerindex.org/pdf/en/2019.pdf' #check
+file_name = data_dir+url.split('/')[-1]
+urllib.request.urlretrieve(url, file_name)
+
 # read in data from Table 2.1 GLOBAL HUNGER INDEX SCORES BY 2019 GHI RANK, which is on page 17 of the report
-df=tabula.read_pdf(pdf_loc,pages=17) #check
+df=tabula.read_pdf(file_name,pages=17) #check
 
 #remove headers and poorly formatted column names (rows 0, 1)
 df=df.iloc[2:]
@@ -58,9 +65,7 @@ csv_loc = data_dir+dataset_name+'.csv'
 hunger_index_long.to_csv(csv_loc, index=False)
 
 #Upload to Carto
-from carto.datasets import DatasetManager
 
-from carto.auth import APIKeyAuthClient
 #set up carto authentication using local variables for username (CARTO_WRI_RW_USER) and API key (CARTO_WRI_RW_KEY)
 auth_client = APIKeyAuthClient(api_key=os.getenv('CARTO_WRI_RW_KEY'), base_url="https://{user}.carto.com/".format(user=os.getenv('CARTO_WRI_RW_USER')))
 #set up dataset manager with authentication
