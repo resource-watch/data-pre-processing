@@ -3,6 +3,7 @@
 
 # Data files
 *dst/*
+*data/*
 *.nc
 *.tif
 *.csv
