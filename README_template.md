@@ -9,6 +9,9 @@ Below, we describe the steps used to {describe how you changed the data, e.g., "
 ```
 Include any SQL or GEE code you used in a code snippet.
 ```
+
+Please see the [Python script]({link to Python script on Github}) for more details on this processing.
+
 You can view the processed {Resource Watch public title} dataset [on Resource Watch]({link to dataset's metadata page on Resource Watch}).
 
 You can also download original dataset [directly through Resource Watch]({s3 link if available}), or [from the source website]({download from source link}).
