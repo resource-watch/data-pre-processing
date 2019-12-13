@@ -37,8 +37,9 @@ energy_df = pd.read_csv(file_name.split('.')[0]+'/SE4ALLData.csv')
 energy_intensity_df = energy_df[energy_df['Indicator Name'].str.contains('Energy intensity level of primary energy')]
 
 #convert tables from wide form (each year is a column) to long form (a single column of years and a single column of values)
-energy_intensity_long = pd.melt (energy_intensity_df, id_vars= ['Country Name' ,'Country Code'] , 
-                                 value_vars = ['1990', '1991','1992','1993','1994','1995','1996','1997','1998','1999','2000','2001','2002','2003','2004','2005','2006','2007','2008','2009','2010','2011','2012','2013','2014','2015','2016'],
+year_list = [str(year) for year in range(1990, 2017)] #check
+energy_intensity_long = pd.melt (energy_intensity_df, id_vars= ['Country Name' ,'Country Code'] ,
+                                 value_vars = year_list,
                                  var_name = 'year',
                                  value_name = 'energy_intensity')
 
