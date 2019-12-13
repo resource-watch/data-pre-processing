@@ -1,115 +1,69 @@
-#!/usr/bin/env python
-# coding: utf-8
+import os
+import pandas as pd
+import urllib.request
+import tabula
 
-# In[2]:
-
-
-import os 
-import pandas as pd 
-
-
-# In[3]:
-
-
-# find current directory
-path= os.getcwd()
-
-
-# In[4]:
-
-
-print(path)
-
-
-# In[5]:
-
-
-# define directory
-path = '/Users/tinahuang/Desktop' # define your own path
+# first, set the directory that you are working in with the path variable
+# you can use an environmental variable, as we did, or directly enter the directory name as a string
+# example: path = '/home/foo_015a_global_hunger_index'
+dataset_name = 'foo_015a_global_hunger_index' #check
+path = os.getenv('PROCESSING_DIR')+dataset_name
 os.chdir(path)
 
+# create a new sub-directory within your specified dir called 'data'
+data_dir = 'data/'
+if not os.path.exists(data_dir):
+    os.mkdir(data_dir)
 
-# In[8]:
+# Download data from the 2019 Global Hunger Index report and save to your data dir
+pdf_loc = data_dir+'report.pdf'
+urllib.request.urlretrieve('https://www.globalhungerindex.org/pdf/en/2019.pdf', pdf_loc) #check
+# read in data from Table 2.1 GLOBAL HUNGER INDEX SCORES BY 2019 GHI RANK, which is on page 17 of the report
+df=tabula.read_pdf(pdf_loc,pages=17) #check
 
+#remove headers and poorly formatted column names (rows 0, 1)
+df=df.iloc[2:]
 
-print(path) # check your path
+#get first half of table (columns 1-5, do not include rank column)
+df_a=df.iloc[:, 1:6]
+#name columns
+col_names = ["Country", "2000", "2005", "2010", "2019"] #check
+df_a.columns = col_names
+#get second half of table (columns 7-11, do not include rank column) and drop empty rows at end
+df_b=df.iloc[:, 7:12].dropna(how='all')
+#name columns
+df_b.columns = col_names
 
+#combine first and second half of table
+global_hunger_index_2019_df = pd.concat([df_a, df_b], ignore_index=True, sort=False)
 
-# In[9]:
-
-
-# Download data from the 2019 Global Hunger Index report :https://www.globalhungerindex.org/pdf/en/2019.pdf
-# copy and paste data from the pdf report into a csv, replace "-" with NaN
-
-
-# In[10]:
-
-
-# read in csv file as Dataframe 
-global_hunger_index_2019_df = pd.read_csv('foo_015a_global_hunger_index - Sheet1.csv')
-
-
-# In[11]:
-
-
-# examine this data frame 
-global_hunger_index_2019_df.head()
-
-
-# In[12]:
-
-
-# clean the dataframe, replace <5 with 5, replace NaN's with null
+# clean the dataframe
+# replace <5 with 5
 global_hunger_index_2019_df= global_hunger_index_2019_df.replace('<5', 5)
-global_hunger_index_2019_df=global_hunger_index_2019_df.where((pd.notnull(global_hunger_index_2019_df)), None)
-global_hunger_index_2019_df
-
-
-# In[13]:
-
-
-# we will only use column 1:5, subset the data frame
-global_hunger_index_2019_df= global_hunger_index_2019_df[['Country', '2000', '2005', '2010', '2019'] ]
-
-
-# In[14]:
-
-
-# examine new dataframe 
-global_hunger_index_2019_df.head()
-
-
-# In[1]:
-
+#replace — in table with None
+global_hunger_index_2019_df = global_hunger_index_2019_df.replace({'—': None})
 
 #convert table from wide form (each year is a column) to long form (a single column of years and a single column of values)
 hunger_index_long = pd.melt (global_hunger_index_2019_df, id_vars= ['Country'] , var_name = 'year', value_name = 'hunger_index_score')
 
-
-# In[16]:
-
-
-# examine the new data frame 
-hunger_index_long
-
-
-# In[18]:
-
-
-# examine each column's data type
-hunger_index_long.dtypes
-
-
-# In[19]:
-
-
-#convert year and hunger_index_score columns from object to number
+#convert year column from object to integer
 hunger_index_long.year=hunger_index_long.year.astype('int64')
+#convert hunger_index_score column from object to number
 hunger_index_long.hunger_index_score = hunger_index_long.hunger_index_score.astype('float64')
+#replace NaN in table with None
 hunger_index_long=hunger_index_long.where((pd.notnull(hunger_index_long)), None)
-hunger_index_long
 
+#save processed dataset to csv
+csv_loc = data_dir+dataset_name+'.csv'
+hunger_index_long.to_csv(csv_loc, index=False)
 
+#Upload to Carto
+from carto.datasets import DatasetManager
 
-
-
+from carto.auth import APIKeyAuthClient
+#set up carto authentication using local variables for username (CARTO_WRI_RW_USER) and API key (CARTO_WRI_RW_KEY)
+auth_client = APIKeyAuthClient(api_key=os.getenv('CARTO_WRI_RW_KEY'), base_url="https://{user}.carto.com/".format(user=os.getenv('CARTO_WRI_RW_USER')))
+#set up dataset manager with authentication
+dataset_manager = DatasetManager(auth_client)
+#upload dataset to carto
+dataset = dataset_manager.create(csv_loc)
