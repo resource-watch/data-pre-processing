@@ -5,7 +5,7 @@ This dataset was provided by the source as a pdf report. The data shown on Resou
 
 This table was read into Python as a dataframe. The data was cleaned, values listed as '<5' were replaced with 5, and the the table was converted from wide to a long form.
 
-Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/foo_015a_global_hunger_index/foo_015a_global_hunger_index.py) for more details on this processing.
+Please see the [Python script](https://github.com/Taufiq06/data-pre-processing/blob/master/cli_000_country_level_social_cost_of_carbon/cli_000_country_level_social_cost_of_carbon.py) for more details on this processing.
 
 You can view the processed Global Hunger Index dataset [on Resource Watch](https://resourcewatch.org/data/explore/foo015a-Global-Hunger-Index).
 
