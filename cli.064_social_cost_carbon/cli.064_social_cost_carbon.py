@@ -1,17 +1,15 @@
 import os
 import pandas as pd
-import urllib.request
-import tabula
 from carto.datasets import DatasetManager
 from carto.auth import APIKeyAuthClient
 
 # name of table on Carto where you want to upload data
 # this should be a table name that is not currently in use
-dataset_name = 'foo_015a_global_hunger_index' #check
+dataset_name = 'cli.064_social_cost_carbon' #check
 
 # first, set the directory that you are working in with the path variable
 # you can use an environmental variable, as we did, or directly enter the directory name as a string
-# example: path = '/home/foo_015a_global_hunger_index'
+# example: path = '/home/cli.064_social_cost_carbon'
 path = os.getenv('PROCESSING_DIR')+dataset_name
 os.chdir(path)
 
@@ -20,49 +18,24 @@ data_dir = 'data/'
 if not os.path.exists(data_dir):
     os.mkdir(data_dir)
 
-# Download data from the 2019 Global Hunger Index report and save to your data dir
-url = 'https://www.globalhungerindex.org/pdf/en/2019.pdf' #check
-file_name = data_dir+url.split('/')[-1]
-urllib.request.urlretrieve(url, file_name)
+# read in data from database of "Country-level social cost of carbon", which is the csv file "cscc_db_v2.csv" in the Github repo 
+url = 'https://raw.githubusercontent.com/country-level-scc/cscc-database-2018/master/cscc_db_v2.csv' #check
+df=pd.read_csv(url) #check
 
-# read in data from Table 2.1 GLOBAL HUNGER INDEX SCORES BY 2019 GHI RANK, which is on page 17 of the report
-df=tabula.read_pdf(file_name,pages=17) #check
+#convert table from wide form (each cscc percentile is a column) to long form (a single column of cscc percentile and a single column of cscc scores)
+cscc_long = pd.melt (df, id_vars= ['ISO3'] ,value_vars=['16.7%','50%','83.3%'], var_name = 'cscc_percentile', value_name = 'cscc_score')
 
-#remove headers and poorly formatted column names (rows 0, 1)
-df=df.iloc[2:]
+# change the country code column name
+cscc_long.rename(columns={'ISO3': 'country_code'}, inplace=True)
 
-#get first half of table (columns 1-5, do not include rank column)
-df_a=df.iloc[:, 1:6]
-#name columns
-col_names = ["Country", "2000", "2005", "2010", "2019"] #check
-df_a.columns = col_names
-#get second half of table (columns 7-11, do not include rank column) and drop empty rows at end
-df_b=df.iloc[:, 7:12].dropna(how='all')
-#name columns
-df_b.columns = col_names
-
-#combine first and second half of table
-global_hunger_index_2019_df = pd.concat([df_a, df_b], ignore_index=True, sort=False)
-
-# clean the dataframe
-# replace <5 with 5
-global_hunger_index_2019_df= global_hunger_index_2019_df.replace('<5', 5)
-#replace — in table with None
-global_hunger_index_2019_df = global_hunger_index_2019_df.replace({'—': None})
-
-#convert table from wide form (each year is a column) to long form (a single column of years and a single column of values)
-hunger_index_long = pd.melt (global_hunger_index_2019_df, id_vars= ['Country'] , var_name = 'year', value_name = 'hunger_index_score')
-
-#convert year column from object to integer
-hunger_index_long.year=hunger_index_long.year.astype('int64')
-#convert hunger_index_score column from object to number
-hunger_index_long.hunger_index_score = hunger_index_long.hunger_index_score.astype('float64')
+#convert cscc_score column from object to number
+cscc_long.cscc_score = cscc_long.cscc_score.astype('float64')
 #replace NaN in table with None
-hunger_index_long=hunger_index_long.where((pd.notnull(hunger_index_long)), None)
+cscc_long=cscc_long.where((pd.notnull(cscc_long)), None)
 
 #save processed dataset to csv
 csv_loc = data_dir+dataset_name+'.csv'
-hunger_index_long.to_csv(csv_loc, index=False)
+cscc_long.to_csv(csv_loc, index=False)
 
 #Upload to Carto
 
