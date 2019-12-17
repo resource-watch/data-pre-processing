@@ -7,7 +7,7 @@ This table was read into Python as a dataframe. The data was cleaned, values lis
 
 Please see the [Python script](https://github.com/Taufiq06/data-pre-processing/blob/master/cli_000_country_level_social_cost_of_carbon/cli_000_country_level_social_cost_of_carbon.py) for more details on this processing.
 
-You can view the processed Global Hunger Index dataset [on Resource Watch](https://resourcewatch.org/data/explore/foo015a-Global-Hunger-Index).
+You can view the processed Country-Level Social Cost of Carbon dataset [on Resource Watch](https://resourcewatch.org/data/explore/foo015a-Global-Hunger-Index).
 
 You can also download original dataset [directly through Resource Watch](http://wri-projects.s3.amazonaws.com/resourcewatch/foo_015a_global_hunger_index.zip), or [from the source website](https://github.com/country-level-scc/cscc-database-2018/blob/master/cscc_db_v2.csv).
 
