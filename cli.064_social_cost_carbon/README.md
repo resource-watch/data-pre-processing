@@ -1,7 +1,7 @@
 ## Country-Level Social Cost of Carbon Dataset Pre-processing
 This file describes the data pre-processing that was done to [Country-level social cost of carbon dataset](https://github.com/country-level-scc/cscc-database-2018/blob/master/cscc_db_v2.csv) for [display on Resource Watch]().
 
-This dataset was provided by the source as a csv file in a GitHub repositury. The data shown on Resource Watch can be found in database of "Country-level social cost of carbon", which is the csv file "cscc_db_v2.csv" in the Github repository.
+This dataset was provided by the source as a csv file in a GitHub repositury. The data shown on Resource Watch can be found in database of "Country-level social cost of carbon", which is the csv file "cscc_db_v2.csv" in the [Github repository](https://github.com/country-level-scc/cscc-database-2018/blob/master/cscc_db_v2.csv).
 
 This table was read into Python as a dataframe. The data was trimmed, the column for country code was renamed and the the table was converted from wide to a long form so that the final table contains a single column of cscc percentile and a single column of cscc scores.
 
