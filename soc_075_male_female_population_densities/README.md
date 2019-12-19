@@ -7,7 +7,7 @@ To create the layer "Number of females per 100 males", we divide the female popu
 
 This calculation was done using Google Earth Engine, a free geospatial analysis system by Google. While the sytem is free you need to sign up with a Google account, which can be done [here](https://earthengine.google.com/). 
 
-And you can run the code we used to preprocess this layer in Google Earth Engine here [here](https://code.earthengine.google.com/69705398b91fdcbdad2298f08ada5da4), and the code is also copied below.
+The code used to preprocess this layer in Google Earth Engine can be found [here](https://code.earthengine.google.com/69705398b91fdcbdad2298f08ada5da4) and is copied below.
 ```
 var female = ee.Image('projects/resource-watch-gee/soc_075_female_male_populations/female_density')
 var male = ee.Image('projects/resource-watch-gee/soc_075_female_male_populations/male_density')
@@ -24,7 +24,7 @@ Export.image.toAsset({
   maxPixels:1e13})
 ```
 
-You can view the processed {Resource Watch public title} dataset [on Resource Watch]({link to dataset's metadata page on Resource Watch}).
+You can view the processed Female & Male Population Densities dataset [on Resource Watch](https://resourcewatch.org/data/explore/soc075-Broad-Age-Groups).
 
 You can also download original dataset [from the source website](https://sedac.ciesin.columbia.edu/data/set/gpw-v4-basic-demographic-characteristics-rev11/data-download).
 
