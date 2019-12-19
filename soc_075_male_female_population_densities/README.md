@@ -1,7 +1,6 @@
 ## Female & Male Population Densities Dataset Pre-processing
 This file describes the data pre-processing that was done to [the Gridded Population of the World (GPW), v4: Basic Demographic Characteristics, v4.10 (2010)](https://sedac.ciesin.columbia.edu/data/set/gpw-v4-basic-demographic-characteristics-rev11) for [display on Resource Watch](https://resourcewatch.org/data/explore/soc075-Broad-Age-Groups).
 
-{Describe how the original data came from the source.}
 The original data contains two layers, male population density and female population density in people per square kilometer.
 
 To create the layer "Number of females per 100 males", we divide the female population density by the male population density and then multiply by 100.
