@@ -3,7 +3,7 @@ This file describes the data pre-processing that was done to [Sustainable Energy
 
 This dataset was provided by the source as a csv. The subset of renewable energy consumption data was selected, and the table was converted from wide to long form, using Python.
 
-Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/ene_021a_renewable_energy_consumption/ene_021a_renewable_energy_consumption.py) for more details on this processing.
+Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/ene_021a_renewable_energy_consumption/ene_021a_renewable_energy_consumption_processing.py) for more details on this processing.
 
 You can view the processed dataset for [display on Resource Watch](https://resourcewatch.org/data/explore/ene021a-Renewable-Energy-Consumption).
 
