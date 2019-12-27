@@ -78,17 +78,18 @@ df_long.to_csv(csv_loc, index=False)
 '''
 Upload processed data to Carto
 '''
+print('Uploading processed data to Carto.')
 #set up carto authentication using local variables for username (CARTO_WRI_RW_USER) and API key (CARTO_WRI_RW_KEY)
 auth_client = APIKeyAuthClient(api_key=os.getenv('CARTO_WRI_RW_KEY'), base_url="https://{user}.carto.com/".format(user=os.getenv('CARTO_WRI_RW_USER')))
 #set up dataset manager with authentication
 dataset_manager = DatasetManager(auth_client)
 #upload dataset to carto
 dataset = dataset_manager.create(csv_loc)
-
+print('Carto table created: {}'.format(os.path.basename(csv_loc).split('.')[0]))
 #set dataset privacy to 'Public with link'
 dataset.privacy = 'LINK'
 dataset.save()
-
+print('Privacy set to public.')
 
 '''
 Upload original data and processed data to Amazon S3 storage
@@ -107,6 +108,7 @@ def upload_to_aws(local_file, bucket, s3_file):
         print("Credentials not available")
         return False
 
+print('Uploading original data to S3.')
 # Copy the raw data into a zipped file to upload to S3
 raw_data_dir = data_dir+dataset_name+'.zip'
 with ZipFile(raw_data_dir,'w') as zip:
@@ -115,7 +117,7 @@ with ZipFile(raw_data_dir,'w') as zip:
 # Upload raw data file to S3
 uploaded = upload_to_aws(raw_data_dir, 'wri-public-data', 'resourcewatch/'+os.path.basename(raw_data_dir))
 
-
+print('Uploading processed data to S3.')
 # Copy the processed data into a zipped file to upload to S3
 processed_data_dir = data_dir+dataset_name+'_edit'+'.zip'
 with ZipFile(processed_data_dir,'w') as zip:
