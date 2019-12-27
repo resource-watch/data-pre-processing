@@ -2,6 +2,9 @@ import os
 import pandas as pd
 from carto.datasets import DatasetManager
 from carto.auth import APIKeyAuthClient
+import boto3
+from botocore.exceptions import NoCredentialsError
+from zipfile import ZipFile
 import shutil
 
 # name of table on Carto where you want to upload data
@@ -31,40 +34,50 @@ This will download a file titled 'International_data.csv' to your Downloads fold
 download = os.path.expanduser("~")+'/Downloads/International_data.csv'
 
 # Move this file into your data directory
-csv_raw =  data_dir+dataset_name+'_raw.csv'
-shutil.move(download,csv_raw)
+raw_data_file = data_dir+os.path.basename(download)
+shutil.move(download,raw_data_file)
+
+# Copy the raw data into a zipped file to upload to S3
+raw_data_dir = data_dir+dataset_name+'.zip'
+with ZipFile(raw_data_dir,'w') as zip:
+    zip.write(raw_data_file, os.path.basename(raw_data_file))
 
 # read in csv file as Dataframe
-energy_df = pd.read_csv(csv_raw, header=[4])
+df = pd.read_csv(raw_data_file, header=[4])
 
 #drop first column from table with no data in it
-energy_df = energy_df.drop(energy_df.columns[0], axis=1)
+df = df.drop(df.columns[0], axis=1)
 
 #drop first two rows from table with no data in it
-energy_df = energy_df.drop([0,1,2], axis=0)
-energy_df=energy_df.reset_index(drop=True)
+df = df.drop([0,1,2], axis=0)
+df=df.reset_index(drop=True)
 
 #rename first two unnamed columns
-energy_df.rename(columns={energy_df.columns[0]:'country'}, inplace=True)
-energy_df.rename(columns={energy_df.columns[1]:'unit'}, inplace=True)
+df.rename(columns={df.columns[0]:'country'}, inplace=True)
+df.rename(columns={df.columns[1]:'unit'}, inplace=True)
 
 #replace — in table with None
-energy_df = energy_df.replace({'--': None})
+df = df.replace({'--': None})
 
 #convert tables from wide form (each year is a column) to long form (a single column of years and a single column of values)
 year_list = [str(year) for year in range(1980, 2018)] #check
-energy_consumption_long = pd.melt (energy_df, id_vars= ['country'] ,
-                                 value_vars = year_list,
-                                 var_name = 'year',
-                                 value_name = 'energy_consumption_quadBTU')
+df_long = pd.melt (df, id_vars= ['country'],
+                   value_vars = year_list,
+                   var_name = 'year',
+                   value_name = 'energy_consumption_quadBTU')
 
 #convert year and value column from object to integer
-energy_consumption_long.year=energy_consumption_long.year.astype('int64')
-energy_consumption_long.energy_consumption_quadBTU=energy_consumption_long.energy_consumption_quadBTU.astype('float64')
+df_long.year=df_long.year.astype('int64')
+df_long.energy_consumption_quadBTU=df_long.energy_consumption_quadBTU.astype('float64')
 
 #save processed dataset to csv
-csv_loc = data_dir+dataset_name+'.csv'
-energy_consumption_long.to_csv(csv_loc, index=False)
+csv_loc = data_dir+dataset_name+'_edit.csv'
+df_long.to_csv(csv_loc, index=False)
+
+#copy the processed data into a zipped file to upload to S3
+processed_data_dir = data_dir+dataset_name+'_edit'+'.zip'
+with ZipFile(processed_data_dir,'w') as zip:
+    zip.write(csv_loc, os.path.basename(csv_loc))
 
 #Upload to Carto
 
@@ -74,3 +87,24 @@ auth_client = APIKeyAuthClient(api_key=os.getenv('CARTO_WRI_RW_KEY'), base_url="
 dataset_manager = DatasetManager(auth_client)
 #upload dataset to carto
 dataset = dataset_manager.create(csv_loc)
+
+# Upload original data and processed data to AWS S3
+def upload_to_aws(local_file, bucket, s3_file):
+    s3 = boto3.client('s3', aws_access_key_id=os.getenv('aws_access_key_id'), aws_secret_access_key=os.getenv('aws_secret_access_key'))
+    try:
+        s3.upload_file(local_file, bucket, s3_file)
+        print("Upload Successful")
+        print("http://{}.s3.amazonaws.com/{}".format(bucket, s3_file))
+        return True
+    except FileNotFoundError:
+        print("The file was not found")
+        return False
+    except NoCredentialsError:
+        print("Credentials not available")
+        return False
+
+#upload raw data file to S3
+uploaded = upload_to_aws(raw_data_dir, 'wri-public-data', 'resourcewatch/'+os.path.basename(raw_data_dir))
+
+#upload processed data file to S3
+uploaded = upload_to_aws(processed_data_dir, 'wri-public-data', 'resourcewatch/'+os.path.basename(processed_data_dir))
