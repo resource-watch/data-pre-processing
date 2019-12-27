@@ -87,6 +87,9 @@ dataset_manager = DatasetManager(auth_client)
 #upload dataset to carto
 dataset = dataset_manager.create(csv_loc)
 
+#set dataset privacy to 'Public with link'
+dataset.privacy = 'LINK'
+dataset.save()
 
 '''
 Upload original data and processed data to Amazon S3 storage

@@ -16,7 +16,6 @@ dataset_name = 'ene_029a_energy_intensity' #check
 # example: path = '/home/ene_029a_energy_intensity'
 path = os.getenv('PROCESSING_DIR')+dataset_name
 #move to this directory
-
 os.chdir(path)
 
 # create a new sub-directory within your specified dir called 'data'
@@ -73,6 +72,10 @@ auth_client = APIKeyAuthClient(api_key=os.getenv('CARTO_WRI_RW_KEY'), base_url="
 dataset_manager = DatasetManager(auth_client)
 #upload dataset to carto
 dataset = dataset_manager.create(csv_loc)
+
+#set dataset privacy to 'Public with link'
+dataset.privacy = 'LINK'
+dataset.save()
 
 '''
 Upload original data and processed data to Amazon S3 storage
