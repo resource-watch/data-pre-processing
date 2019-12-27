@@ -15,6 +15,7 @@ dataset_name = 'ene_034_electricity_consumption' #check
 # you can use an environmental variable, as we did, or directly enter the directory name as a string
 # example: path = '/home/ene_034_electricity_consumption'
 path = os.getenv('PROCESSING_DIR')+dataset_name
+#move to this directory
 os.chdir(path)
 
 # create a new sub-directory within your specified dir called 'data'
