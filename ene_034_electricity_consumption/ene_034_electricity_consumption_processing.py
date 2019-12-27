@@ -23,8 +23,9 @@ data_dir = 'data/'
 if not os.path.exists(data_dir):
     os.mkdir(data_dir)
 
-# Download data and save to your data dir
 '''
+Download data and save to your data directory
+
 Country-level data for net electricity consumption can be downloaded at the following link:
 https://www.eia.gov/beta/international/data/browser/#/?pa=0000002&c=ruvvvvvfvtvnvv1vrvvvvfvvvvvvfvvvou20evvvvvvvvvvvvuvs&ct=0&tl_id=2-A&vs=INTL.2-2-AFG-BKWH.A&vo=0&v=H&start=1980&end=2016
 
@@ -38,11 +39,9 @@ download = os.path.expanduser("~")+'/Downloads/International_data.csv'
 raw_data_file = data_dir+os.path.basename(download)
 shutil.move(download,raw_data_file)
 
-# Copy the raw data into a zipped file to upload to S3
-raw_data_dir = data_dir+dataset_name+'.zip'
-with ZipFile(raw_data_dir,'w') as zip:
-    zip.write(raw_data_file, os.path.basename(raw_data_file))
-
+'''
+Process data
+'''
 # read in csv file as Dataframe
 df = pd.read_csv(raw_data_file, header=[4])
 
@@ -76,14 +75,10 @@ df_long.electricity_consumption_billionkwh=df_long.electricity_consumption_billi
 csv_loc = data_dir+dataset_name+'_edit.csv'
 df_long.to_csv(csv_loc, index=False)
 
-#copy the processed data into a zipped file to upload to S3
-processed_data_dir = data_dir+dataset_name+'_edit'+'.zip'
-with ZipFile(processed_data_dir,'w') as zip:
-    zip.write(csv_loc, os.path.basename(csv_loc))
 
-
-#Upload to Carto
-
+'''
+Upload processed data to Carto
+'''
 #set up carto authentication using local variables for username (CARTO_WRI_RW_USER) and API key (CARTO_WRI_RW_KEY)
 auth_client = APIKeyAuthClient(api_key=os.getenv('CARTO_WRI_RW_KEY'), base_url="https://{user}.carto.com/".format(user=os.getenv('CARTO_WRI_RW_USER')))
 #set up dataset manager with authentication
@@ -91,7 +86,10 @@ dataset_manager = DatasetManager(auth_client)
 #upload dataset to carto
 dataset = dataset_manager.create(csv_loc)
 
-# Upload original data and processed data to AWS S3
+
+'''
+Upload original data and processed data to Amazon S3 storage
+'''
 def upload_to_aws(local_file, bucket, s3_file):
     s3 = boto3.client('s3', aws_access_key_id=os.getenv('aws_access_key_id'), aws_secret_access_key=os.getenv('aws_secret_access_key'))
     try:
@@ -106,8 +104,19 @@ def upload_to_aws(local_file, bucket, s3_file):
         print("Credentials not available")
         return False
 
-#upload raw data file to S3
+# Copy the raw data into a zipped file to upload to S3
+raw_data_dir = data_dir+dataset_name+'.zip'
+with ZipFile(raw_data_dir,'w') as zip:
+    zip.write(raw_data_file, os.path.basename(raw_data_file))
+
+# Upload raw data file to S3
 uploaded = upload_to_aws(raw_data_dir, 'wri-public-data', 'resourcewatch/'+os.path.basename(raw_data_dir))
 
-#upload processed data file to S3
+
+# Copy the processed data into a zipped file to upload to S3
+processed_data_dir = data_dir+dataset_name+'_edit'+'.zip'
+with ZipFile(processed_data_dir,'w') as zip:
+    zip.write(csv_loc, os.path.basename(csv_loc))
+
+# Upload processed data file to S3
 uploaded = upload_to_aws(processed_data_dir, 'wri-public-data', 'resourcewatch/'+os.path.basename(processed_data_dir))
