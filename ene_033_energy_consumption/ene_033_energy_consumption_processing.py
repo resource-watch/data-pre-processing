@@ -89,7 +89,7 @@ print('Carto table created: {}'.format(os.path.basename(csv_loc).split('.')[0]))
 #set dataset privacy to 'Public with link'
 dataset.privacy = 'LINK'
 dataset.save()
-print('Privacy set to public.')
+print('Privacy set to public with link.')
 
 '''
 Upload original data and processed data to Amazon S3 storage
