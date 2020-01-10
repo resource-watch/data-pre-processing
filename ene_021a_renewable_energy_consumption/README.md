@@ -9,4 +9,4 @@ You can view the processed dataset for [display on Resource Watch](https://resou
 
 You can also download original dataset [directly through Resource Watch](http://wri-public-data.s3.amazonaws.com/resourcewatch/ene_021a_renewable_energy_consumption.zip), or [from the source website](https://datacatalog.worldbank.org/dataset/sustainable-energy-all).
 
-###### Note: This dataset processing was done by [Tina Huang](https://www.wri.org/profile/tina-huang), and QC'd by [Amelia Snyder](https://www.wri.org/profile/amelia-snyder)
+###### Note: This dataset processing was done by [Tina Huang](https://www.wri.org/profile/tina-huang), and QC'd by [Amelia Snyder](https://www.wri.org/profile/amelia-snyder).
