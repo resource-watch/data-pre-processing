@@ -34,18 +34,18 @@ SW corner: 0N, -180E
 
 SPI_2019_2:
 NE corner: 50N, 0E
-SW corner: 0N, -E
+SW corner: 0N, -90E
 
 SPI_2019_3:
-NE corner: 50N, 0E
-SW corner: 0N, -90E
+NE corner: 50N, 90E
+SW corner: 50N, 180E
 
 SPI_2019_4:
 NE corner: 0N, -180E
-SW corner: 0N, -90E
+SW corner: 0N, 90E
 
 SPI_2019_5:
-NE corner: 0N, 90E
+NE corner: 0N, -90E
 SW corner: -50N, -180E
 
 SPI_2019_6:
