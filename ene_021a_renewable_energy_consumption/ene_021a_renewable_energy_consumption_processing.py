@@ -7,10 +7,6 @@ import boto3
 from botocore.exceptions import NoCredentialsError
 from zipfile import ZipFile
 
-import dotenv
-#enter the location of your .env file
-dotenv.load_dotenv('C:\\Users\\tina.huang\\OneDrive - World Resources Institute\\Desktop\\Github\\cred\\.env')
-
 # name of table on Carto where you want to upload data
 # this should be a table name that is not currently in use
 dataset_name = 'ene_021a_renewable_energy_consumption' #check
