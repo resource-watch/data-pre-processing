@@ -200,7 +200,7 @@ if __name__ == '__main__':
             'wps_008_poverty320' : {
                 'indicators': ['SI.POV.LMIC'],
                 'columns': ['poverty_headcount'],
-                'units': ['% of population']}
+                'units': ['% of population']},
             'soc_008_gdp_per_capita_edit' : {
                 'indicators': ['NY.GDP.PCAP.PP.CD'],
                 'columns': ['gdp_per_capita'],
