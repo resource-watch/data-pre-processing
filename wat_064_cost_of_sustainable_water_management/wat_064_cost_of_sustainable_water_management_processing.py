@@ -47,7 +47,7 @@ Process data
 filename=raw_data_file_unzipped+'/Achieving_Abundance_Countries.xlsx'
 Achieving_Abundance_df=pd.read_excel(filename, header=1) # selecting 2nd as row as the column names
 
-# Remove unnecessary columns
+# Remove columns containing contextual information that are not part of the core dataset
 Achieving_Abundance_df.drop(Achieving_Abundance_df.iloc[:, 9:], inplace = True, axis = 1)
 
 # Change column name for total cost to make it easily interpretable
@@ -58,13 +58,16 @@ i = 0
 upper_bound = (Achieving_Abundance_df.shape[1])
 
 for col in Achieving_Abundance_df.columns: 
+    # Generate a name for the column that will hold the percentages.
     low_col = col.lower() # convert to lower case
     fin_col =low_col.replace (" ", "_") # put '_' in between for better readability
+    percent_col = fin_col+'_percent'
+    # If the column is not the 'total cost' column calculate the values for the percent column.
     i += 1
     if 2 < i < (upper_bound):
         print('Calculating percent of the total estimated cost for ' + str(col))
         # Create & populate new columns by converting each sustainable water management category to rounded percents
-        Achieving_Abundance_df[fin_col+'_percent'] = round((Achieving_Abundance_df[col]/Achieving_Abundance_df['Total Cost'])*100)
+        Achieving_Abundance_df[percent_col] = round((Achieving_Abundance_df[col]/Achieving_Abundance_df['Total Cost'])*100)
 
 #replace all NaN with None
 final_df=Achieving_Abundance_df.where((pd.notnull(Achieving_Abundance_df)), None)
