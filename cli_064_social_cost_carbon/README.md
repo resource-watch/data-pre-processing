@@ -5,7 +5,7 @@ This dataset was provided by the source as a csv file in a GitHub repository. Th
 
 This table was read into Python as a dataframe. The data was trimmed, the column for country code was renamed and the the table was converted from wide to a long form so that the final table contains a single column of CSCC percentiles and a single column of CSCC scores.
 
-Please see the [Python script](https://github.com/Taufiq06/data-pre-processing/blob/master/cli.064_social_cost_carbon/cli.064_social_cost_carbon_processing.py) for more details on this processing.
+Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/cli_064_social_cost_carbon/cli_064_social_cost_carbon_processing.py) for more details on this processing.
 
 You can view the processed Country-Level Social Cost of Carbon dataset [on Resource Watch]().
 
