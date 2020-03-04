@@ -9,11 +9,11 @@ from zipfile import ZipFile
 
 # name of table on Carto where you want to upload data
 # this should be a table name that is not currently in use
-dataset_name = 'cli_029a_vulnerability_to_climate_change' #check
+dataset_name = 'wat_064_cost_of_sustainable_water_management' #check
 
 # set the directory that you are working in with the path variable
 # you can use an environmental variable, as we did, or directly enter the directory name as a string
-# example: path = '/home/cli_029a_vulnerability_to_cc'
+# example: path = '/home/wat_064_cost_of_sustainable_water_management'
 dir = os.getenv('PROCESSING_DIR')+dataset_name
 #move to this directory
 os.chdir(dir)
@@ -28,7 +28,7 @@ if not os.path.exists(data_dir):
 Download data and save to your data directory
 '''
 # insert the url used to download the data from the source website
-url='https://gain.nd.edu/assets/323406/resources_2019_19_01_21h59_1_1_.zip'  #check
+url='https://wriorg.s3.amazonaws.com/s3fs-public/achieving-abundance.zip'  #check
 
 # download the data from the source
 raw_data_file = data_dir+os.path.basename(url)
@@ -43,31 +43,34 @@ zip_ref.close()
 '''
 Process data
 '''
-#read in climate change vulnerability data to pandas dataframe
-filename=raw_data_file_unzipped+'/resources/vulnerability/vulnerability.csv'
-vulnerability_df=pd.read_csv(filename)
+# Read in Achieving_Abundance_Countries data to pandas dataframe
+filename=raw_data_file_unzipped+'/Achieving_Abundance_Countries.xlsx'
+Achieving_Abundance_df=pd.read_excel(filename, header=1) # selecting 2nd as row as the column names
 
-#read in climate change readiness data to pandas dataframe
-filename=raw_data_file_unzipped+'/resources/readiness/readiness.csv'
-readiness_df=pd.read_csv(filename)
+# Remove columns containing contextual information that are not part of the core dataset
+Achieving_Abundance_df.drop(Achieving_Abundance_df.iloc[:, 9:], inplace = True, axis = 1)
 
-#read in nd-gain score data to pandas dataframe
-filename=raw_data_file_unzipped+'/resources/gain/gain.csv'
-gain_df=pd.read_csv(filename)
+# Change column name for total cost to make it easily interpretable
+Achieving_Abundance_df.rename(columns={'Total': 'Total Cost'}, inplace=True)
 
-#convert tables from wide form (each year is a column) to long form (a single column of years and a single column of values)
-vulnerability_df_long = pd.melt(vulnerability_df,id_vars=['ISO3', 'Name'],var_name='year', value_name='vulnerability')
-readiness_df_long = pd.melt(readiness_df,id_vars=['ISO3', 'Name'],var_name='year', value_name='readiness')
-gain_df_long = pd.melt(gain_df,id_vars=['ISO3', 'Name'],var_name='year', value_name='gain')
+# Convert each aspect of sustainable water management to a percent of total estimated cost. 
+i = 0
+upper_bound = (Achieving_Abundance_df.shape[1])
 
-#merge 3 indicators into one table
-final_df = vulnerability_df_long.merge(readiness_df_long, left_on=['ISO3', 'Name', 'year'], right_on=['ISO3', 'Name', 'year']).merge(gain_df_long, left_on=['ISO3', 'Name', 'year'], right_on=['ISO3', 'Name', 'year'])
-
-#convert year column from string to number
-final_df.year=final_df.year.astype('int64')
+for col in Achieving_Abundance_df.columns: 
+    # Generate a name for the column that will hold the percentages.
+    low_col = col.lower() # convert to lower case
+    fin_col =low_col.replace (" ", "_") # put '_' in between for better readability
+    percent_col = fin_col+'_percent'
+    # If the column is not the 'total cost' column calculate the values for the percent column.
+    i += 1
+    if 2 < i < (upper_bound):
+        print('Calculating percent of the total estimated cost for ' + str(col))
+        # Create & populate new columns by converting each sustainable water management category to rounded percents
+        Achieving_Abundance_df[percent_col] = round((Achieving_Abundance_df[col]/Achieving_Abundance_df['Total Cost'])*100)
 
 #replace all NaN with None
-final_df=final_df.where((pd.notnull(final_df)), None)
+final_df=Achieving_Abundance_df.where((pd.notnull(Achieving_Abundance_df)), None)
 
 #save processed dataset to csv
 csv_loc = data_dir+dataset_name+'_edit.csv'

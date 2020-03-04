@@ -1,6 +1,7 @@
-import urllib
 import os
 import pandas as pd
+import urllib.request
+import tabula
 from carto.datasets import DatasetManager
 from carto.auth import APIKeyAuthClient
 import boto3
@@ -9,17 +10,16 @@ from zipfile import ZipFile
 
 # name of table on Carto where you want to upload data
 # this should be a table name that is not currently in use
-dataset_name = 'cli_029a_vulnerability_to_climate_change' #check
+dataset_name = 'foo_015a_global_hunger_index' #check
 
-# set the directory that you are working in with the path variable
+# first, set the directory that you are working in with the path variable
 # you can use an environmental variable, as we did, or directly enter the directory name as a string
-# example: path = '/home/cli_029a_vulnerability_to_cc'
-dir = os.getenv('PROCESSING_DIR')+dataset_name
+# example: path = '/home/foo_015a_global_hunger_index'
+path = os.getenv('PROCESSING_DIR')+dataset_name
 #move to this directory
-os.chdir(dir)
+os.chdir(path)
 
 # create a new sub-directory within your specified dir called 'data'
-# within this directory, create files to store raw and processed data
 data_dir = 'data/'
 if not os.path.exists(data_dir):
     os.mkdir(data_dir)
@@ -28,50 +28,54 @@ if not os.path.exists(data_dir):
 Download data and save to your data directory
 '''
 # insert the url used to download the data from the source website
-url='https://gain.nd.edu/assets/323406/resources_2019_19_01_21h59_1_1_.zip'  #check
+url = 'https://www.globalhungerindex.org/pdf/en/2019.pdf' #check
 
 # download the data from the source
 raw_data_file = data_dir+os.path.basename(url)
-raw_data_file_unzipped = raw_data_file.split('.')[0]
 urllib.request.urlretrieve(url, raw_data_file)
-
-#unzip source data
-zip_ref = ZipFile(raw_data_file, 'r')
-zip_ref.extractall(raw_data_file_unzipped)
-zip_ref.close()
 
 '''
 Process data
 '''
-#read in climate change vulnerability data to pandas dataframe
-filename=raw_data_file_unzipped+'/resources/vulnerability/vulnerability.csv'
-vulnerability_df=pd.read_csv(filename)
+# read in data from Table 2.1 GLOBAL HUNGER INDEX SCORES BY 2019 GHI RANK, which is on page 17 of the report
+df_raw=tabula.read_pdf(raw_data_file,pages=17) #check
 
-#read in climate change readiness data to pandas dataframe
-filename=raw_data_file_unzipped+'/resources/readiness/readiness.csv'
-readiness_df=pd.read_csv(filename)
+#remove headers and poorly formatted column names (rows 0, 1)
+df_raw=df_raw.iloc[2:]
 
-#read in nd-gain score data to pandas dataframe
-filename=raw_data_file_unzipped+'/resources/gain/gain.csv'
-gain_df=pd.read_csv(filename)
+#get first half of table (columns 1-5, do not include rank column)
+df_a=df_raw.iloc[:, 1:6]
+#name columns
+col_names = ["Country", "2000", "2005", "2010", "2019"] #check
+df_a.columns = col_names
+#get second half of table (columns 7-11, do not include rank column) and drop empty rows at end
+df_b=df_raw.iloc[:, 7:12].dropna(how='all')
+#name columns
+df_b.columns = col_names
 
-#convert tables from wide form (each year is a column) to long form (a single column of years and a single column of values)
-vulnerability_df_long = pd.melt(vulnerability_df,id_vars=['ISO3', 'Name'],var_name='year', value_name='vulnerability')
-readiness_df_long = pd.melt(readiness_df,id_vars=['ISO3', 'Name'],var_name='year', value_name='readiness')
-gain_df_long = pd.melt(gain_df,id_vars=['ISO3', 'Name'],var_name='year', value_name='gain')
+#combine first and second half of table
+df = pd.concat([df_a, df_b], ignore_index=True, sort=False)
 
-#merge 3 indicators into one table
-final_df = vulnerability_df_long.merge(readiness_df_long, left_on=['ISO3', 'Name', 'year'], right_on=['ISO3', 'Name', 'year']).merge(gain_df_long, left_on=['ISO3', 'Name', 'year'], right_on=['ISO3', 'Name', 'year'])
+# clean the dataframe
+# replace <5 with 5
+df= df.replace('<5', 5)
+#replace — in table with None
+df = df.replace({'—': None})
 
-#convert year column from string to number
-final_df.year=final_df.year.astype('int64')
+#convert table from wide form (each year is a column) to long form (a single column of years and a single column of values)
+df_long = pd.melt (df, id_vars= ['Country'] , var_name = 'year', value_name = 'hunger_index_score')
 
-#replace all NaN with None
-final_df=final_df.where((pd.notnull(final_df)), None)
+#convert year column from object to integer
+df_long.year=df_long.year.astype('int64')
+#convert hunger_index_score column from object to number
+df_long.hunger_index_score = df_long.hunger_index_score.astype('float64')
+#replace NaN in table with None
+df_long=df_long.where((pd.notnull(df_long)), None)
 
 #save processed dataset to csv
 csv_loc = data_dir+dataset_name+'_edit.csv'
-final_df.to_csv(csv_loc, index=False)
+df_long.to_csv(csv_loc, index=False)
+
 
 '''
 Upload processed data to Carto
