@@ -71,10 +71,12 @@ def upload_asset(full_file_path, DATA_DIR=DATA_DIR, EE_COLLECTION=EE_COLLECTION,
 for i,filey in enumerate(files):
     print(i)
 
-    task_id = upload_asset(filey)
+    if i >=0 and i <= 5000: # repeat this process for len(files)
     
-    if PAUSE_FOR_OVERLOAD:
-        if (i% NUM_ASSETS_AT_ONCE == 0) and (i>0):
-            #Wait for all tasks to finish
-            cmd = ['earthengine','task','wait','all']
-            subprocess.call(cmd, shell=True)
+        task_id = upload_asset(filey)
+        
+        if PAUSE_FOR_OVERLOAD:
+            if (i% NUM_ASSETS_AT_ONCE == 0) and (i>0):
+                #Wait for all tasks to finish
+                cmd = ['earthengine','task','wait','all']
+                subprocess.call(cmd, shell=True)

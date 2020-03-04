@@ -1,19 +1,20 @@
-## Cost of Sustainable Water Management Dataset Pre-processing
-This file describes the data pre-processing that was done to the [Achieving Abundance: Understanding the Cost of a Sustainable Water Future dataset](https://www.wri.org/resources/data-sets/achieving-abundance) for [display on Resource Watch](https://resourcewatch.org/data/explore/wat064-Cost-of-Sustainable-Water-Management).
+## Urban Built-up Area Dataset Pre-processing
+This file describes the data pre-processing that was done to the [GHS-BUILT dataset](https://ghsl.jrc.ec.europa.eu/download.php?ds=bu) for [display on Resource Watch](https://resourcewatch.org/data/explore/cit033a-Urban-Built-Up-Area_1).
 
-This dataset was provided by the source as two excel files. Each file includes the estimated total cost of delivering sustainable water management by 2030, along with the breakdown of how that cost is distributed across different aspects of sustainable water management. One file shows these costs at the country level, and the other file shows the costs at a basin-level. Resource Watch displays the country-level data from this dataset.
+This dataset was provided by the source as a virtual raster (VRT) file along wih separate tiff files that cover the entire region. Since the VRT file was very large, we couldn't convert it directly to a tiff file using GDAL. So, we opted for mosaicing the indvidual tiff files so that we can vizualize the mosaiced version. 
 
-The country-level spreadsheet was read into Python as a dataframe. New columns were added to show the percentage of the total cost that would come from each aspect. These columns were calculated by dividing the cost associated with each aspect of sustainable water management by the total cost, then multiplying them by 100. These percentages were rounded to the nearest integer.
+For raster files, we show the data on our platform by pulling from Google Earth Engine (GEE). So, we need to upload these tiff files to Google Earth Engine. And since, we can't directly upload these files to Google Earth Engine from Local, we will upload them to Google Cloud Bucket and then to Google Earth Engine. Please see the [Python script](https://github.com/Taufiq06/data-pre-processing/blob/master/cit_033a_urban_builtup_area/cit_033a_urban_built_up_area_processing.py) for more details on this processing.
 
-Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/taufiq/wat_064_cost_of_sustainable_water_management/wat_064_cost_of_sustainable_water_management_processing.py) for more details on this processing.
+One additional note is that we shouldn't try to upload all files to GEE at once. We will run into maximum asset error if we do that. Instead we should distribute the whole task into batches. The steps will be: upload a batch of files, mosaic them, delete individual files that are already mosaiced, continue uploading the next batch of files.
 
-You can view the processed Cost of Sustainable Water Management dataset [on Resource Watch](https://resourcewatch.org/data/explore/wat064-Cost-of-Sustainable-Water-Management).
+Once each batch of files were uploaded to GEE, a final mosaic was made out of each batches that was eventually displayed on Resource Watch. 
 
-You can also download original dataset [directly through Resource Watch](http://wri-public-data.s3.amazonaws.com/resourcewatch/wat_064_cost_of_sustainable_water_management_edit.zip), or [from the source website](https://www.wri.org/resources/data-sets/achieving-abundance).
+You can view the processed Urban Built-up Area dataset [on Resource Watch](https://resourcewatch.org/data/explore/cit033a-Urban-Built-Up-Area_1).
 
 ###### Note: This dataset processing was done by [Taufiq Rashid](https://www.wri.org/profile/taufiq-rashid), and QC'd by [Amelia Snyder](https://www.wri.org/profile/amelia-snyder).
 
 
-This dataset was provided by the source as a virtual raster (VRT) file along wih separate tiff files that cover the entire region. Since the VRT file was very large, we couldn't convert it directly to a tiff file using GDAL. So, we opted for mosaicing the indvidual tiff files so that we can vizualize the mosaiced version. 
 
-For raster files, we show the data on our platform by pulling from Google Earth Engine. So, we need to upload these tiff files to Google Earth Engine. And since, we can't directly upload these files to Google Earth Engine from Local, we will upload them to Google Cloud Bucket and then to Google Earth Engine. Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/taufiq/wat_064_cost_of_sustainable_water_management/wat_064_cost_of_sustainable_water_management_processing.py) for more details on this processing.
+
+
+
