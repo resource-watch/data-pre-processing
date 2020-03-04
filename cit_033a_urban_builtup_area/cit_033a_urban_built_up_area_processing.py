@@ -16,6 +16,7 @@ os.chdir(DATA_DIR)
 PAUSE_FOR_OVERLOAD = True
 NUM_ASSETS_AT_ONCE = 50
 
+#################################### Transfer files from Local to Bucket ######################################
 
 # Get the list of all individual tif files
 files = glob.glob(DATA_DIR + '\\**\\*.tif', recursive = True)
@@ -24,7 +25,7 @@ task_ids = ['']*len(files)
 
 print(len(files))
 
-
+# Loop through all files in DEST_DIR
 for i,filey in enumerate(files):		
 
     # Rename all files to include extension at the end to avoid overwritting of duplicate names
@@ -39,8 +40,9 @@ for i,filey in enumerate(files):
 cmd = ['gsutil','-m','cp','-r',DEST_DIR,GS_BUCKET]
 subprocess.call(cmd, shell=True)  
 
-# Transfer files from Bucket to GEE
+#################################### Transfer files from Bucket to GEE ######################################
 
+# Google Earth Engine asset to store individual tiff file
 EE_COLLECTION = 'projects/resource-watch-gee/cit_033a_urban_built_up_area_mosaic'
 
 
