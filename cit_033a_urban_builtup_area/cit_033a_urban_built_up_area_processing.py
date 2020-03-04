@@ -3,9 +3,13 @@ import subprocess
 import glob
 from shutil import copy
 
+# Directory of indivual tiff files in local machine
+DATA_DIR = 'C:\\Users\\taufiq.rashid\\OneDrive - World Resources Institute\\Documents\\resource_watch\\cit_033a\\GHS_BUILT_LDSMT_GLOBE_R2018A_3857_30_V2_0\\V2-0\\30x150000\\'
 
-DATA_DIR = 'C:\\Users\\taufiq.rashid\\OneDrive - World Resources Institute\\Documents\\resource_watch\\1-21\\GHS_BUILT_LDSMT_GLOBE_R2018A_3857_30_V2_0\\V2-0\\30x150000\\'
-DEST_DIR = 'C:\\Users\\taufiq.rashid\\OneDrive - World Resources Institute\\Documents\\resource_watch\\1-21\\GHS_BUILT_LDSMT_GLOBE_R2018A_3857_30_V2_0\\V2-0\\temp\\'
+# Single folder to hold all individual files. Done for parallel upload to Google Cloud Bucket
+DEST_DIR = 'C:\\Users\\taufiq.rashid\\OneDrive - World Resources Institute\\Documents\\resource_watch\\cit_033a\\GHS_BUILT_LDSMT_GLOBE_R2018A_3857_30_V2_0\\V2-0\\temp\\'
+
+# Directory for Google Bucket where the individual tiff files will be stored before transferring to Google Earth Engine
 GS_BUCKET = 'gs://rw-gee/temp/'
 
 os.chdir(DATA_DIR)
@@ -72,7 +76,7 @@ for i,filey in enumerate(files):
     print(i)
 
     if i >=0 and i <= 5000: # repeat this process for len(files)
-    
+
         task_id = upload_asset(filey)
         
         if PAUSE_FOR_OVERLOAD:
