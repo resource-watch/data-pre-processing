@@ -7,7 +7,7 @@ Below, we describe the steps used to reformat the table so that it is formatted 
 
 Please see the [Python script]({link to Python script on Github}) for more details on this processing.
 
-You can view the processed Gender Inequality Index dataset [on Resource Watch]({link to dataset's metadata page on Resource Watch}).
+You can view the processed Gender Inequality Index dataset [on Resource Watch](https://resourcewatch.org/data/explore/soc025-Gender-Inequality-Index).
 
 You can also download original dataset [directly through Resource Watch](http://wri-public-data.s3.amazonaws.com/resourcewatch/soc_025a_gender_inequality_index.zip), or [from the source website](http://hdr.undp.org/en/content/table-5-gender-inequality-index-gii).
 
