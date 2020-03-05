@@ -1,5 +1,5 @@
 ## Gender Inequality Index Dataset Pre-processing
-This file describes the data pre-processing that was done to [the Gender Inequality Index]({learn more link}) for [display on Resource Watch](https://resourcewatch.org/data/explore/soc025-Gender-Inequality-Index).
+This file describes the data pre-processing that was done to [the Gender Inequality Index](http://hdr.undp.org/en/content/gender-inequality-index-gii) for [display on Resource Watch](https://resourcewatch.org/data/explore/soc025-Gender-Inequality-Index).
 
 The original data is downloadable in a .xlsx format.  
 
