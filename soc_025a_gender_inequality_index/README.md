@@ -5,7 +5,7 @@ The original data is downloadable in a .xlsx format.
 
 Below, we describe the steps used to reformat the table so that it is formatted correctly to upload to carto.  We read in the data as a pandas dataframe, deleted columns and rows without data, and renamed the columns.  Then we converted the '..' to 'None'.  
 
-Please see the [Python script]({link to Python script on Github}) for more details on this processing.
+Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/soc_025a_gender_inequality_index/soc.025%20Gender%20Inequality%20Index.ipynb) for more details on this processing.
 
 You can view the processed Gender Inequality Index dataset [on Resource Watch](https://resourcewatch.org/data/explore/soc025-Gender-Inequality-Index).
 
