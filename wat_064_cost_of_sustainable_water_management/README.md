@@ -5,7 +5,7 @@ This dataset was provided by the source as two excel files. Each file includes t
 
 The country-level spreadsheet was read into Python as a dataframe. New columns were added to show the percentage of the total cost that would come from each aspect. These columns were calculated by dividing the cost associated with each aspect of sustainable water management by the total cost, then multiplying them by 100. These percentages were rounded to the nearest integer.
 
-Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/taufiq/wat_064_cost_of_sustainable_water_management/wat_064_cost_of_sustainable_water_management_processing.py) for more details on this processing.
+Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/wat_064_cost_of_sustainable_water_management/wat_064_cost_of_sustainable_water_management_processing.py) for more details on this processing.
 
 You can view the processed Cost of Sustainable Water Management dataset [on Resource Watch](https://resourcewatch.org/data/explore/wat064-Cost-of-Sustainable-Water-Management).
 
