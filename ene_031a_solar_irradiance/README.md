@@ -9,14 +9,14 @@ Below, we describe the steps used to process each of these files.
 
 ##### Average daily global horizontal irradiance (9 arcsec resolution)
 1) Download the data from the [source website](https://globalsolaratlas.info/download/world). The files can be found near the bottom of the page. For global horizontal irradiation, the following High Resolution GIS Data files were downloaded:
-  - EEN segment - *GHI, DIF, GTI, DNI - LTAy_DailySum (GeoTIFF)*
-  - EES segment - *GHI, DIF, GTI, DNI - LTAy_DailySum (GeoTIFF)*
-  - EN segment - *GHI, DIF, GTI, DNI - LTAy_DailySum (GeoTIFF)*
-  - ES segment - *GHI, DIF, GTI, DNI - LTAy_DailySum (GeoTIFF)*
-  - WN segment - *GHI, DIF, GTI, DNI - LTAy_DailySum (GeoTIFF)*
-  - WS segment - *GHI, DIF, GTI, DNI - LTAy_DailySum (GeoTIFF)*
-  - WWN segment - *GHI, DIF, GTI, DNI - LTAy_DailySum (GeoTIFF)*
-  - WWS segment - *GHI, DIF, GTI, DNI - LTAy_DailySum (GeoTIFF)*
+    - EEN segment - *GHI, DIF, GTI, DNI - LTAy_DailySum (GeoTIFF)*
+    - EES segment - *GHI, DIF, GTI, DNI - LTAy_DailySum (GeoTIFF)*
+    - EN segment - *GHI, DIF, GTI, DNI - LTAy_DailySum (GeoTIFF)*
+    - ES segment - *GHI, DIF, GTI, DNI - LTAy_DailySum (GeoTIFF)*
+    - WN segment - *GHI, DIF, GTI, DNI - LTAy_DailySum (GeoTIFF)*
+    - WS segment - *GHI, DIF, GTI, DNI - LTAy_DailySum (GeoTIFF)*
+    - WWN segment - *GHI, DIF, GTI, DNI - LTAy_DailySum (GeoTIFF)*
+    - WWS segment - *GHI, DIF, GTI, DNI - LTAy_DailySum (GeoTIFF)*
 2) Unzip each of the downloaded files.
 3) Upload only the *GHI.tif* file in each of these folders to an image collection in Google Earth Engine (GEE).
 4) Mosaic all of the images together into a single, global image using the following GEE code:
@@ -53,7 +53,7 @@ Map.addLayer(mosaic);
 ```
 ##### Average daily photovoltaic power potential (30 arcsec resolution)
 1) Download the data from the [source website](https://globalsolaratlas.info/download/world). The files can be found near the bottom of the page. For daily photovoltaic power potential, the following GIS Data files were downloaded:
-  - PVOUT - Photovoltaic power potential - *PVOUT-LTAm_AvgDailyTotals(GeoTIFF)*
+    - PVOUT - Photovoltaic power potential - *PVOUT-LTAm_AvgDailyTotals(GeoTIFF)*
 2) Unzip the downloaded file.
 3) Upload each of the 12 tiff files in the folder to an image collection in GEE.
 4) Mosaic all of the images together into a single, global image using the following GEE code:
