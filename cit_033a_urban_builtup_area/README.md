@@ -1,6 +1,12 @@
 ## Urban Built-up Area Dataset Pre-processing
 This file describes the data pre-processing that was done to the [GHS-BUILT dataset](https://ghsl.jrc.ec.europa.eu/download.php?ds=bu) for [display on Resource Watch](https://resourcewatch.org/data/explore/cit033a-Urban-Built-Up-Area_1).
 
+The version of the GHS-BUILT dataset that appears on Resource Watch can be retrieved from the [source website](https://ghsl.jrc.ec.europa.eu/download.php?ds=bu) by selecting the following parameters from the panel on the left side:
+ - Product: GHS-Built
+ - Epoch: Multitemporal
+ - Resolution: 30m
+ - Coord. system: Mercator
+
 This dataset was provided by the source as a virtual raster (VRT) file along wih separate tif files that cover the entire region. Since the VRT file was very large, we couldn't convert it directly to a tif file using GDAL. So, we opted for mosaicing the indvidual tiff files so that we can vizualize the mosaiced version. 
 
 For raster files, we usually show the data on resource watch platform by pulling the data from Google Earth Engine (GEE). So, we needed to upload those tiff files to Google Earth Engine. And since, we could't directly upload those files to Google Earth Engine from local directory, we uploaded them to Google Cloud Bucket and then to Google Earth Engine. Please see the [Python script](https://github.com/Taufiq06/data-pre-processing/blob/master/cit_033a_urban_builtup_area/cit_033a_urban_built_up_area_processing.py) for more details on this processing.
