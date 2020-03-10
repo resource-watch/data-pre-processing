@@ -1,11 +1,23 @@
 ## Solar Irradiance Retrieval and Pre-processing
-This file describes the process used to retrieve and pre-process the [Global Solar Atlas Version 2 dataset](https://globalsolaratlas.info/download/world) for [display on Resource Watch](https://resourcewatch.org/data/explore/Solar-Irradiance).
+This file describes the process used to retrieve and pre-process the [Global Solar Atlas Version 2](https://globalsolaratlas.info/download/world) for [display on Resource Watch](https://resourcewatch.org/data/explore/Solar-Irradiance).
 
-Two datasets were downloaded and pre-processed: 1) average daily global horizontal irradiance (9 arcsec resolution), and 2) average daily photovoltaic power potential (30 arcsec resolution).
+Two datasets from this atlas were downloaded and pre-processed:
+1) average daily global horizontal irradiance (9 arcsec resolution)
+2) average daily photovoltaic power potential (30 arcsec resolution)
+
+Below, we describe the steps used to process each of these files.
 
 ##### Average daily global horizontal irradiance (9 arcsec resolution)
-1) go to the bottom of the [website](https://globalsolaratlas.info/download/world) and download each segment of GeoTIFF file.
-2) unzip the files and upload only the global horizontal irradiance tiff files to an image collection folder in Google Earth Engine. Use the following GEE script to mosaic them together
+1) Download the data from the [source website](https://globalsolaratlas.info/download/world). The files can be found near the bottom of the page. For global horizontal irradiation, the following High Resolution GIS Data files were downloaded:
+  - EEN segment - *GHI, DIF, GTI, DNI - LTAy_DailySum (GeoTIFF)*
+  - EES segment - *GHI, DIF, GTI, DNI - LTAy_DailySum (GeoTIFF)*
+  - EN segment - *GHI, DIF, GTI, DNI - LTAy_DailySum (GeoTIFF)*
+  - ES segment - *GHI, DIF, GTI, DNI - LTAy_DailySum (GeoTIFF)*
+  - WN segment - *GHI, DIF, GTI, DNI - LTAy_DailySum (GeoTIFF)*
+  - WS segment - *GHI, DIF, GTI, DNI - LTAy_DailySum (GeoTIFF)*
+  - WWN segment - *GHI, DIF, GTI, DNI - LTAy_DailySum (GeoTIFF)*
+  - WWS segment - *GHI, DIF, GTI, DNI - LTAy_DailySum (GeoTIFF)*
+2) Unzip each of the downloaded files, and upload only the *GHI.tif* file to an image collection folder in Google Earth Engine. Use the following GEE script to mosaic them together
 
 ```
 //Load in image collection
