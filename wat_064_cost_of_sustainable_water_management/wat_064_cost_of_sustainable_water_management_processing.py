@@ -7,9 +7,6 @@ import boto3
 from botocore.exceptions import NoCredentialsError
 from zipfile import ZipFile
 
-import dotenv
-dotenv.load_dotenv('C:\\Users\\taufiq.rashid\\OneDrive - World Resources Institute\\Documents\\GitHub\\Resource_Watch\\cred\\.env')
-
 # name of table on Carto where you want to upload data
 # this should be a table name that is not currently in use
 dataset_name = 'wat_064_cost_of_sustainable_water_management' #check
