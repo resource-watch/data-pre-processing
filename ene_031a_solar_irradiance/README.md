@@ -91,4 +91,4 @@ You can view the processed, Solar Irradiance dataset [here](https://resourcewatc
 
 You can also download original dataset [from the source website](https://globalsolaratlas.info/download/world).
 
-###### Note: This retrieval of and preprocessing of data was documented by [Tina Huang](https://www.wri.org/profile/tina-huang).
+###### Note: This dataset processing was done by [Tina Huang](https://www.wri.org/profile/tina-huang), and QC'd by [Amelia Snyder](https://www.wri.org/profile/amelia-snyder).
