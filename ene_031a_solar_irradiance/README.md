@@ -2,8 +2,8 @@
 This file describes the process used to retrieve and pre-process the [Global Solar Atlas Version 2](https://globalsolaratlas.info/download/world) for [display on Resource Watch](https://resourcewatch.org/data/explore/Solar-Irradiance).
 
 Two datasets from this atlas were downloaded and pre-processed:
-1) average daily global horizontal irradiance (9 arcsec resolution)
-2) average daily photovoltaic power potential (30 arcsec resolution)
+1) Average daily global horizontal irradiance (9 arcsec resolution)
+2) Average daily photovoltaic power potential (30 arcsec resolution)
 
 Below, we describe the steps used to process each of these files.
 
