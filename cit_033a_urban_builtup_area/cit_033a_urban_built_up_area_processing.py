@@ -3,27 +3,31 @@ import subprocess
 import glob
 from shutil import copy
 
-# Directory of indivual tiff files in local machine
-DATA_DIR = 'C:\\Users\\taufiq.rashid\\OneDrive - World Resources Institute\\Documents\\resource_watch\\cit_033a\\GHS_BUILT_LDSMT_GLOBE_R2018A_3857_30_V2_0\\V2-0\\30x150000\\'
+# name of folder to store data for upload in
+dataset_name = 'cit_033a/'
+
+# Directory of indivual tile tiff files on local machine
+DATA_DIR = os.getenv('PROCESSING_DIR')+dataset_name 'GHS_BUILT_LDSMT_GLOBE_R2018A_3857_30_V2_0/V2-0/30x150000/'
 
 # Single folder to hold all individual files. Done for parallel upload to Google Cloud Bucket
-DEST_DIR = 'C:\\Users\\taufiq.rashid\\OneDrive - World Resources Institute\\Documents\\resource_watch\\cit_033a\\GHS_BUILT_LDSMT_GLOBE_R2018A_3857_30_V2_0\\V2-0\\temp\\'
+DEST_DIR = os.getenv('PROCESSING_DIR')+dataset_name 'GHS_BUILT_LDSMT_GLOBE_R2018A_3857_30_V2_0/V2-0/temp/'
 
 # Directory for Google Bucket where the individual tiff files will be stored before transferring to Google Earth Engine
-GS_BUCKET = 'gs://rw-gee/temp/'
+GS_BUCKET = 'gs://{}/temp/'.format(os.getenv('GEE_STAGING_BUCKET'))
 
+# Move to data directory
 os.chdir(DATA_DIR)
-PAUSE_FOR_OVERLOAD = True
+# set number of assets to upload at a single time
 NUM_ASSETS_AT_ONCE = 50
+
+PAUSE_FOR_OVERLOAD = True
 
 #################################### Transfer files from Local to Bucket ######################################
 
 # Get the list of all individual tif files
-files = glob.glob(DATA_DIR + '\\**\\*.tif', recursive = True)
+files = glob.glob(DATA_DIR + '/**/*.tif', recursive = True)
 #Create empty array for task id's
 task_ids = ['']*len(files)
-
-print(len(files))
 
 # Loop through all files in DEST_DIR
 for i,filey in enumerate(files):		
