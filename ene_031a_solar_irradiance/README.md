@@ -52,7 +52,7 @@ Map.addLayer(mosaic);
 
 ```
 ##### Average daily photovoltaic power potential (30 arcsec resolution)
-1) Download the data from the [source website](https://globalsolaratlas.info/download/world). The files can be found near the bottom of the page. For global horizontal irradiation, the following GIS Data files were downloaded:
+1) Download the data from the [source website](https://globalsolaratlas.info/download/world). The files can be found near the bottom of the page. For daily photovoltaic power potential, the following GIS Data files were downloaded:
   - PVOUT - Photovoltaic power potential - *PVOUT-LTAm_AvgDailyTotals(GeoTIFF)*
 2) Unzip the downloaded file.
 3) Upload each of the 12 tiff files in the folder to an image collection in GEE.
