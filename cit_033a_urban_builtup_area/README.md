@@ -15,7 +15,7 @@ The data needed to be in a tif file to upload to Google Earth Engine. Since the 
 
 The tif files were uploaded to Google Earth Engine (GEE) with a Python script, rather than through the user interface. Therefore, each file had to be uploaded to a Google Cloud Bucket and then to Google Earth Engine. Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/cit_033a_urban_builtup_area/cit_033a_urban_built_up_area_processing.py) for more details on the upload process.
 
-After the files were uploaded to GEE, they were mosaicked with the following GEE code:
+After all of the tiles were uploaded to GEE, they were mosaicked into a single image with the following GEE code:
 
 `
 `
