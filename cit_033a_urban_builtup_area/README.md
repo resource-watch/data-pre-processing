@@ -16,10 +16,12 @@ The data needed to be in a tif file to upload to Google Earth Engine. Since the 
 The tif files were uploaded to Google Earth Engine (GEE) with a Python script, rather than through the user interface. Therefore, each file had to be uploaded to a Google Cloud Bucket and then to Google Earth Engine. Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/cit_033a_urban_builtup_area/cit_033a_urban_built_up_area_processing.py) for more details on the upload process.
 
 After the files were uploaded to GEE, they were mosaicked with the following GEE code:
+
 `
 `
 
 **Additional Notes**
+
 The Resource Watch team did not download the data from the source website about. Instead, the source sent us a single zipped file of all the tiles needed to get global coverage. These tiles were significantly smaller than the tiles provided by the source website, so there were many more tiles to upload. All the tiles could not be uploaded to GEE at the same time because their number exceeded the maximum number of assets we could have in GEE. Therefore, the tiles were uploaded and mosaicked in batches. The following steps were taken:
 1) Upload a batch of files to a single image collection in GEE
 2) Mosaic the image collection into a single image and save this
