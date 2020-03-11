@@ -18,7 +18,7 @@ All the files could not be uploaded to GEE at the same time because their number
 1) Upload a batch of files to a single image collection in GEE.
    - The tif files were uploaded to Google Earth Engine (GEE) with a Python script, rather than through the user interface. Therefore, each file had to be uploaded to a Google Cloud Bucket and then to Google Earth Engine. Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/cit_033a_urban_builtup_area/cit_033a_urban_built_up_area_processing.py) for more details on the upload process.
 2) Mosaic the image collection into a single image and save this, using the following code:
-`
+```
 // Purpose: Mosaic a collection of tif files and export them to an asset
 
 
@@ -96,7 +96,7 @@ print(ic.first());
 //Print scale in meters at the equator
 print(ic.first().projection().nominalScale());
 Map.addLayer(mosaic);
-`
+```
 3) Delete all the images that were used in the mosaic.
 4) Repeat steps 1-3 until all tiles had been uploaded and mosaicked in GEE.
 
