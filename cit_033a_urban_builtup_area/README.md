@@ -42,7 +42,7 @@ var bounds = ee.Geometry.Rectangle(rect,null,false);
 //Export mosaiced image to an asset
 Export.image.toAsset({
   image: mosaic,
-  description: 'Urban_built_up_mosaic_number_4',
+  description: 'Exporting Urban_built_up_mosaic_number_1',
   // CHANGE THE assetId EVERYTIME YOU MOSAIC A NEW SET OF TILES
   assetId: 'projects/resource-watch-gee/cit_033a_urban_built_up_area_1',
   crs: crs,
@@ -83,7 +83,7 @@ var bounds = ee.Geometry.Rectangle(rect,null,false);
 //Export image 
 Export.image.toAsset({
   image: mosaic,
-  description: 'Urban_built_up_final_mosaic',
+  description: 'Exporting Urban_built_up_final_mosaic',
   assetId: 'projects/resource-watch-gee/cit_033a_urban_built_up_area_30m_mosaic',
   crs: crs,
   crsTransform: transform,
