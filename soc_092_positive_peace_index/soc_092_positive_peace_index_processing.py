@@ -7,8 +7,6 @@ import boto3
 from botocore.exceptions import NoCredentialsError
 from zipfile import ZipFile
 
-import dotenv
-dotenv.load_dotenv('C:\\Users\\taufiq.rashid\\OneDrive - World Resources Institute\\Documents\\GitHub\\Forked_Repo\\cred\\.env')
 
 # name of table on Carto where you want to upload data
 # this should be a table name that is not currently in use
