@@ -1,5 +1,6 @@
 import os
 import pandas as pd
+import urllib
 
 # name of dataset
 dataset_name = 'test_001'
@@ -9,7 +10,7 @@ path = '/home/user/folder_where_you_are_working'
 #move to this directory
 os.chdir(path)
 
-# create a new sub-directory within your specified dir called 'data'
+# create a new directory called 'data' where we can store the original and processed data later
 data_dir = 'data/'
 if not os.path.exists(data_dir):
     os.mkdir(data_dir)
