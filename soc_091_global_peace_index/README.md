@@ -1,9 +1,9 @@
 ## Global Peace Index Dataset Pre-processing
 This file describes the data pre-processing that was done to [Global Peace Index 2019 dataset](http://visionofhumanity.org/app/uploads/2020/02/GPI-2019-overall-scores-2008-2019.xlsx) for [display on Resource Watch](https://resourcewatch.org/data/explore/soc091-Global-Peace-Index).
 
-This dataset was provided by the source as a pdf report. The data shown on Resource Watch can be found in Table 2.1 Global Hunger Index Scores By 2019 GHI Rank, which is on page 17 of the report.
+This dataset was provided by the source as an excel file. The file includes the overall Global Peace Index score for 163 countries or independent territories from 2008 to 2019.
 
-This table was read into Python as a dataframe. The data was cleaned, values listed as '<5' were replaced with 5, and the the table was converted from wide to a long form.
+The spreadsheet was read into Python as a dataframe. The data was cleaned, and the the table was converted from wide to a long form.
 
 Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/soc_091_global_peace_index/soc_091_global_peace_index_processing.py) for more details on this processing.
 
