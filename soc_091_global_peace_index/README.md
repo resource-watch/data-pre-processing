@@ -7,7 +7,7 @@ The spreadsheet was read into Python as a dataframe. The data was cleaned, and t
 
 Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/soc_091_global_peace_index/soc_091_global_peace_index_processing.py) for more details on this processing.
 
-You can view the processed Global Hunger Index dataset [on Resource Watch](https://resourcewatch.org/data/explore/soc091-Global-Peace-Index).
+You can view the processed Global Peace Index dataset [on Resource Watch](https://resourcewatch.org/data/explore/soc091-Global-Peace-Index).
 
 You can also download original dataset [directly through Resource Watch](http://wri-public-data.s3.amazonaws.com/resourcewatch/soc_091_global_peace_index.zip), or [from the source website](http://visionofhumanity.org/app/uploads/2020/02/GPI-2019-overall-scores-2008-2019.xlsx).
 
