@@ -1,14 +1,14 @@
-## Global Hunger Index Dataset Pre-processing
-This file describes the data pre-processing that was done to [2019 Global Hunger Index dataset](https://www.globalhungerindex.org/download/all.html) for [display on Resource Watch](https://resourcewatch.org/data/explore/foo015a-Global-Hunger-Index).
+## Global Terrorism Index Dataset Pre-processing
+This file describes the data pre-processing that was done to [2019 Global Terrorism Index dataset](http://visionofhumanity.org/app/uploads/2020/02/GTI-2019-overall-scores-2002-2018.xlsx) for [display on Resource Watch](https://resourcewatch.org/data/explore/soc093-Global-Terrorism-Index).
 
-This dataset was provided by the source as a pdf report. The data shown on Resource Watch can be found in Table 2.1 Global Hunger Index Scores By 2019 GHI Rank, which is on page 17 of the report.
+This dataset was provided by the source as an excel file. The file includes the overall Global Terrorism Index score for 163 countries or independent territories from 2002 to 2018.
 
-This table was read into Python as a dataframe. The data was cleaned, values listed as '<5' were replaced with 5, and the the table was converted from wide to a long form.
+The spreadsheet was read into Python as a dataframe. The data was cleaned, and the the table was converted from wide to a long form.
 
-Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/foo_015a_global_hunger_index/foo_015a_global_hunger_index_processing.py) for more details on this processing.
+Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/soc_093_global_terrorism_index/soc_093_global_terrorism_index_processing.py) for more details on this processing.
 
-You can view the processed Global Hunger Index dataset [on Resource Watch](https://resourcewatch.org/data/explore/foo015a-Global-Hunger-Index).
+You can view the processed Global Terrorism Index dataset [on Resource Watch](https://resourcewatch.org/data/explore/soc093-Global-Terrorism-Index).
 
-You can also download original dataset [directly through Resource Watch](http://wri-projects.s3.amazonaws.com/resourcewatch/foo_015a_global_hunger_index.zip), or [from the source website](https://www.globalhungerindex.org/download/all.html).
+You can also download original dataset [directly through Resource Watch](http://wri-public-data.s3.amazonaws.com/resourcewatch/soc_093_global_terrorism_index.zip), or [from the source website](http://visionofhumanity.org/app/uploads/2020/02/GTI-2019-overall-scores-2002-2018.xlsx).
 
 ###### Note: This dataset processing was done by [Taufiq Rashid](https://www.wri.org/profile/taufiq-rashid), and QC'd by [Amelia Snyder](https://www.wri.org/profile/amelia-snyder).
