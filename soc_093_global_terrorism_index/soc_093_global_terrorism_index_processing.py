@@ -38,7 +38,7 @@ urllib.request.urlretrieve(url, raw_data_file)
 '''
 Process data
 '''
-# read in csv file as Dataframe
+# read in the 'Overall Scores' sheet of the Excel file as a dataframe
 df=pd.read_excel(raw_data_file, sheet_name="Overall Scores", header=4) # selecting 4th row as the column names
 
 # Remove all columns after column index 12 because they are empty
