@@ -9,4 +9,4 @@ You can view the processed dataset for [display on Resource Watch](https://resou
 
 You can also download original dataset [directly through Resource Watch](http://wri-public-data.s3.amazonaws.com/resourcewatch/for_005a_mangrove_forests.zip), or [from the source website](https://data.unep-wcmc.org/datasets/45).
 
-###### Note: This dataset processing was done by [Kristine Lister](https://www.wri.org/profile/kristine-lister), and QC'd by [Amelia Snyder](https://www.wri.org/profile/amelia-snyder).
+###### Note: This dataset processing was done by [Kristine Lister](https://www.wri.org/profile/kristine-lister), and QC'd by [insert name of QC person](https://www.wri.org/profile/firstname-lastname).
