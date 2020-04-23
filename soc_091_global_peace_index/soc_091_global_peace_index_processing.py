@@ -40,7 +40,7 @@ Process data
 # read in the 'Overall Scores' sheet of the Excel file as a dataframe
 df=pd.read_excel(raw_data_file, sheet_name="Overall Scores", header=3) # selecting 4th row as the column names
 
-# Remove all unnecessary columns after column index 13
+# Remove all columns after column index 12 because they are empty
 df.drop(df.iloc[:, 13:], inplace = True, axis = 1)
 
 #convert table from wide form (each year is a column) to long form (a single column of years and a single column of values)
