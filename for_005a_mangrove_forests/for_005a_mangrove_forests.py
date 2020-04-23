@@ -41,7 +41,7 @@ CARTO_SCHEMA = OrderedDict([
 ])
 
 #Set data directory. Code is set to run if this python file is copied into the uncompressed data package downloaded from GMW's page https://data.unep-wcmc.org/datasets/45
-data_directory = os.path.join(os.getcwd(),'CartoData')
+data_directory = os.path.join(os.getcwd(),'01_Data')
 print(data_directory)
 
 #Load in the shapefiles, ordered alphabeticly 
@@ -54,6 +54,10 @@ shape_files = sorted(glob.glob(os.path.join(data_directory,'*.shp')))
 #Tracking variable for the cumulative unique ID
 index_buffer = 0
 
+#Creating empty geodataframe to save processed geodataframes
+out_gdf = gpd.GeoDataFrame()
+out_file_name = os.path.join(os.getcwd(),'for_005a_mangrove_forests.shp')
+
 #Read in each shapefile in a for loop
 for shape_file in shape_files:
     print(shape_file)
@@ -64,14 +68,17 @@ for shape_file in shape_files:
     year = os.path.basename(shape_file)
     year = int(year[4:8])
     gdf['Year'] = year
+
+    #Convert old unique ID to new unique ID
+    gdf['ogc_fid'] = np.arange(1,len(gdf)+1)+index_buffer
+    #Save the last unique ID to the tracking variable
+    index_buffer = gdf['ogc_fid'].values[-1]
+    
+    #Append processed geodataframe to out_gdf
+    out_gdf = out_gdf.append(gdf)
     
     #Order columns
     df = gdf[['ogc_fid','pxlval','Year']]
-    
-    #Convert old unique ID to new unique ID
-    df['ogc_fid'] = np.arange(1,len(df)+1)+index_buffer
-    #Save the last unique ID to the tracking variable
-    index_buffer = df['ogc_fid'].values[-1]
     
     #Convert shapely geometry to geojson
     df['geometry'] = convert_geometry(gdf['geometry'])
@@ -83,3 +90,6 @@ for shape_file in shape_files:
     
     #Upload to carto
     cartosql.insertRows(table, CARTO_SCHEMA.keys(),CARTO_SCHEMA.values(), new_rows)
+
+out_gdf.to_file(out_file_name,driver='ESRI Shapefile')
+  
