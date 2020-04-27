@@ -93,9 +93,9 @@ if __name__ == '__main__':
                 'indicators': ['EG.ELC.ACCS.ZS','EG.ELC.ACCS.RU.ZS','EG.ELC.ACCS.UR.ZS'],
                 'columns': ['total','rural','urban'],
                 'units': ['% of population', '% of rural population', '% of urban population']},
-            'ene_021_se4all_country_indicators':{
+            'ene_021a_renewable_energy_consumption':{
                 'indicators': ['3.1_RE.CONSUMPTION'],
-                'columns': ['rnw_ene_con'],
+                'columns': ['renewable_energy_consumption'],
                 'units': ['Renewable energy consumption (TJ)']},
             'soc_101 Renewable energy consumption':{
                 'indicators': ['EG.FEC.RNEW.ZS'],
@@ -207,7 +207,7 @@ if __name__ == '__main__':
                 'units': ['current international $']}
             }
     
-        
+        tables_to_not_overwrite_column = ['ene_021a_renewable_energy_consumption','soc_081_mortality_rate']
         carto_table_names = carto.getTables()
         # Write to S3 and Carto the individual data sets
         #for code, info in data_codes_and_names.items():
@@ -237,7 +237,7 @@ if __name__ == '__main__':
 
             #Add data column, unit, and indicator code to CARTO_SCHEMA, column_order, and dataset
             for i in range(len(valnames)):
-                if i==0 and len(valnames) == 1  and tablename!='soc_081_mortality_rate':
+                if (i==0) and (len(valnames) == 1)  and (tablename not in tables_to_not_overwrite_column):
                     CARTO_SCHEMA.update({'yr_data':'numeric'})
                 else:
                     CARTO_SCHEMA.update({valnames[i].replace(' ', '_').lower():'numeric'})
