@@ -89,7 +89,7 @@ if __name__ == '__main__':
                 'indicators': ['SI.POV.GINI'],
                 'columns': ['GINI'], 
                 'units': ['GINI index (World Bank estimate)']},
-            'ene_012_electricity_access': {
+            'ene_012a_electricity_access': {
                 'indicators': ['EG.ELC.ACCS.ZS','EG.ELC.ACCS.RU.ZS','EG.ELC.ACCS.UR.ZS'],
                 'columns': ['total','rural','urban'],
                 'units': ['% of population', '% of rural population', '% of urban population']},
