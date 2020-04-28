@@ -165,7 +165,7 @@ if __name__ == '__main__':
                 'indicators': ['GE.EST','RQ.EST','PV.EST','RL.EST','VA.EST','CC.EST'],
                 'columns': ['government_effectiveness_data','regulatory_quality_data','political_stability_data','rule_of_law_data','voice_accountability_data','control_of_corruption_data'],
                 'units': ['estimate', 'estimate', 'estimate','estimate','estimate','estimate']},
-            'soc_084_pop_growth_rate' : {
+            'soc_090_pop_growth_rate' : {
                 'indicators': ['SP.POP.GROW'],
                 'columns': ['Growth rate'],
                 'units': ['percent']},
