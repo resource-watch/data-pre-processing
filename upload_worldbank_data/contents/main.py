@@ -93,9 +93,9 @@ if __name__ == '__main__':
                 'indicators': ['EG.ELC.ACCS.ZS','EG.ELC.ACCS.RU.ZS','EG.ELC.ACCS.UR.ZS'],
                 'columns': ['total','rural','urban'],
                 'units': ['% of population', '% of rural population', '% of urban population']},
-            'ene_021a_renewable_energy_consumption':{
+            'ene_021_se4all_country_indicators':{
                 'indicators': ['3.1_RE.CONSUMPTION'],
-                'columns': ['renewable_energy_consumption'],
+                'columns': ['rnw_ene_con'],
                 'units': ['Renewable energy consumption (TJ)']},
             'soc_101 Renewable energy consumption':{
                 'indicators': ['EG.FEC.RNEW.ZS'],
