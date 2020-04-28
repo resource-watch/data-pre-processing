@@ -177,7 +177,7 @@ if __name__ == '__main__':
                 'indicators': ['SL.UEM.TOTL.ZS'],
                 'columns': ['unemployment'],
                 'units': ['% of total labor force']},
-            'wat_005a_improved_water_access_edited' : {
+            'wat_005a_improved_water_access' : {
                 'indicators': ['SH.H2O.SMDW.ZS','SH.H2O.SMDW.UR.ZS','SH.H2O.SMDW.RU.ZS'],
                 'columns': ['total','urban','rural'],
                 'units': ['% of population','% of urban pop','% of rural pop']},
