@@ -72,6 +72,21 @@ df_long.hunger_index_score = df_long.hunger_index_score.astype('float64')
 #replace NaN in table with None
 df_long=df_long.where((pd.notnull(df_long)), None)
 
+#add rows for countries with insuffient data, but significant concern, as noted here:
+# https://www.globalhungerindex.org/results.html#box-2-1
+
+#add a column to our dataframe to store this flag - it will be False for all the countries already in our table
+df_long['sig_concern'] = False
+
+#make a list of countries for which there is insuffient data, but significant concern
+sig_concern = ['Burundi', 'Comoros', 'Democratic Republic of Congo', 'Eritrea', 'Libya', 'Papua New Guinea', 'Somalia',
+               'South Sudan', 'Syrian Arab Republic']
+
+#add a new row to the dataframe for each of these countries, there will be no index score, but we will mark the flag as True
+for country in sig_concern:
+    row = [country, 2019, None, True]
+    df_long = df_long.append(pd.Series(row, index=df_long.columns), ignore_index=True)
+
 #save processed dataset to csv
 csv_loc = data_dir+dataset_name+'_edit.csv'
 df_long.to_csv(csv_loc, index=False)
