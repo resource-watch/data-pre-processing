@@ -5,6 +5,8 @@ This dataset was provided by the source as a pdf report. The data shown on Resou
 
 This table was read into Python as a dataframe. The data was cleaned, values listed as '<5' were replaced with 5, and the the table was converted from wide to a long form.
 
+Countries with insufficient data but significant cause for concern were not included in the source's data table, but they were noted [by the source](https://www.globalhungerindex.org/results.html#box-2-1). A new column was added to the table to store a flag for "Insufficient data, significant concern," and rows were added to the table for each of these countries noted by the source. 
+
 Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/foo_015a_global_hunger_index/foo_015a_global_hunger_index_processing.py) for more details on this processing.
 
 You can view the processed Global Hunger Index dataset [on Resource Watch](https://resourcewatch.org/data/explore/foo015a-Global-Hunger-Index).
