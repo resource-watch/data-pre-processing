@@ -197,6 +197,10 @@ if __name__ == '__main__':
                 'indicators': ['SI.POV.LMIC'],
                 'columns': ['poverty_headcount'],
                 'units': ['% of population']},
+            'soc_015_adult_literacy_rate' : {
+                'indicators': ['SE.ADT.LITR.ZS'],
+                'columns': ['adult_literacy_rate'],
+                'units': ['% of population 15+']},               
             'soc_008_gdp_per_capita_edit' : {
                 'indicators': ['NY.GDP.PCAP.PP.CD'],
                 'columns': ['gdp_per_capita'],
