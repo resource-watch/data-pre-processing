@@ -97,6 +97,10 @@ if __name__ == '__main__':
                 'indicators': ['3.1_RE.CONSUMPTION'],
                 'columns': ['rnw_ene_con'],
                 'units': ['Renewable energy consumption (TJ)']},
+            'ene_028_access_clean_cooking':{
+                'indicators': ['EG.CFT.ACCS.ZS'],
+                'columns': ['yr_data'],
+                'units': ['% of population']},
             'soc_101 Renewable energy consumption':{
                 'indicators': ['EG.FEC.RNEW.ZS'],
                 'columns': ['rnw_ene_con_per'],
@@ -133,6 +137,14 @@ if __name__ == '__main__':
                 'indicators': ['SP.DYN.LE00.IN'],
                 'columns': ['life_exp'],
                 'units': ['years']},
+            'cit_020_pop_ex_pm25':{
+                'indicators': ['EN.ATM.PM25.MC.ZS'],
+                'columns': ['yr_data'],
+                'units': ['% of population']},
+            'cit_028_urban_slum':{
+                'indicators': ['EN.POP.SLUM.UR.ZS'],
+                'columns': ['yr_data'],
+                'units': ['% of urban population']},
             'cit_025_urban_population':{
                 'indicators': ['SP.URB.TOTL.IN.ZS'],
                 'columns': ['urban_pop'],
@@ -141,6 +153,10 @@ if __name__ == '__main__':
                 'indicators': ['TM.VAL.MRCH.CD.WT'],
                 'columns': ['merch_imp'],
                 'units': ['current US$']},
+            'com_006_account_balance':{
+                'indicators': ['BN.CAB.XOKA.CD'],
+                'columns': ['yr_data'],
+                'units': ['BoP, current US$']},            
             'com_010_gdp_ppp_usd':{
                 'indicators': ['NY.GDP.MKTP.CD'],
                 'columns': ['gdp'],
@@ -192,15 +208,31 @@ if __name__ == '__main__':
             'wps_008_poverty320' : {
                 'indicators': ['SI.POV.LMIC'],
                 'columns': ['poverty_headcount'],
-                'units': ['% of population']},
-            'soc_015_adult_literacy_rate' : {
-                'indicators': ['SE.ADT.LITR.ZS'],
-                'columns': ['adult_literacy_rate'],
-                'units': ['% of population 15+']},               
+                'units': ['% of population']},             
             'soc_008_gdp_per_capita_edit' : {
                 'indicators': ['NY.GDP.PCAP.PP.CD'],
                 'columns': ['gdp_per_capita'],
-                'units': ['current international $']}
+                'units': ['current international $']},
+            'soc_015_adult_literacy_rate' : {
+                'indicators': ['SE.ADT.LITR.ZS'],
+                'columns': ['adult_literacy_rate'],
+                'units': ['% of population 15+']}, 
+            'soc_078_poverty_headcount_ratio_190' : {
+                'indicators': ['SI.POV.DDAY'],
+                'columns': ['yr_data'],
+                'units': ['% of population']},
+            'soc_079_total_fertility' : {
+                'indicators': ['SP.DYN.TFRT.IN'],
+                'columns': ['yr_data'],
+                'units': ['births per woman']},
+            'soc_101_poverty320' : {
+                'indicators': ['SI.POV.LMIC'],
+                'columns': ['yr_data'],
+                'units': ['% of population']},
+            'soc_102_inflation' : {
+                'indicators': ['SI.POV.LMIC'],
+                'columns': ['yr_data'],
+                'units': ['annual %']}
             }
     
         tables_to_not_overwrite_column = ['ene_021a_renewable_energy_consumption','soc_081_mortality_rate']
