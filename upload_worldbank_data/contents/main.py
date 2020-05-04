@@ -189,10 +189,6 @@ if __name__ == '__main__':
                 'indicators': ['FP.CPI.TOTL.ZG'],
                 'columns': ['inflation'],
                 'units': ['annual %']},
-            'wps_007_unemployment' : {
-                'indicators': ['SL.UEM.TOTL.ZS'],
-                'columns': ['unemployment'],
-                'units': ['% of total labor force']},
             'wps_008_poverty320' : {
                 'indicators': ['SI.POV.LMIC'],
                 'columns': ['poverty_headcount'],
