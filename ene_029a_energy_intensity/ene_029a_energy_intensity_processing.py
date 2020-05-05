@@ -31,10 +31,10 @@ url = 'http://databank.worldbank.org/data/download/SE4ALL_csv.zip' #check
 
 # download the data from the source
 raw_data_file = data_dir+os.path.basename(url)
-raw_data_file_unzipped = raw_data_file.split('.')[0]
 urllib.request.urlretrieve(url, raw_data_file)
 
 #unzip source data
+raw_data_file_unzipped = raw_data_file.split('.')[0]
 zip_ref = ZipFile(raw_data_file, 'r')
 zip_ref.extractall(raw_data_file_unzipped)
 zip_ref.close()
