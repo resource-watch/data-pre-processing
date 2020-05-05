@@ -230,7 +230,7 @@ if __name__ == '__main__':
                 'columns': ['yr_data'],
                 'units': ['% of population']},
             'soc_102_inflation' : {
-                'indicators': ['SI.POV.LMIC'],
+                'indicators': ['FP.CPI.TOTL.ZG'],
                 'columns': ['yr_data'],
                 'units': ['annual %']}
             }
