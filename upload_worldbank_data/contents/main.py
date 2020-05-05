@@ -214,9 +214,9 @@ if __name__ == '__main__':
                 'columns': ['gdp_per_capita'],
                 'units': ['current international $']},
             'soc_015_adult_literacy_rate' : {
-                'indicators': ['SE.ADT.LITR.ZS'],
-                'columns': ['adult_literacy_rate'],
-                'units': ['% of population 15+']}, 
+                'indicators': ['SE.ADT.LITR.ZS','SE.ADT.LITR.FE.ZS','SE.ADT.LITR.MA.ZS'],
+                'columns': ['yr_data','female_data','male_data'],
+                'units': ['% of population 15+','% of females 15+','% of males 15+']}, 
             'soc_078_poverty_headcount_ratio_190' : {
                 'indicators': ['SI.POV.DDAY'],
                 'columns': ['yr_data'],
