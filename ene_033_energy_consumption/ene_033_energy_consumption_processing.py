@@ -71,8 +71,8 @@ df_long.year=df_long.year.astype('int64')
 df_long.energy_consumption_quadBTU=df_long.energy_consumption_quadBTU.astype('float64')
 
 #save processed dataset to csv
-csv_loc = data_dir+dataset_name+'_edit.csv'
-df_long.to_csv(csv_loc, index=False)
+processed_data_file = data_dir+dataset_name+'_edit.csv'
+df_long.to_csv(processed_data_file, index=False)
 
 
 '''
@@ -84,8 +84,8 @@ auth_client = APIKeyAuthClient(api_key=os.getenv('CARTO_WRI_RW_KEY'), base_url="
 #set up dataset manager with authentication
 dataset_manager = DatasetManager(auth_client)
 #upload dataset to carto
-dataset = dataset_manager.create(csv_loc)
-print('Carto table created: {}'.format(os.path.basename(csv_loc).split('.')[0]))
+dataset = dataset_manager.create(processed_data_file)
+print('Carto table created: {}'.format(os.path.basename(processed_data_file).split('.')[0]))
 #set dataset privacy to 'Public with link'
 dataset.privacy = 'LINK'
 dataset.save()
@@ -121,7 +121,7 @@ print('Uploading processed data to S3.')
 # Copy the processed data into a zipped file to upload to S3
 processed_data_dir = data_dir+dataset_name+'_edit'+'.zip'
 with ZipFile(processed_data_dir,'w') as zip:
-    zip.write(csv_loc, os.path.basename(csv_loc))
+    zip.write(processed_data_file, os.path.basename(processed_data_file))
 
 # Upload processed data file to S3
 uploaded = upload_to_aws(processed_data_dir, 'wri-public-data', 'resourcewatch/'+os.path.basename(processed_data_dir))
