@@ -3,7 +3,7 @@ This file describes the data pre-processing that was done to [Mangrove Forests d
 
 This dataset was provided by the source as a series of shapefiles, one for each year of data, including 1996, 2007, 2008, 2009, 2010, 2015, and 2016.
 
-In order to upload the selected data on Resource Watch, the following steps were followed:
+In order to upload the selected data on Resource Watch, the following steps were taken:
 
 1. Download and unzip source data.
 2. Combine the shapefiles for each year into one shapefile that includes all years of data, and add a column named 'year' to indicate which year each row represents.
