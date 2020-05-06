@@ -98,9 +98,9 @@ if __name__ == '__main__':
                 'columns': ['rnw_ene_con'],
                 'units': ['Renewable energy consumption (TJ)']},
             'ene_004_renewable_energy_share_of_total_energy_consumption_edit':{
-                'indicators': ['2.1_SHARE.TOTAL.RE.IN.TFEC'],
+                'indicators': ['EG.FEC.RNEW.ZS'],
                 'columns': ['renewable_energy_share_of_total_energy_consumption_p'],
-                'units': ['Share of renewable energy in total final energy consumption (%)']},
+                'units': ['% of total final energy consumption']},
             'ene_028_access_clean_cooking':{
                 'indicators': ['EG.CFT.ACCS.ZS'],
                 'columns': ['yr_data'],
@@ -109,10 +109,6 @@ if __name__ == '__main__':
                 'indicators': ['6.1_PRIMARY.ENERGY.INTENSITY'],
                 'columns': ['energy_intensity'],
                 'units': ['MJ/2011 USD PPP']},
-            'soc_101 Renewable energy consumption':{
-                'indicators': ['EG.FEC.RNEW.ZS'],
-                'columns': ['rnw_ene_con_per'],
-                'units': ['% of total final energy consumption']},
             'soc_082_individuals_using_the_internet':{
                 'indicators': ['IT.NET.USER.ZS'],
                 'columns': ['intnt_use'],
