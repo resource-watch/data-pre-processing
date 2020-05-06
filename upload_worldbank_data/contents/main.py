@@ -97,10 +97,18 @@ if __name__ == '__main__':
                 'indicators': ['3.1_RE.CONSUMPTION'],
                 'columns': ['rnw_ene_con'],
                 'units': ['Renewable energy consumption (TJ)']},
+            'ene_004_renewable_energy_share_of_total_energy_consumption_edit':{
+                'indicators': ['2.1_SHARE.TOTAL.RE.IN.TFEC'],
+                'columns': ['renewable_energy_share_of_total_energy_consumption_p'],
+                'units': ['Share of renewable energy in total final energy consumption (%)']},
             'ene_028_access_clean_cooking':{
                 'indicators': ['EG.CFT.ACCS.ZS'],
                 'columns': ['yr_data'],
                 'units': ['% of population']},
+            'ene_029a_energy_intensity':{
+                'indicators': ['6.1_PRIMARY.ENERGY.INTENSITY'],
+                'columns': ['energy_intensity'],
+                'units': ['MJ/2011 USD PPP']},
             'soc_101 Renewable energy consumption':{
                 'indicators': ['EG.FEC.RNEW.ZS'],
                 'columns': ['rnw_ene_con_per'],
@@ -235,7 +243,9 @@ if __name__ == '__main__':
                 'units': ['annual %']}
             }
     
-        tables_to_not_overwrite_column = ['ene_021a_renewable_energy_consumption','soc_081_mortality_rate']
+        tables_to_not_overwrite_column = ['ene_021a_renewable_energy_consumption','soc_081_mortality_rate',
+                                          'ene_004_renewable_energy_share_of_total_energy_consumption_edit',
+                                          'ene_029a_energy_intensity']
         carto_table_names = carto.getTables()
         # Write to S3 and Carto the individual data sets
         #for code, info in data_codes_and_names.items():
