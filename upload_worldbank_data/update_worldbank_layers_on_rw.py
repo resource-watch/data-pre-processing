@@ -17,7 +17,9 @@ auth = cartoframes.auth.Credentials(username=os.getenv('CARTO_WRI_RW_USER'), api
 
 # if there are any specific years that we don't want to make layers for in a dataset, list them here:
 exclude_years = {'daaa9f12-c0ef-499a-b2d8-4bceaa9b95fa': list(range(1960,1990)),
-                 'e8f53f73-d77c-485a-a2a6-1c47ea4aead9': list(range(1970,2000))}
+                 'e8f53f73-d77c-485a-a2a6-1c47ea4aead9': list(range(1970,2000)),
+                 '8711d841-8421-4fcb-8ee2-881e573856e0': list(range(1967, 1990)),
+                 }
 
 def get_layers(ds_id):
     '''
