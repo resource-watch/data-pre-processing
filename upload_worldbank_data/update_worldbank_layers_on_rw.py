@@ -6,8 +6,8 @@ import requests
 import cartoframes
 import dotenv
 
-# load in env variables file
-dotenv.load_dotenv('/home/amsnyder/Github/cred/.env')
+# load in env variables file - enter the location of your env variables file
+dotenv.load_dotenv('')
 
 # pull in RW API key for updating and adding new layers
 API_TOKEN = os.getenv('RW_API_KEY')
