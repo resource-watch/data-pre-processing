@@ -109,6 +109,10 @@ if __name__ == '__main__':
                 'indicators': ['6.1_PRIMARY.ENERGY.INTENSITY'],
                 'columns': ['energy_intensity'],
                 'units': ['MJ/2011 USD PPP']},
+            'foo_019a_child_malnutrition_edit' : {
+                'indicators':['SH.STA.OWGH.ZS','SH.STA.MALN.ZS','SH.STA.WAST.ZS','SH.SVR.WAST.ZS','SH.STA.STNT.ZS'],
+                'columns': ['overweight','underweight','wasting','severe wasting','stunting'],
+                'units': ['% of children under 5','% of children under 5','% of children under 5','% of children under 5','% of children under 5']},
             'soc_082_individuals_using_the_internet':{
                 'indicators': ['IT.NET.USER.ZS'],
                 'columns': ['intnt_use'],
