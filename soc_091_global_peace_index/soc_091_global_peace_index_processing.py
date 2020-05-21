@@ -15,12 +15,12 @@ dataset_name = 'soc_091_global_peace_index' #check
 # first, set the directory that you are working in with the path variable
 # you can use an environmental variable, as we did, or directly enter the directory name as a string
 # example: path = '/home/soc_091_global_peace_index'
-path = os.getenv('PROCESSING_DIR')+dataset_name
+path = os.path.join(os.getenv('PROCESSING_DIR'), dataset_name)
 #move to this directory
 os.chdir(path)
 
 # create a new sub-directory within your specified dir called 'data'
-data_dir = 'data/'
+data_dir = 'data'
 if not os.path.exists(data_dir):
     os.mkdir(data_dir)
 
@@ -31,7 +31,7 @@ Download data and save to your data directory
 url = 'http://visionofhumanity.org/app/uploads/2020/02/GPI-2019-overall-scores-2008-2019.xlsx' #check
 
 # download the data from source
-raw_data_file = data_dir+os.path.basename(url)
+raw_data_file = os.path.join(data_dir, os.path.basename(url))
 urllib.request.urlretrieve(url, raw_data_file)
 
 '''
@@ -56,7 +56,7 @@ df_long.gpi_score = df_long.gpi_score.astype('float64')
 df_long=df_long.where((pd.notnull(df_long)), None)
 
 #save processed dataset to csv
-processed_data_file = data_dir+dataset_name+'_edit.csv'
+processed_data_file = os.path.join(data_dir, dataset_name+'_edit.csv')
 df_long.to_csv(processed_data_file, index=False)
 
 '''
@@ -94,7 +94,7 @@ def upload_to_aws(local_file, bucket, s3_file):
 
 print('Uploading original data to S3.')
 # Copy the raw data into a zipped file to upload to S3
-raw_data_dir = data_dir+dataset_name+'.zip'
+raw_data_dir = os.path.join(data_dir, dataset_name+'.zip')
 with ZipFile(raw_data_dir,'w') as zip:
     zip.write(raw_data_file, os.path.basename(raw_data_file))
 
@@ -103,7 +103,7 @@ uploaded = upload_to_aws(raw_data_dir, 'wri-public-data', 'resourcewatch/'+os.pa
 
 print('Uploading processed data to S3.')
 # Copy the processed data into a zipped file to upload to S3
-processed_data_dir = data_dir+dataset_name+'_edit'+'.zip'
+processed_data_dir = os.path.join(data_dir, dataset_name+'_edit.zip')
 with ZipFile(processed_data_dir,'w') as zip:
     zip.write(processed_data_file, os.path.basename(processed_data_file))
 
