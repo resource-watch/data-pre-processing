@@ -6,8 +6,8 @@ from zipfile import ZipFile
 import eeUtil
 import subprocess
 
-# name of table on Carto where you want to upload data
-# this should be a table name that is not currently in use
+# name of asset on GEE where you want to upload data
+# this should be an asset name that is not currently in use
 dataset_name = 'ocn_008_historic_coral_bleaching_stress_frequency' #check
 
 # first, set the directory that you are working in with the path variable
@@ -62,7 +62,13 @@ def convert(file, vars, outfile_name):
     subprocess.call(merge_cmd)
 
 # variables in netcdf to be converted to tifs
-vars = ['n_gt0', 'n_ge4', 'n_ge8', 'rp_gt0', 'rp_ge4', 'rp_ge8']
+vars = ['n_gt0', # The number of events for which the thermal stress, measured by Degree Heating Weeks, exceeded 0 degC-weeks.
+        'n_ge4', # The number of events for which the thermal stress, measured by Degree Heating Weeks, reached or exceeded 4 degC-weeks.
+        'n_ge8', # The number of events for which the thermal stress, measured by Degree Heating Weeks, reached or exceeded 8 degC-weeks.
+        'rp_gt0', # The average time between events for which the thermal stress, measured by Degree Heating Weeks, exceeded 0 degC-weeks.
+        'rp_ge4', # The average time between events for which the thermal stress, measured by Degree Heating Weeks, reached or exceeded 4 degC-weeks.
+        'rp_ge8' # The average time between events for which the thermal stress, measured by Degree Heating Weeks, reached or exceeded 8 degC-weeks.
+        ]
 
 # generate a name for processed tif
 processed_data_file = os.path.join(data_dir, dataset_name+'.tif')
