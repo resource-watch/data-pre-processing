@@ -14,13 +14,13 @@ dataset_name = 'wat_064_cost_of_sustainable_water_management' #check
 # set the directory that you are working in with the path variable
 # you can use an environmental variable, as we did, or directly enter the directory name as a string
 # example: path = '/home/wat_064_cost_of_sustainable_water_management'
-dir = os.getenv('PROCESSING_DIR')+dataset_name
+dir = os.path.join(os.getenv('PROCESSING_DIR'), dataset_name)
 #move to this directory
 os.chdir(dir)
 
 # create a new sub-directory within your specified dir called 'data'
 # within this directory, create files to store raw and processed data
-data_dir = 'data/'
+data_dir = 'data'
 if not os.path.exists(data_dir):
     os.mkdir(data_dir)
 
@@ -31,7 +31,7 @@ Download data and save to your data directory
 url='https://wriorg.s3.amazonaws.com/s3fs-public/achieving-abundance.zip'  #check
 
 # download the data from the source
-raw_data_file = data_dir+os.path.basename(url)
+raw_data_file = os.path.join(data_dir, os.path.basename(url))
 urllib.request.urlretrieve(url, raw_data_file)
 
 #unzip source data
@@ -44,7 +44,7 @@ zip_ref.close()
 Process data
 '''
 # Read in Achieving_Abundance_Countries data to pandas dataframe
-filename=raw_data_file_unzipped+'/Achieving_Abundance_Countries.xlsx'
+filename=os.path.join(raw_data_file_unzipped, 'Achieving_Abundance_Countries.xlsx')
 Achieving_Abundance_df=pd.read_excel(filename, header=1) # selecting 2nd as row as the column names
 
 # Remove columns containing contextual information that are not part of the core dataset
@@ -73,7 +73,7 @@ for col in Achieving_Abundance_df.columns:
 final_df=Achieving_Abundance_df.where((pd.notnull(Achieving_Abundance_df)), None)
 
 #save processed dataset to csv
-processed_data_file = data_dir+dataset_name+'_edit.csv'
+processed_data_file = os.path.join(data_dir, dataset_name+'_edit.csv')
 final_df.to_csv(processed_data_file, index=False)
 
 '''
@@ -111,7 +111,7 @@ def upload_to_aws(local_file, bucket, s3_file):
 
 print('Uploading original data to S3.')
 # Copy the raw data into a zipped file to upload to S3
-raw_data_dir = data_dir+dataset_name+'.zip'
+raw_data_dir = os.path.join(data_dir, dataset_name+'.zip')
 with ZipFile(raw_data_dir,'w') as zip:
     zip.write(raw_data_file, os.path.basename(raw_data_file))
 
@@ -120,7 +120,7 @@ uploaded = upload_to_aws(raw_data_dir, 'wri-public-data', 'resourcewatch/'+os.pa
 
 print('Uploading processed data to S3.')
 # Copy the processed data into a zipped file to upload to S3
-processed_data_dir = data_dir+dataset_name+'_edit'+'.zip'
+processed_data_dir = os.path.join(data_dir, dataset_name+'_edit.zip')
 with ZipFile(processed_data_dir,'w') as zip:
     zip.write(processed_data_file, os.path.basename(processed_data_file))
 
