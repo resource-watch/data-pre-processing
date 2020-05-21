@@ -13,12 +13,12 @@ dataset_name = 'cli_064_social_cost_carbon' #check
 # first, set the directory that you are working in with the path variable
 # you can use an environmental variable, as we did, or directly enter the directory name as a string
 # example: path = '/home/cli_064_social_cost_carbon'
-path = os.getenv('PROCESSING_DIR')+dataset_name
+path = os.path.join(os.getenv('PROCESSING_DIR'), dataset_name)
 #move to this directory
 os.chdir(path)
 
 # create a new sub-directory within your specified dir called 'data'
-data_dir = 'data/'
+data_dir = 'data'
 if not os.path.exists(data_dir):
     os.mkdir(data_dir)
 
@@ -29,7 +29,7 @@ Download data and save to your data directory
 url = 'https://raw.githubusercontent.com/country-level-scc/cscc-database-2018/master/cscc_db_v2.csv' #check
 
 # download the data from database of "Country-level social cost of carbon", which is the csv file "cscc_db_v2.csv" in the Github repo
-raw_data_file = data_dir+os.path.basename(url)
+raw_data_file = os.path.join(data_dir, os.path.basename(url))
 urllib.request.urlretrieve(url, raw_data_file)
 
 '''
@@ -47,7 +47,7 @@ df_long.cscc_score = df_long.cscc_score.astype('float64')
 df_long=df_long.where((pd.notnull(df_long)), None)
 
 #save processed dataset to csv
-processed_data_file = data_dir+dataset_name+'_edit.csv'
+processed_data_file = os.path.join(data_dir, dataset_name+'_edit.csv')
 df_long.to_csv(processed_data_file, index=False)
 
 '''
@@ -85,7 +85,7 @@ def upload_to_aws(local_file, bucket, s3_file):
 
 print('Uploading original data to S3.')
 # Copy the raw data into a zipped file to upload to S3
-raw_data_dir = data_dir+dataset_name+'.zip'
+raw_data_dir = os.path.join(data_dir, dataset_name+'.zip')
 with ZipFile(raw_data_dir,'w') as zip:
     zip.write(raw_data_file, os.path.basename(raw_data_file))
 
@@ -94,7 +94,7 @@ uploaded = upload_to_aws(raw_data_dir, 'wri-public-data', 'resourcewatch/'+os.pa
 
 print('Uploading processed data to S3.')
 # Copy the processed data into a zipped file to upload to S3
-processed_data_dir = data_dir+dataset_name+'_edit'+'.zip'
+processed_data_dir = os.path.join(data_dir, dataset_name+'_edit.zip')
 with ZipFile(processed_data_dir,'w') as zip:
     zip.write(processed_data_file, os.path.basename(processed_data_file))
 
