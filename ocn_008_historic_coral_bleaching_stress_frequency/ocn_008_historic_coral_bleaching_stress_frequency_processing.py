@@ -13,7 +13,7 @@ dataset_name = 'ocn_008_historic_coral_bleaching_stress_frequency' #check
 # first, set the directory that you are working in with the path variable
 # you can use an environmental variable, as we did, or directly enter the directory name as a string
 # example: path = '/home/ene_034_electricity_consumption'
-path = os.getenv('PROCESSING_DIR')+dataset_name
+path = os.path.join(os.getenv('PROCESSING_DIR'),dataset_name)
 #move to this directory
 os.chdir(path)
 
@@ -30,7 +30,7 @@ Download data and save to your data directory
 url='ftp://ftp.star.nesdis.noaa.gov/pub/sod/mecb/crw/data/thermal_history/v2.1/noaa_crw_thermal_history_stress_freq_v2.1.nc'  #check
 
 # download the data from the source
-raw_data_file = data_dir+os.path.basename(url)
+raw_data_file = os.path.join(data_dir,os.path.basename(url))
 urllib.request.urlretrieve(url, raw_data_file)
 
 '''
@@ -65,7 +65,7 @@ def convert(file, vars, outfile_name):
 vars = ['n_gt0', 'n_ge4', 'n_ge8', 'rp_gt0', 'rp_ge4', 'rp_ge8']
 
 # generate a name for processed tif
-processed_data_file = data_dir+dataset_name+'.tif'
+processed_data_file = os.path.join(data_dir, dataset_name+'.tif')
 
 # convert the listed variables into tif files then merge them into a single tif file with a band for each variable
 convert(file, vars, processed_data_file)
@@ -114,7 +114,7 @@ def upload_to_aws(local_file, bucket, s3_file):
 
 print('Uploading original data to S3.')
 # Copy the raw data into a zipped file to upload to S3
-raw_data_dir = data_dir+dataset_name+'.zip'
+raw_data_dir = os.path.join(data_dir, dataset_name+'.zip')
 with ZipFile(raw_data_dir,'w') as zip:
     zip.write(raw_data_file, os.path.basename(raw_data_file))
 
@@ -123,7 +123,7 @@ uploaded = upload_to_aws(raw_data_dir, 'wri-projects', 'resourcewatch/raster/'+o
 
 print('Uploading processed data to S3.')
 # Copy the processed data into a zipped file to upload to S3
-processed_data_dir = data_dir+dataset_name+'_edit'+'.zip'
+processed_data_dir = os.path.join(data_dir, dataset_name+'_edit.zip')
 with ZipFile(processed_data_dir,'w') as zip:
     zip.write(processed_data_file, os.path.basename(processed_data_file))
 
