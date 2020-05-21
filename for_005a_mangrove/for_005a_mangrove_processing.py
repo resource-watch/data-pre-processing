@@ -27,12 +27,12 @@ dataset_name = 'for_005a_mangrove' #check
 # first, set the directory that you are working in with the path variable
 # you can use an environmental variable, as we did, or directly enter the directory name as a string
 # example: path = '/home/for_005a_mangrove'
-path = os.getenv('PROCESSING_DIR')+dataset_name
+path = os.path.join(os.getenv('PROCESSING_DIR'), dataset_name)
 #move to this directory
 os.chdir(path)
 
 # create a new sub-directory within your specified dir called 'data'
-data_dir = 'data/'
+data_dir = 'data'
 if not os.path.exists(data_dir):
     os.mkdir(data_dir)
 
@@ -44,7 +44,7 @@ url = 'http://wcmc.io/GMW_001' #check
 # note - you can also download the data by year here: https://data.unep-wcmc.org/datasets/45
 
 # download the data from the source
-raw_data_file = data_dir+'GMW_001_GlobalMangroveWatch.zip'
+raw_data_file = os.path.join(data_dir, 'GMW_001_GlobalMangroveWatch.zip')
 urllib.request.urlretrieve(url, raw_data_file)
 
 # unzip source data
@@ -122,7 +122,7 @@ index_buffer = 0
 out_gdf = gpd.GeoDataFrame()
 
 # Generate name for processed dataset
-processed_data_file = os.path.join(data_dir,dataset_name+'_edit.shp')
+processed_data_file = os.path.join(data_dir, dataset_name+'_edit.shp')
 # Create empty table for dataset on Carto
 checkCreateTable(os.path.basename(processed_data_file).split('.')[0], CARTO_SCHEMA)
 print('Carto table created: {}'.format(os.path.basename(processed_data_file).split('.')[0]))
@@ -194,7 +194,7 @@ def upload_to_aws(local_file, bucket, s3_file):
 
 print('Uploading original data to S3.')
 # Copy the raw data into a zipped file to upload to S3
-raw_data_dir = data_dir+dataset_name+'.zip'
+raw_data_dir = os.path.join(data_dir, dataset_name+'.zip')
 with ZipFile(raw_data_dir,'w') as zip:
     zip.write(raw_data_file, os.path.basename(raw_data_file))
 
@@ -203,7 +203,7 @@ uploaded = upload_to_aws(raw_data_dir, 'wri-public-data', 'resourcewatch/'+os.pa
 
 print('Uploading processed data to S3.')
 # Copy the processed data into a zipped file to upload to S3
-processed_data_dir = data_dir+dataset_name+'_edit'+'.zip'
+processed_data_dir = os.path.join(data_dir, dataset_name+'_edit.zip')
 with ZipFile(processed_data_dir,'w') as zip:
     zip.write(processed_data_file, os.path.basename(processed_data_file))
 
