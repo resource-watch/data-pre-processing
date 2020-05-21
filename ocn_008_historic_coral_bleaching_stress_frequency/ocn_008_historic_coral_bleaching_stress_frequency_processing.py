@@ -88,7 +88,7 @@ bands = [{'id': var, 'tileset_band_index': vars.index(var), 'pyramiding_policy':
 # initialize ee and eeUtil modules for uploading to Google Earth Engine
 auth = ee.ServiceAccountCredentials(os.getenv('GEE_SERVICE_ACCOUNT'), key_data=os.getenv('GEE_JSON'))
 ee.Initialize(auth)
-eeUtil.init(service_account=os.getenv('GEE_SERVICE_ACCOUNT'), credential_path=os.getenv('GOOGLE_APPLICATION_CREDENTIALS'), project=os.getenv('CLOUDSDK_CORE_PROJECT'), bucket=os.getenv('GEE_STAGING_BUCKET'))
+eeUtil.initJson()
 
 print('Uploading processed data to Google Earth Engine.')
 # Upload processed data file to GEE
