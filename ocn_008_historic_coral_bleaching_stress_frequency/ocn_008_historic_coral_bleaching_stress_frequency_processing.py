@@ -19,7 +19,7 @@ os.chdir(path)
 
 # create a new sub-directory within your specified dir called 'data'
 # within this directory, create files to store raw and processed data
-data_dir = 'data/'
+data_dir = 'data'
 if not os.path.exists(data_dir):
     os.mkdir(data_dir)
 
