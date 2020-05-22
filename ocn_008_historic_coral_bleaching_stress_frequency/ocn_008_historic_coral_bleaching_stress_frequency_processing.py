@@ -3,6 +3,7 @@ import boto3
 from botocore.exceptions import NoCredentialsError
 import urllib
 from zipfile import ZipFile
+import ee
 import eeUtil
 import subprocess
 
