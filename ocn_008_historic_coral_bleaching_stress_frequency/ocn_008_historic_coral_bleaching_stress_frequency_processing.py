@@ -74,7 +74,7 @@ vars = ['n_gt0', # The number of events for which the thermal stress, measured b
 processed_data_file = os.path.join(data_dir, dataset_name+'.tif')
 
 # convert the listed variables into tif files then merge them into a single tif file with a band for each variable
-convert(file, vars, processed_data_file)
+convert(raw_data_file, vars, processed_data_file)
 
 '''
 Upload processed data to Google Earth Engine
@@ -94,7 +94,7 @@ print('Uploading processed data to Google Earth Engine.')
 # Upload processed data file to GEE
 asset_name = f'/projects/resource-watch-gee/{dataset_name}'
 eeUtil.uploadAsset(filename=processed_data_file, asset=asset_name, gs_prefix=dataset_name, public=True, bands=bands)
-print('GEE asset created: {}'.format(asset_name)
+print('GEE asset created: {}'.format(asset_name))
 
 # set dataset privacy to public
 acl = {"all_users_can_read": True}
