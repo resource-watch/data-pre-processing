@@ -58,8 +58,10 @@ def convert(file, vars, outfile_name):
         subprocess.call(cmd)
         # add the new subdataset tif files to the list of tifs generated from this netcdf file
         band_tifs.append(band_tif)
-    # merge all the sub tifs from this netcdf to create an overall tif representing all variables
-    merge_cmd = ['gdal_merge.py', '-seperate'] + band_tifs + ['-o', outfile_name]
+    # merge all the sub tifs from this netcdf to create an overall tif representing all variable
+    merge_cmd = ['gdal_merge.py', '-separate'] + band_tifs + ['-o', outfile_name]
+    separator = " "
+    separator.join(merge_cmd)
     subprocess.call(merge_cmd)
 
 # variables in netcdf to be converted to tifs
@@ -89,7 +91,7 @@ bands = [{'id': var, 'tileset_band_index': vars.index(var), 'pyramiding_policy':
 # initialize ee and eeUtil modules for uploading to Google Earth Engine
 auth = ee.ServiceAccountCredentials(os.getenv('GEE_SERVICE_ACCOUNT'), key_data=os.getenv('GEE_JSON'))
 ee.Initialize(auth)
-eeUtil.initJson()
+eeUtil.init(service_account=os.getenv('GEE_SERVICE_ACCOUNT'), credential_path=os.getenv('GOOGLE_APPLICATION_CREDENTIALS'), project=os.getenv('CLOUDSDK_CORE_PROJECT'), bucket=os.getenv('GEE_STAGING_BUCKET'))
 
 print('Uploading processed data to Google Earth Engine.')
 # Upload processed data file to GEE
