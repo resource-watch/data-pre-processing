@@ -61,8 +61,8 @@ def convert(file, vars, outfile_name):
     # merge all the sub tifs from this netcdf to create an overall tif representing all variable
     merge_cmd = ['gdal_merge.py', '-separate'] + band_tifs + ['-o', outfile_name]
     separator = " "
-    separator.join(merge_cmd)
-    subprocess.call(merge_cmd)
+    merge_cmd = separator.join(merge_cmd)
+    subprocess.call(merge_cmd, shell=True)
 
 # variables in netcdf to be converted to tifs
 vars = ['n_gt0', # The number of events for which the thermal stress, measured by Degree Heating Weeks, exceeded 0 degC-weeks.
