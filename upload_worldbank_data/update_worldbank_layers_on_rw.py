@@ -15,12 +15,6 @@ API_TOKEN = os.getenv('RW_API_KEY')
 # set up authentication for cartoframes module
 auth = cartoframes.auth.Credentials(username=os.getenv('CARTO_WRI_RW_USER'), api_key=os.getenv('CARTO_WRI_RW_KEY'))
 
-# if there are any specific years that we don't want to make layers for in a dataset, list them here:
-exclude_years = {'daaa9f12-c0ef-499a-b2d8-4bceaa9b95fa': list(range(1960,1990)),
-                 'e8f53f73-d77c-485a-a2a6-1c47ea4aead9': list(range(1970,2000)),
-                 '8711d841-8421-4fcb-8ee2-881e573856e0': list(range(1967, 1990)),
-                 }
-
 def get_layers(ds_id):
     '''
     Given a Resource Watch dataset's API ID, this function will return a list of all the layers associated with it
@@ -78,8 +72,19 @@ def get_carto_years(carto_table, data_col):
         where = data_col +  ' IS NOT NULL'
     # query Carto table to get rows where there is data
     carto_df = cartoframes.read_carto(f' SELECT * from {carto_table} WHERE {where}', credentials=auth)
+
     # pull out a list of years from the 'year' column
     carto_years = [int(year) for year in np.unique(carto_df['year'])]
+
+    # get count of occurrences of each year
+    vc = carto_df['year'].value_counts()
+    # pull out list of years with fewer than 10 data points
+    years_to_drop = vc[vc < 10].index
+    # keep list of these years that are more than 10 years old
+    years_to_drop = [year for year in years_to_drop if year < datetime.datetime.utcnow().year - 10]
+    # remove years with less that 10 countries of data if it is more than 10 years old
+    carto_years = [year for year in carto_years if year not in years_to_drop]
+
     # put these years in order from oldest to newest
     carto_years.sort()
     return carto_years
@@ -230,45 +235,47 @@ metadata_check_df = pd.DataFrame(columns=['name','dataset_id', 'years_added', 'm
 
 # go through each Resource Watch dataset and make sure it is up to date with the most recent data
 for i, row in df.iterrows():
-    # pull in relevant information about dataset
-    ts = row['Time Slider']
-    ds_id = row['Dataset ID']
-    name = row['Backoffice Dataset Name']
-    carto_table = row['Carto Table']
-    carto_col = row ['Carto Column']
+    # some rows contain more than one dataset
+    ds_ids = row['Dataset ID'].split(';')
+    names = row['Public Title'].split(';')
 
-    # get all the years that we have already made layers for on RW
-    rw_years = get_layer_years(ds_id)
+    for i in range(len(ds_ids)):
+        # pull in relevant information about dataset
+        ts = row['Time Slider']
+        ds_id = ds_ids[i]
+        name = names[i]
+        carto_table = row['Carto Table']
+        carto_col = row ['Carto Column']
 
-    # get all years available in carto table
-    carto_years = get_carto_years(carto_table, carto_col)
-    print(ds_id)
-    # if this dataset is a time slider on RW,
-    if ts=='Yes':
-        # find years that we need to make layers for (data available on Carto, but no layer on RW)
-        update_years = np.setdiff1d(carto_years, rw_years)
-        # if there are specific years for a dataset that we don't want to make layers for, remove them
-        if ds_id in exclude_years:
-            update_years = np.setdiff1d(update_years, exclude_years[ds_id])
-        print(update_years)
-        # make layers for missing years
-        duplicate_wb_layers(ds_id, update_years)
-        # add dataset to our spreadsheet for checking metadata
-        metadata_check_df = metadata_check_df.append({'name':name, 'dataset_id':ds_id, 'years_added':','.join(map(str, update_years))}, ignore_index=True)
+        # get all the years that we have already made layers for on RW
+        rw_years = get_layer_years(ds_id)
 
-    # if this dataset is not a time slider on RW
-    else:
-        # pull the year of data being shown in the RW dataset's layers
-        rw_year = rw_years[0]
-        # get the most recent year of data available in the Carto table
-        latest_carto_year = carto_years[-1]
-        print(latest_carto_year)
-        # if we don't have the latest years on RW, update the existing layers
-        if rw_year != latest_carto_year:
-            # update layer on RW to be latest year of data available
-            #update_rw_layer_year(ds_id, rw_year, latest_carto_year)
+        # get all years available in carto table
+        carto_years = get_carto_years(carto_table, carto_col)
+        print(ds_id)
+        # if this dataset is a time slider on RW,
+        if ts=='Yes':
+            # find years that we need to make layers for (data available on Carto, but no layer on RW)
+            update_years = np.setdiff1d(carto_years, rw_years)
+            print(update_years)
+            # make layers for missing years
+            duplicate_wb_layers(ds_id, update_years)
             # add dataset to our spreadsheet for checking metadata
-            metadata_check_df = metadata_check_df.append({'name': name, 'dataset_id': ds_id, 'years_added': latest_carto_year}, ignore_index=True)
+            metadata_check_df = metadata_check_df.append({'name':name, 'dataset_id':ds_id, 'years_added':','.join(map(str, update_years))}, ignore_index=True)
+
+        # if this dataset is not a time slider on RW
+        else:
+            # pull the year of data being shown in the RW dataset's layers
+            rw_year = rw_years[0]
+            # get the most recent year of data available in the Carto table
+            latest_carto_year = carto_years[-1]
+            print(latest_carto_year)
+            # if we don't have the latest years on RW, update the existing layers
+            if rw_year != latest_carto_year:
+                # update layer on RW to be latest year of data available
+                #update_rw_layer_year(ds_id, rw_year, latest_carto_year)
+                # add dataset to our spreadsheet for checking metadata
+                metadata_check_df = metadata_check_df.append({'name': name, 'dataset_id': ds_id, 'years_added': latest_carto_year}, ignore_index=True)
 
 # save table of updated datasets, then use this to update metadata and master sheet
 metadata_check_df.to_csv('updated_wb_datasets.csv', index=False, header=True)
