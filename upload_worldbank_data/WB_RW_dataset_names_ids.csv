@@ -3,7 +3,7 @@ cit.020,Air Quality: Population Exposed to Unhealthy Levels of Fine Particulate 
 cit.028,Urban Population Living in Slums,,35ce2b98-adbb-4873-b334-d7b1cc542de7,,,,,
 ene.028,Access to Clean Cooking Fuels,,c665f519-eef9-4f67-a8bf-7e3e6dc8bfcd,,,,,
 foo.019,Child Malnutrition,No,8bc79a36-d77e-4ee3-b9bc-c77146cfc503,foo_019_child_malnutrition_edit,overweight;underweight;wasting;severe_wasting;stunting,SH.STA.OWGH.ZS;SH.STA.MALN.ZS;SH.STA.WAST.ZS;SH.SVR.WAST.ZS;SH.STA.STNT.ZS,overweight;underweight;wasting;severe wasting;stunting,% of children under 5;% of children under 5;% of children under 5;% of children under 5;% of children under 5
-soc.008,Gross Domestic Product Per Capita (PPP, Current International $),,00abb46f-34e2-4bf7-be30-1fb0b1de022f,,,,,
+soc.008,"Gross Domestic Product Per Capita (PPP, Current International $)",,00abb46f-34e2-4bf7-be30-1fb0b1de022f,,,,,
 soc.066,Population Below Income Poverty Line ($1.90),,4d7ce999-1e37-418f-b8a6-1816b29e901a,,,,,
 soc.078(077?),poverty_headcount_ratio_190(Poverty headcount ratio),,(3ebc33cf-c174-4159-a07f-3ee0dc0d6ba9),,,,,
 soc.079,Fertility Rates,,80f951a7-edd5-472a-8b46-744eb93fd7ef,,,,,
