@@ -170,7 +170,7 @@ auth_client = APIKeyAuthClient(api_key=os.getenv('CARTO_WRI_RW_KEY'), base_url="
 #set up dataset manager with authentication
 dataset_manager = DatasetManager(auth_client)
 #set dataset privacy to 'Public with link'
-dataset = dataset_manager.get('amelia_test')
+dataset = dataset_manager.get(dataset_name+'_edit')
 dataset.privacy = 'LINK'
 dataset.save()
 print('Privacy set to public with link.')
