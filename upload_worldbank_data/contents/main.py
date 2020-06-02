@@ -180,6 +180,7 @@ if __name__ == '__main__':
 
 #
 for dataset_name, info in wb_rw_table.iterrows():
+    dataset_name = dataset_name[:-5]
     logging.info('Next table to update: {}'.format(dataset_name))
     # create a new sub-directory within your specified dir called 'data'
     data_dir = 'data'
