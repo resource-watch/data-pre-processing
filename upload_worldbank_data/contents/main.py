@@ -1,325 +1,285 @@
-#!/usr/bin/env python3
+''  # !/usr/bin/env python3
 if __name__ == '__main__':
-    import pandas as pd
-    import os
     import logging
+    import os
     import sys
-    import glob
-    import time
-    
+    import pandas as pd
+    import numpy as np
+    import datetime
+    import requests
+    import os
+    from collections import OrderedDict
+    import urllib.request
+    import cartosql
+    from carto.datasets import DatasetManager
+    from carto.auth import APIKeyAuthClient
+    import boto3
+    from botocore.exceptions import NoCredentialsError
+    from zipfile import ZipFile
+
     logging.basicConfig(stream=sys.stderr, level=logging.INFO)
 
-    import requests as req
-    from collections import OrderedDict
-
-    # Utilities
-    import carto
-    import misc
-
     CARTO_USER = os.getenv('CARTO_WRI_RW_USER')
-    WB_DATA = "resourcewatch/"
+    CARTO_KEY = os.getenv('CARTO_WRI_RW_KEY')
 
-    def fetch_wb_data(codes_and_names):
-        tables = list(codes_and_names.keys())
-        for ix, table in enumerate(tables):
-            indicators = codes_and_names[table]['indicators']
-            value_names = codes_and_names[table]['columns']
-            for i in range(len(indicators)):
-                indicator = indicators[i]
-                value_name = value_names[i]
-                # Fetch data
-                res = req.get("http://api.worldbank.org/countries/all/indicators/{}?format=json&per_page=10000".format(indicator))
-                pages = int(res.json()[0]['pages'])
-                #logging.info(res.text)
-                json = []
-                for page in range(1,pages+1):
-                    res = req.get("http://api.worldbank.org/countries/all/indicators/{}?format=json&per_page=10000&page={}".format(indicator,page))
-                    json = json + res.json()[1]
-                # Format into dataframe, only keep some columns
-                #Old way
-                #data = pd.io.json.json_normalize(res.json()[1])
-                data = pd.io.json.json_normalize(json)
-                data = data[["country.value", "date", "value"]]
-                data.columns = ["Country", "Year", value_name]
-                # Standardize time column for ISO time
-                data["Time"] = misc.fix_datetime_UTC(data, dttm_elems={"year_col":"Year"})
-            
-                # Only keep countries, not larger political bodies
-                data = data.iloc[misc.pick_wanted_entities(data["Country"].values)]
-            
-                # Set index to Country and Year
-                data = data.set_index(["Country", "Time","Year"])
-                if ix == 0 and i == 0:
-                    # Start off the dataframe
-                    all_world_bank_data = data
-                else:
-                    # Continue adding to the dataframe
-                    all_world_bank_data = all_world_bank_data.join(data, how="outer")
+    wb_rw_table = pd.read_csv(
+        'https://raw.githubusercontent.com/resource-watch/data-pre-processing/master/upload_worldbank_data//WB_RW_dataset_names_ids.csv').set_index(
+        'Carto Table')
 
-        # Finished fetching, reset_index
+    # pull in sheet with World Bank name to iso3 conversions
+    wb_name_to_iso3_conversion = pd.read_csv(
+        'https://raw.githubusercontent.com/resource-watch/data-pre-processing/master/upload_worldbank_data/WB_name_to_ISO3.csv').set_index(
+        'WB_name')
+
+    tables_to_not_overwrite_column = ['ene_021a_renewable_energy_consumption',
+                                      'soc_081_mortality_rate',
+                                      'ene_004_renewable_energy_share_of_total_energy_consumption',
+                                      'ene_029a_energy_intensity']
+    # get list of all carto table names
+    carto_table_names = cartosql.getTables(user=CARTO_USER, key=CARTO_KEY)
+
+
+    def upload_to_aws(local_file, bucket, s3_file):
+        s3 = boto3.client('s3', aws_access_key_id=os.getenv('aws_access_key_id'),
+                          aws_secret_access_key=os.getenv('aws_secret_access_key'))
+        try:
+            s3.upload_file(local_file, bucket, s3_file)
+            logging.info("Upload Successful")
+            logging.info("http://{}.s3.amazonaws.com/{}".format(bucket, s3_file))
+            return True
+        except FileNotFoundError:
+            logging.info("The file was not found")
+            return False
+        except NoCredentialsError:
+            logging.info("Credentials not available")
+            return False
+
+
+    # Add ISO3 column
+    def add_iso(name):
+        try:
+            return (wb_name_to_iso3_conversion.loc[name, "ISO"])
+        except:
+            return (np.nan)
+
+
+    # pull in table of standard Resource Watch names
+    sql_statement = 'SELECT iso_a3, name FROM wri_countries_a'
+    country_html = requests.get(f'https://{CARTO_USER}.carto.com/api/v2/sql?q={sql_statement}')
+    country_info = pd.DataFrame(country_html.json()['rows'])
+
+
+    def add_rw_name(code):
+        temp = country_info.loc[country_info['iso_a3'] == code]
+        temp = temp['name'].tolist()
+        if temp != []:
+            return (temp[0])
+        else:
+            return (None)
+
+
+    def add_rw_code(code):
+        temp = country_info.loc[country_info['iso_a3'] == code]
+        temp = temp['iso_a3'].tolist()
+        if temp != []:
+            return (temp[0])
+        else:
+            return (None)
+
+
+    #
+    def fetch_wb_data(table):
+        # pull the WB indicators that are included in this table
+        indicators = wb_rw_table.loc[table, 'wb_indicators'].split(";")
+        # pull the list of column names used in the Carto table associated with each indicator
+        value_names = wb_rw_table.loc[table, 'wb_columns'].split(";")
+        #
+        units = wb_rw_table.loc[table, 'wb_units'].split(";")
+        # pull each of the indicators from the World Bank API one at a time
+        for i in range(len(indicators)):
+            # get the current indicator
+            indicator = indicators[i]
+            # get the name of the column it will go into in Carto
+            value_name = value_names[i]
+            # get the units
+            unit = units[i]
+            # fetch data for this indicator (only the first 10,000 entries will be returned)
+            res = requests.get(
+                "http://api.worldbank.org/countries/all/indicators/{}?format=json&per_page=10000".format(indicator))
+            # check how many pages of data there are for this indicator
+            pages = int(res.json()[0]['pages'])
+            # pull the data, one page at a time, appending the data to the json variable
+            json = []
+            for page in range(pages):
+                res = requests.get(
+                    "http://api.worldbank.org/countries/all/indicators/{}?format=json&per_page=10000&page={}".format(
+                        indicator, page + 1))
+                json = json + res.json()[1]
+            # format into dataframe and only keep relevant columns
+            data = pd.io.json.json_normalize(json)
+            data = data[["country.value", "date", "value"]]
+            # rename these columns
+            data.columns = ["Country", "Year", value_name]
+            # add a units column
+            data['unit' + str(i + 1)] = unit
+            # add indicator code column
+            data['indicator_code' + str(i + 1)] = indicator
+            # Standardize time column for ISO time
+            data["Time"] = data.apply(lambda x: datetime.date(int(x['Year']), 1, 1).strftime("%Y-%m-%dT%H:%M:%SZ"),
+                                      axis=1)
+
+            # Only keep countries, not larger political bodies
+            drop_patterns = ['Arab World', 'Middle income', 'Europe & Central Asia (IDA & IBRD countries)', 'IDA total',
+                             'Latin America & the Caribbean (IDA & IBRD countries)',
+                             'Middle East & North Africa (IDA & IBRD countries)', 'blank (ID 268)',
+                             'Europe & Central Asia (excluding high income)', 'IBRD only', 'IDA only',
+                             'Early-demographic dividend', 'Latin America & the Caribbean (excluding high income)',
+                             'Middle East & North Africa', 'Middle East & North Africa (excluding high income)',
+                             'Late-demographic dividend', 'Pacific island small states', 'Europe & Central Asia',
+                             'European Union', 'High income', 'IDA & IBRD total', 'IDA blend', 'Caribbean small states',
+                             'Central Europe and the Baltics', 'East Asia & Pacific',
+                             'East Asia & Pacific (excluding high income)', 'Low & middle income',
+                             'Lower middle income', 'Other small states', 'East Asia & Pacific (IDA & IBRD countries)',
+                             'Euro area', 'OECD members', 'North America',
+                             'Middle East & North Africa (excluding high income)', 'Post-demographic dividend',
+                             'Small states', 'South Asia', 'Upper middle income', 'World',
+                             'Heavily indebted poor countries (HIPC)', 'Least developed countries: UN classification',
+                             'blank (ID 267)', 'blank (ID 265)', 'Latin America & Caribbean',
+                             'Latin America & Caribbean (excluding high income)', 'IDA & IBRD total', 'IBRD only',
+                             'Europe & Central Asia', 'Sub-Saharan Africa (excluding high income)', 'Macao SAR China',
+                             'Sub-Saharan Africa', 'Pre-demographic dividend', 'South Asia (IDA & IBRD)',
+                             'Sub-Saharan Africa (IDA & IBRD countries)', 'Upper middle income',
+                             'Fragile and conflict affected situations', 'Low income', 'Not classified']
+
+            data = data[~data['Country'].isin(drop_patterns)]
+
+            # Set index to Country, Year, and Time
+            data = data.set_index(["Country", "Time", "Year"])
+            if i == 0:
+                # Start off the dataframe
+                all_world_bank_data = data
+            else:
+                # Continue adding more columns to the dataframe
+                all_world_bank_data = all_world_bank_data.join(data, how="outer")
+
+            # Reset the index for the table
         all_world_bank_data = all_world_bank_data.reset_index()
 
-        # Add ISO3 column - will now only contained desired entities
-        all_world_bank_data["ISO3"] = list(map(misc.add_iso, all_world_bank_data["Country"]))
-    
+        all_world_bank_data.insert(0, "ISO3", all_world_bank_data.apply(lambda row: add_iso(row["Country"]), axis=1))
+
         # Drop rows which don't have an ISO3 assigned
         all_world_bank_data = all_world_bank_data.loc[pd.notnull(all_world_bank_data["ISO3"])]
-    
-        #Add in RW specific countries and ISO codes
-        all_world_bank_data["rw_country_name"] = list(map(misc.add_rw_name, all_world_bank_data["ISO3"]))
-        all_world_bank_data["rw_country_code"] = list(map(misc.add_rw_code, all_world_bank_data["ISO3"]))
 
-        # Set the index to be everything except the value column. This simplifies dissection later
-        all_world_bank_data = all_world_bank_data.set_index(["Country", "ISO3", "Time", "Year", "rw_country_name","rw_country_code"])
-        return(all_world_bank_data)
+        # Add in RW specific countries and ISO codes
+        all_world_bank_data["rw_country_name"] = all_world_bank_data.apply(lambda row: add_rw_name(row["ISO3"]), axis=1)
+        all_world_bank_data["rw_country_code"] = all_world_bank_data.apply(lambda row: add_rw_code(row["ISO3"]), axis=1)
 
-    def main():
+        # make sure all null values are set to None
+        all_world_bank_data = all_world_bank_data.where((pd.notnull(all_world_bank_data)), None).reset_index(drop=True)
+        return (all_world_bank_data)
 
-        ## World Bank data series codes and names
-        # key = WB code: https://datahelpdesk.worldbank.org/knowledgebase/articles/201175-how-does-the-world-bank-code-its-indicators
-        # value = [table_name, value_column_name, units]
-    
-    
-        ### WARNINGS
-        # For this to work as expected, there must not be any , in the table names
-        # And table names cannot be longer than a certain number of characters, equal to
-        # Length of: soc_106_proportion_of_seats_held_by_women_in_national_parliamen (63 characters)
-        data_codes_and_names = {
-            'soc_020_gini' : {
-                'indicators': ['SI.POV.GINI'],
-                'columns': ['GINI'], 
-                'units': ['GINI index (World Bank estimate)']},
-            'ene_012_electricity_access': {
-                'indicators': ['EG.ELC.ACCS.ZS','EG.ELC.ACCS.RU.ZS','EG.ELC.ACCS.UR.ZS'],
-                'columns': ['total','rural','urban'],
-                'units': ['% of population', '% of rural population', '% of urban population']},
-            'ene_021_se4all_country_indicators':{
-                'indicators': ['3.1_RE.CONSUMPTION'],
-                'columns': ['rnw_ene_con'],
-                'units': ['Renewable energy consumption (TJ)']},
-            'ene_004_renewable_energy_share_of_total_energy_consumption_edit':{
-                'indicators': ['EG.FEC.RNEW.ZS'],
-                'columns': ['renewable_energy_share_of_total_energy_consumption_p'],
-                'units': ['% of total final energy consumption']},
-            'ene_028_access_clean_cooking':{
-                'indicators': ['EG.CFT.ACCS.ZS'],
-                'columns': ['yr_data'],
-                'units': ['% of population']},
-            'ene_029a_energy_intensity':{
-                'indicators': ['6.1_PRIMARY.ENERGY.INTENSITY'],
-                'columns': ['energy_intensity'],
-                'units': ['MJ/2011 USD PPP']},
-            'soc_082_individuals_using_the_internet':{
-                'indicators': ['IT.NET.USER.ZS'],
-                'columns': ['intnt_use'],
-                'units': ['% of population']},
-            'soc_103 Household final consumption expenditure per capita':{
-                'indicators': ['NE.CON.PRVT.PC.KD'],
-                'columns': ['cons_exp'],
-                'units': ['constant 2010 US$']},
-            'soc_104 Industry value added':{
-                'indicators': ['NV.IND.TOTL.KD'],
-                'columns': ['ind_val_add'],
-                'units': ['constant 2010 US$']},
-            'soc_105 Total natural resources rents':{
-                'indicators': ['NY.GDP.TOTL.RT.ZS'],
-                'columns': ['nat_rsc_rnt'],
-                'units': ['% of GDP']},
-            'soc_106 Proportion of women in national parliaments':{
-                'indicators': ['SG.GEN.PARL.ZS'],
-                'columns': ['wmn_prlmnt'],
-                'units': ['% of parliamentary seats']},
-            'soc_107 Employment to population ratio':{
-                'indicators': ['SL.EMP.TOTL.SP.ZS'],
-                'columns': ['empl_ratio'],
-                'units': ['% employed population, ages 15+']},
-            'soc_108 Net migration':{
-                'indicators': ['SM.POP.NETM'],
-                'columns': ['net_migr'],
-                'units': ['number of net in-migrants']},
-            'soc_036_life_expectancy_at_birth':{
-                'indicators': ['SP.DYN.LE00.IN'],
-                'columns': ['life_exp'],
-                'units': ['years']},
-            'cit_020_pop_ex_pm25':{
-                'indicators': ['EN.ATM.PM25.MC.ZS'],
-                'columns': ['yr_data'],
-                'units': ['% of population']},
-            'cit_028_urban_slum':{
-                'indicators': ['EN.POP.SLUM.UR.ZS'],
-                'columns': ['yr_data'],
-                'units': ['% of urban population']},
-            'cit_025_urban_population':{
-                'indicators': ['SP.URB.TOTL.IN.ZS'],
-                'columns': ['urban_pop'],
-                'units': ['% of total population']},
-            'soc_111 Merchandise imports':{
-                'indicators': ['TM.VAL.MRCH.CD.WT'],
-                'columns': ['merch_imp'],
-                'units': ['current US$']},
-            'com_006_account_balance':{
-                'indicators': ['BN.CAB.XOKA.CD'],
-                'columns': ['yr_data'],
-                'units': ['BoP, current US$']},            
-            'com_010_gdp_ppp_usd':{
-                'indicators': ['NY.GDP.MKTP.CD'],
-                'columns': ['gdp'],
-                'units': ['current US$']},
-            'soc_066_population_below_poverty_line':{
-                'indicators':['SI.POV.DDAY'],
-                'columns':['poverty'],
-                'units':['% of population']},
-            'soc_074_employment_in_agriculture':{
-                'indicators':['SL.AGR.EMPL.ZS'],
-                'columns':['employment'],
-                'units':['% of population']},
-            'soc_076_country_population':{
-                'indicators':['SP.POP.TOTL'],
-                'columns':['total population'],
-                'units':['people']},
-            'soc_081_mortality_rate':{
-                'indicators':['SP.DYN.IMRT.IN'],
-                'columns':['mortality rate'],
-                'units':['deaths per 1000 live births']},
-            'soc_029_worldwide_governance_indicators': {
-                'indicators': ['GE.EST','RQ.EST','PV.EST','RL.EST','VA.EST','CC.EST'],
-                'columns': ['government_effectiveness_data','regulatory_quality_data','political_stability_data','rule_of_law_data','voice_accountability_data','control_of_corruption_data'],
-                'units': ['estimate', 'estimate', 'estimate','estimate','estimate','estimate']},
-            'soc_090_pop_growth_rate' : {
-                'indicators': ['SP.POP.GROW'],
-                'columns': ['Growth rate'],
-                'units': ['percent']},
-            'foo_43_agriculture_value_added' : {
-                'indicators': ['NV.AGR.TOTL.ZS'],
-                'columns': ['Value added'],
-                'units': ['percent of GDP']},
-            'com_036_unemployment' : {
-                'indicators': ['SL.UEM.TOTL.ZS'],
-                'columns': ['unemployment'],
-                'units': ['% of total labor force']},
-            'wat_005a_improved_water_access' : {
-                'indicators': ['SH.H2O.SMDW.ZS','SH.H2O.SMDW.UR.ZS','SH.H2O.SMDW.RU.ZS'],
-                'columns': ['total','urban','rural'],
-                'units': ['% of population','% of urban pop','% of rural pop']},
-            'soc_040_improved_sanitation' : {
-                'indicators': ['SH.STA.SMSS.ZS','SH.STA.SMSS.UR.ZS','SH.STA.SMSS.RU.ZS'],
-                'columns': ['total_data','urban_data','rural_data'],
-                'units': ['% of population','% of urban pop','% of rural pop']},
-            'wps_006_inflation' : {
-                'indicators': ['FP.CPI.TOTL.ZG'],
-                'columns': ['inflation'],
-                'units': ['annual %']},
-            'wps_008_poverty320' : {
-                'indicators': ['SI.POV.LMIC'],
-                'columns': ['poverty_headcount'],
-                'units': ['% of population']},             
-            'soc_008_gdp_per_capita_edit' : {
-                'indicators': ['NY.GDP.PCAP.PP.CD'],
-                'columns': ['gdp_per_capita'],
-                'units': ['current international $']},
-            'soc_015_adult_literacy_rate' : {
-                'indicators': ['SE.ADT.LITR.ZS','SE.ADT.LITR.FE.ZS','SE.ADT.LITR.MA.ZS'],
-                'columns': ['yr_data','female_data','male_data'],
-                'units': ['% of population 15+','% of females 15+','% of males 15+']}, 
-            'soc_078_poverty_headcount_ratio_190' : {
-                'indicators': ['SI.POV.DDAY'],
-                'columns': ['yr_data'],
-                'units': ['% of population']},
-            'soc_079_total_fertility' : {
-                'indicators': ['SP.DYN.TFRT.IN'],
-                'columns': ['yr_data'],
-                'units': ['births per woman']},
-            'soc_101_poverty320' : {
-                'indicators': ['SI.POV.LMIC'],
-                'columns': ['yr_data'],
-                'units': ['% of population']},
-            'soc_102_inflation' : {
-                'indicators': ['FP.CPI.TOTL.ZG'],
-                'columns': ['yr_data'],
-                'units': ['annual %']}
-            }
-    
-        tables_to_not_overwrite_column = ['ene_021a_renewable_energy_consumption','soc_081_mortality_rate',
-                                          'ene_004_renewable_energy_share_of_total_energy_consumption_edit',
-                                          'ene_029a_energy_intensity']
-        carto_table_names = carto.getTables()
-        # Write to S3 and Carto the individual data sets
-        #for code, info in data_codes_and_names.items():
-        for tablename, info in data_codes_and_names.items():
-            data_codes_and_names_short = {tablename: info}
-            logging.info('Next table to update: {}'.format(data_codes_and_names_short))
-            #Creates dataset with all data columns
-            all_world_bank_data = fetch_wb_data(data_codes_and_names_short)
-            all_world_bank_data = all_world_bank_data.where((pd.notnull(all_world_bank_data)), None)
+#
+for dataset_name, info in wb_rw_table.iterrows():
+    logging.info('Next table to update: {}'.format(dataset_name))
+    # create a new sub-directory within your specified dir called 'data'
+    data_dir = 'data'
+    if not os.path.exists(data_dir):
+        os.mkdir(data_dir)
 
-            # Can't have spaces in Carto table names
-            table = tablename.replace(' ', '_').lower()
-            valnames = info['columns']
-            units = info['units']
-            indicators = info['indicators']
+    '''
+    Download data and save to your data directory
+    '''
+    raw_data_files = []
+    indicators = info['wb_indicators'].split(";")
+    for indicator in indicators:
+        url = f'http://api.worldbank.org/v2/en/indicator/{indicator}?downloadformat=csv'
+        raw_data_file = os.path.join(data_dir, f'{indicator}_DS2_en_csv_v2')
+        raw_data_files.append(raw_data_file)
+        urllib.request.urlretrieve(url, raw_data_file)
 
-            column_order = ['ISO3', 'Country', 'Time', 'Year']
-            CARTO_SCHEMA = OrderedDict([
-                ('country_code', 'text'),
-                ('Country_name', 'text'),
-                ('datetime', 'timestamp'),
-                ('Year', 'numeric')])
+    '''
+    Process data
+    '''
+    # Creates dataset with all data columns
+    all_world_bank_data = fetch_wb_data(dataset_name)
+    # save processed dataset to csv
+    processed_data_file = os.path.join(data_dir, dataset_name + '_edit.csv')
+    all_world_bank_data.to_csv(processed_data_file, index=False)
 
-            #Get subset of dataset with
-            long_form = all_world_bank_data[valnames]
-            long_form = long_form.reset_index()
+    '''
+    Upload processed data to Carto
+    '''
+    logging.info('Uploading processed data to Carto.')
 
-            #Add data column, unit, and indicator code to CARTO_SCHEMA, column_order, and dataset
-            for i in range(len(valnames)):
-                if (i==0) and (len(valnames) == 1)  and (tablename not in tables_to_not_overwrite_column):
-                    CARTO_SCHEMA.update({'yr_data':'numeric'})
-                else:
-                    CARTO_SCHEMA.update({valnames[i].replace(' ', '_').lower():'numeric'})
-                CARTO_SCHEMA.update({'Unit'+str(i+1):'text'})
-                CARTO_SCHEMA.update({'Indicator_code'+str(i+1):'text'})
-                long_form[units[i]] = units[i]
-                long_form[indicators[i]] = indicators[i]
-                column_order.append(valnames[i])
-                column_order.append(units[i])
-                column_order.append(indicators[i])
+    ### Check if table exists
+    # if table does not exist, create it
+    table_name = dataset_name+'_edit'
+    if not table_name in carto_table_names:
+        logging.info(f'Table {table_name} does not exist, creating')
+        # Change privacy of table on Carto
+        # set up carto authentication using local variables for username (CARTO_WRI_RW_USER) and API key (CARTO_WRI_RW_KEY)
+        auth_client = APIKeyAuthClient(api_key=os.getenv('CARTO_WRI_RW_KEY'),
+                                       base_url="https://{user}.carto.com/".format(user=os.getenv('CARTO_WRI_RW_USER')))
+        # set up dataset manager with authentication
+        dataset_manager = DatasetManager(auth_client)
+        # upload dataset to carto
+        dataset = dataset_manager.create(processed_data_file)
+        # set dataset privacy to 'Public with link'
+        dataset = dataset_manager.get(table_name)
+        dataset.privacy = 'LINK'
+        dataset.save()
+        logging.info('Privacy set to public with link.')
+    # if table does exist, clear all the rows so we can upload the latest version
+    else:
+        logging.info(f'Table {table_name} already exists, clearing rows')
+        # column names and types for data table
+        # column names should be lowercase
+        # column types should be one of the following: geometry, text, numeric, timestamp
+        CARTO_SCHEMA = OrderedDict([
+            ('country_code', 'text'),
+            ('country_name', 'text'),
+            ('datetime', 'timestamp'),
+            ('year', 'numeric')])
+        # Go through each type of "value" in this table
+        # Add data column, unit, and indicator code to CARTO_SCHEMA, column_order, and dataset
+        valnames = info['Carto Column'].split(";")
+        for i in range(len(valnames)):
+            CARTO_SCHEMA.update({valnames[i]: 'numeric'})
+            # add the unit column name and type for this value  to the Carto Schema
+            CARTO_SCHEMA.update({'unit' + str(i + 1): 'text'})
+            # add the WB Indicator Code column name and type for this value to the Carto Schema
+            CARTO_SCHEMA.update({'indicator_code' + str(i + 1): 'text'})
+        # add the RW country name and country code columns to the table
+        CARTO_SCHEMA.update({"rw_country_name": 'text'})
+        CARTO_SCHEMA.update({"rw_country_code": 'text'})
 
-            CARTO_SCHEMA.update({"rw_country_name":'text'})
-            CARTO_SCHEMA.update({"rw_country_code":'text'})
-            column_order = column_order + ["rw_country_name", "rw_country_code"]
+        cartosql.deleteRows(table_name, 'cartodb_id IS NOT NULL', user=CARTO_USER, key=CARTO_KEY)
 
+        # Insert new observations
+        if len(all_world_bank_data):
+            cartosql.blockInsertRows(table_name, CARTO_SCHEMA.keys(), CARTO_SCHEMA.values(), all_world_bank_data.values.tolist(), user=CARTO_USER, key=CARTO_KEY)
+            logging.info('Success! New rows have been added to Carto.')
+        else:
+            logging.info('No rows to add to Carto.')
 
-            # Enforce order in the data frame
-            long_form = long_form[column_order]
+    '''
+    Upload original data and processed data to Amazon S3 storage
+    '''
+    logging.info('Uploading original data to S3.')
+    # Copy the raw data into a zipped file to upload to S3
+    raw_data_dir = os.path.join(data_dir, dataset_name + '.zip')
+    with ZipFile(raw_data_dir, 'w') as zip:
+        for raw_data_file in raw_data_files:
+            zip.write(raw_data_file, os.path.basename(raw_data_file))
 
-            #Remove null values if there is only one data column
-            #if len(valnames) == 1:
-            #    long_form = long_form[pd.notnull(long_form[valnames[0]])]
+    # Upload raw data file to S3
+    uploaded = upload_to_aws(raw_data_dir, 'wri-public-data', 'resourcewatch/' + os.path.basename(raw_data_dir))
 
+    logging.info('Uploading processed data to S3.')
+    # Copy the processed data into a zipped file to upload to S3
+    processed_data_dir = os.path.join(data_dir, dataset_name + '_edit.zip')
+    with ZipFile(processed_data_dir, 'w') as zip:
+        zip.write(processed_data_file, os.path.basename(processed_data_file))
 
-            # Write to S3
-            misc.write_to_S3(long_form, WB_DATA + "{}_edit.csv.gz".format(table))
-
-            # Write to Carto
-            CARTO_TABLE = table
-
-
-            ### 1. Check if table exists and create table, if it does, drop and replace
-            #dest_ids = []
-            table_in_carto = table in carto_table_names
-            if not table_in_carto:
-                logging.info('Table {} does not exist'.format(CARTO_TABLE))
-                carto.createTable(CARTO_TABLE, CARTO_SCHEMA)
-            else:
-                logging.info('Table {} does exist'.format(CARTO_TABLE))
-                carto.deleteRows(CARTO_TABLE, 'cartodb_id IS NOT NULL')
-            
-            time.sleep(60)
-            ### 2. Insert new observations
-            # https://stackoverflow.com/questions/19585280/convert-a-row-in-pandas-into-list
-            rows = long_form.values.tolist()
-            logging.info('Success! The following includes the first ten rows added to Carto')
-            logging.info(rows[:10])
-            if len(rows):
-                carto.blockInsertRows(CARTO_TABLE, CARTO_SCHEMA, rows)
-            time.sleep(120)
-    main()
+    # Upload processed data file to S3
+    uploaded = upload_to_aws(processed_data_dir, 'wri-public-data', 'resourcewatch/' + os.path.basename(processed_data_dir))
