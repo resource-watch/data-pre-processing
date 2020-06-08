@@ -1,7 +1,6 @@
 ﻿WRI ID,Public Title,Time Slider,Dataset ID,Published,Carto Table,Carto Column,wb_indicators,wb_columns,wb_units
 cit.044,Distribution of Consumer Spending by Sector,No,29a3cc91-9bf7-480f-b324-58570d9cd68f,add to script,,,,,
 
-soc.077,Poverty headcount ratio,Yes,3ebc33cf-c174-4159-a07f-3ee0dc0d6ba9,delete,soc_077_poverty_headcount_ratio_edit,yr_data,,,
 soc.103,Household final consumption expenditure per capita,,,delete,,,,,
 soc.104,Industry value added,,,delete,,,,,
 soc.105,Total natural resources rents,,,delete,,,,,
