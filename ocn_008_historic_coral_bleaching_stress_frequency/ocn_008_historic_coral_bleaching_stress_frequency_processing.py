@@ -40,7 +40,7 @@ Process data
 def convert(file, vars, outfile_name):
     '''
     Convert netcdf files to tifs
-    INPUT   file: list of file names for netcdfs that we want to convert (stringKI)
+    INPUT   file: list of file names for netcdfs that we want to convert (string)
             vars: list of variables we want to pull from the source dataset (list of strings)
     RETURN  tifs: list of file names for tifs that have been generated (list of strings)
     '''
