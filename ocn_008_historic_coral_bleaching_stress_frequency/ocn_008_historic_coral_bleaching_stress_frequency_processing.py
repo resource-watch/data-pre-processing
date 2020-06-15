@@ -134,7 +134,7 @@ bands = [{'id': var, 'tileset_band_index': vars.index(var), 'tileset_id': datase
 # Upload processed data file to GEE
 asset_name = f'projects/resource-watch-gee/{dataset_name}'
 
-def ingestAssets(gs_uri, asset, date='', bands=[], public=False):
+def ingestAsset(gs_uri, asset, date='', bands=[], public=False):
     '''
     Upload asset from Google Cloud Storage to Google Earth Engine
     INPUT   gs_uri: data file location on GCS, should be formatted `gs://<bucket>/<blob>` (string)
@@ -160,22 +160,25 @@ def ingestAssets(gs_uri, asset, date='', bands=[], public=False):
     task_id = ee.data.newTaskId()[0]
     print('Ingesting {} to {}: {}'.format(gs_uri, asset, task_id))
     # start ingestion process
+    uploaded = False
     ee.data.startIngestion(task_id, params, True)
     # if process is still running, wait before checking ingestion again
-    status = ee.data.getTaskStatus(task_id)[0]['state']
-    while status=='RUNNING':
-        time.sleep(30)
-        status = ee.data.getTaskStatus(task_id)[0]['state']
-    print(status)
+    while uploaded == False:
+        try:
+            ee.data.getAsset(asset)
+            uploaded = True
+            print('GEE asset created: {}'.format(asset))
+            time.sleep(30)
+        except:
+            time.sleep(60)
     if public==True:
         # set dataset privacy to public
         acl = {"all_users_can_read": True}
-        ee.data.setAssetAcl(asset_name, acl)
+        ee.data.setAssetAcl(asset, acl)
         print('Privacy set to public.')
     return task_id
 
 task_id = ingestAsset(gs_uris[0], asset=asset_name, bands=bands, public=True)
-print('GEE asset created: {}'.format(asset_name))
 
 
 def gsRemove(gs_uris):
@@ -191,6 +194,7 @@ def gsRemove(gs_uris):
     gsBucket.delete_blobs(paths, lambda x:x)
 
 gsRemove(gs_uris)
+
 print('Files deleted from Google Cloud Storage.')
 
 '''
