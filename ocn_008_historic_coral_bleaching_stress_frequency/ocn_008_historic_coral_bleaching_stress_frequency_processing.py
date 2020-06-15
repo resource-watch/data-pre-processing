@@ -168,7 +168,6 @@ def ingestAsset(gs_uri, asset, date='', bands=[], public=False):
             ee.data.getAsset(asset)
             uploaded = True
             print('GEE asset created: {}'.format(asset))
-            time.sleep(30)
         except:
             time.sleep(60)
     if public==True:
