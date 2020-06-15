@@ -134,13 +134,14 @@ bands = [{'id': var, 'tileset_band_index': vars.index(var), 'tileset_id': datase
 # Upload processed data file to GEE
 asset_name = f'projects/resource-watch-gee/{dataset_name}'
 
-def ingestAssets(gs_uri, asset, date='', bands=[], public=True):
+def ingestAssets(gs_uri, asset, date='', bands=[], public=False):
     '''
     Upload asset from Google Cloud Storage to Google Earth Engine
     INPUT   gs_uri: data file location on GCS, should be formatted `gs://<bucket>/<blob>` (string)
             asset: name of GEE asset destination path
-            date: optional date tag for asset (datetime.datetime or int ms since epoch)
-            bands: optional band name dictionary (list of dictionaries)
+            date: optional, date tag for asset (datetime.datetime or int ms since epoch)
+            bands: optional, band name dictionary (list of dictionaries)
+            public: do you want this asset to be public (Boolean)
     RETURN  task_id: Earth Engine task ID for file upload (string)
     '''
     # set up parameters for image task ingestion
@@ -163,13 +164,14 @@ def ingestAssets(gs_uri, asset, date='', bands=[], public=True):
     # if process is still running, wait before checking ingestion again
     while ee.data.getTaskStatus(task_id)[0]['state']=='RUNNING':
         time.sleep(30)
-    # set dataset privacy to public
-    acl = {"all_users_can_read": True}
-    ee.data.setAssetAcl(asset_name, acl)
-    print('Privacy set to public.')
+    if public==True:
+        # set dataset privacy to public
+        acl = {"all_users_can_read": True}
+        ee.data.setAssetAcl(asset_name, acl)
+        print('Privacy set to public.')
     return task_id
 
-task_id = ingestAsset(gs_uris[0], asset=asset_name, bands=bands)
+task_id = ingestAsset(gs_uris[0], asset=asset_name, bands=bands, public=True)
 print('GEE asset created: {}'.format(asset_name))
 
 
