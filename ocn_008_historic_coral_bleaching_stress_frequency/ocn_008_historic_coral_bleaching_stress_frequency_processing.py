@@ -4,8 +4,9 @@ from botocore.exceptions import NoCredentialsError
 import urllib
 from zipfile import ZipFile
 import ee
-import eeUtil
 import subprocess
+from google.cloud import storage
+import time
 
 # name of asset on GEE where you want to upload data
 # this should be an asset name that is not currently in use
@@ -82,27 +83,112 @@ convert(raw_data_file, vars, processed_data_file)
 '''
 Upload processed data to Google Earth Engine
 '''
+print('Uploading processed data to Google Cloud Storage.')
+# set up Google Cloud Storage project and bucket objects
+gsClient = storage.Client(os.environ.get("CLOUDSDK_CORE_PROJECT"))
+gsBucket = gsClient.bucket(os.environ.get("GEE_STAGING_BUCKET"))
+
+def gsStage(files, prefix=''):
+    '''
+    Upload files to Google Cloud Storage
+    INPUT   files: location of file on local computer that you want to upload (string)
+            prefix: optional, folder within GCS bucket where you want to upload the data (string)
+    RETURN  gs_uris: list of uploaded data file locations on GCS (list of strings)
+    '''
+    # make sure the GCS bucket exists, create it if it does not
+    if not gsBucket.exists():
+        print('Bucket {} does not exist, creating'.format(bucket))
+        gsBucket.create()
+    # make sure files to be uploaded are formatted as a tuple
+    files = (files,) if isinstance(files, str) else files
+    # create an empty list to store the list of files we have uploaded to GCS
+    gs_uris = []
+    # loop through each file and upload
+    for f in files:
+        # define location within GCS bucket where the file should go
+        path = '{}/{}'.format(prefix, os.path.basename(f))
+        # format the full GCS path for the file
+        uri = 'gs://{}/{}'.format(gsBucket.name, path)
+        print('Uploading {} to {}'.format(f, uri))
+        # upload the file to GCS
+        gsBucket.blob(path).upload_from_filename(f)
+        # add the file location to our list of uploaded files
+        gs_uris.append(uri)
+    return gs_uris
+
+# upload local files to Google Cloud Storage
+gs_uris = gsStage(processed_data_file, dataset_name)
+
+# initialize ee and eeUtil modules for uploading to Google Earth Engine
+auth = ee.ServiceAccountCredentials(os.getenv('GEE_SERVICE_ACCOUNT'), os.getenv('GOOGLE_APPLICATION_CREDENTIALS'))
+ee.Initialize(auth)
+
+print('Uploading processed data to Google Earth Engine.')
+
 # set pyramiding policy for GEE upload
 pyramiding_policy = 'MEAN' #check
 
 # name bands according to variable names in original netcdf
-bands = [{'id': var, 'tileset_band_index': vars.index(var), 'pyramiding_policy': pyramiding_policy} for var in vars]
+bands = [{'id': var, 'tileset_band_index': vars.index(var), 'tileset_id': dataset_name, 'pyramidingPolicy': pyramiding_policy} for var in vars]
 
-# initialize ee and eeUtil modules for uploading to Google Earth Engine
-auth = ee.ServiceAccountCredentials(os.getenv('GEE_SERVICE_ACCOUNT'), key_data=os.getenv('GEE_JSON'))
-ee.Initialize(auth)
-eeUtil.init(service_account=os.getenv('GEE_SERVICE_ACCOUNT'), credential_path=os.getenv('GOOGLE_APPLICATION_CREDENTIALS'), project=os.getenv('CLOUDSDK_CORE_PROJECT'), bucket=os.getenv('GEE_STAGING_BUCKET'))
-
-print('Uploading processed data to Google Earth Engine.')
 # Upload processed data file to GEE
-asset_name = f'/projects/resource-watch-gee/{dataset_name}'
-eeUtil.uploadAsset(filename=processed_data_file, asset=asset_name, gs_prefix=dataset_name, public=True, bands=bands)
+asset_name = f'projects/resource-watch-gee/{dataset_name}'
+
+def ingestAssets(gs_uri, asset, date='', bands=[], public=False):
+    '''
+    Upload asset from Google Cloud Storage to Google Earth Engine
+    INPUT   gs_uri: data file location on GCS, should be formatted `gs://<bucket>/<blob>` (string)
+            asset: name of GEE asset destination path
+            date: optional, date tag for asset (datetime.datetime or int ms since epoch)
+            bands: optional, band name dictionary (list of dictionaries)
+            public: do you want this asset to be public (Boolean)
+    RETURN  task_id: Earth Engine task ID for file upload (string)
+    '''
+    # set up parameters for image task ingestion
+    params = {'name': f'projects/earthengine-legacy/assets/{asset}',
+              'tilesets': [{'id': os.path.basename(gs_uri).split('.')[0], 'sources': [{'uris': gs_uri}]}]}
+    # if a date was input into the function, add it to the parameters
+    if date:
+        params['properties'] = {'time_start': formatDate(date),
+                                'time_end': formatDate(date)}
+    # if band parameters were included add them to the parameters
+    if bands:
+        if isinstance(bands[0], str):
+            bands = [{'id': b} for b in bands]
+        params['bands'] = bands
+    # create a new task ID to ingest this asset
+    task_id = ee.data.newTaskId()[0]
+    print('Ingesting {} to {}: {}'.format(gs_uri, asset, task_id))
+    # start ingestion process
+    ee.data.startIngestion(task_id, params, True)
+    # if process is still running, wait before checking ingestion again
+    while ee.data.getTaskStatus(task_id)[0]['state']=='RUNNING':
+        time.sleep(30)
+    if public==True:
+        # set dataset privacy to public
+        acl = {"all_users_can_read": True}
+        ee.data.setAssetAcl(asset_name, acl)
+        print('Privacy set to public.')
+    return task_id
+
+task_id = ingestAsset(gs_uris[0], asset=asset_name, bands=bands, public=True)
 print('GEE asset created: {}'.format(asset_name))
 
-# set dataset privacy to public
-acl = {"all_users_can_read": True}
-ee.data.setAssetAcl(asset_name[1:], acl)
-print('Privacy set to public.')
+
+def gsRemove(gs_uris):
+    '''
+    Delete files from Google Cloud Storage
+    INPUT   gs_uris: list of data file locations on GCS that you want to delete (list of strings)
+    '''
+    # create a list of the files in Google Cloud Storage that should be deleted
+    paths = []
+    for path in gs_uris:
+        paths.append(path[6 + len(gsBucket.name):])
+    # delete all files from Google Cloud Storage
+    gsBucket.delete_blobs(paths, lambda x:x)
+
+gsRemove(gs_uris)
+print('Files deleted from Google Cloud Storage.')
 
 '''
 Upload original data and processed data to Amazon S3 storage
