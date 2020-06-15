@@ -162,8 +162,11 @@ def ingestAssets(gs_uri, asset, date='', bands=[], public=False):
     # start ingestion process
     ee.data.startIngestion(task_id, params, True)
     # if process is still running, wait before checking ingestion again
-    while ee.data.getTaskStatus(task_id)[0]['state']=='RUNNING':
+    status = ee.data.getTaskStatus(task_id)[0]['state']
+    while status=='RUNNING':
         time.sleep(30)
+        status = ee.data.getTaskStatus(task_id)[0]['state']
+    print(status)
     if public==True:
         # set dataset privacy to public
         acl = {"all_users_can_read": True}
