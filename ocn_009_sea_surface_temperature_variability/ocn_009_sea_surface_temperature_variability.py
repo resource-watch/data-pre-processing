@@ -35,12 +35,12 @@ import logging
 # this should be an asset name that is not currently in use
 dataset_name = 'ocn_009_sea_surface_temperature_variability'
 
-subdatasets = ['stdv_warmseason',
+subdatasets = ['stdv_maxmonth',
                'stdv_annual',
                'mask',
               ]
 
-band_ids = ['stdv_warmseason',
+band_ids = ['stdv_maxmonth',
             'stdv_annual',
            ]
 
