@@ -6,6 +6,9 @@ from botocore.exceptions import NoCredentialsError
 import time
 import ee
 from google.cloud import storage
+import logging
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
 def gcs_upload(files, prefix='', gcs_bucket=None):
     '''
@@ -16,10 +19,10 @@ def gcs_upload(files, prefix='', gcs_bucket=None):
     '''
     # make sure the GCS bucket exists, create it if it does not
     if gcs_bucket is None:
-        print('No bucket passed, creating {}'.format(os.environ.get("GEE_STAGING_BUCKET")))
+        logger.debug('No bucket passed, creating {}'.format(os.environ.get("GEE_STAGING_BUCKET")))
         gcs_bucket = storage.Client(os.environ.get("CLOUDSDK_CORE_PROJECT")).bucket(os.environ.get("GEE_STAGING_BUCKET"))
     elif not gcs_bucket.exists():
-        print('Bucket {} does not exist, creating'.format(os.environ.get("GEE_STAGING_BUCKET")))
+        logger.debug('Bucket {} does not exist, creating'.format(os.environ.get("GEE_STAGING_BUCKET")))
         gcs_bucket.create()
     # make sure files to be uploaded are formatted as a tuple
     files = (files,) if isinstance(files, str) else files
@@ -31,7 +34,7 @@ def gcs_upload(files, prefix='', gcs_bucket=None):
         path = '{}/{}'.format(prefix, os.path.basename(f))
         # format the full GCS path for the file
         uri = 'gs://{}/{}'.format(gcs_bucket.name, path)
-        print('Uploading {} to {}'.format(f, uri))
+        logger.debug('Uploading {} to {}'.format(f, uri))
         # upload the file to GCS
         gcs_bucket.blob(path).upload_from_filename(f)
         # add the file location to our list of uploaded files
@@ -62,7 +65,7 @@ def gee_ingest(gcs_uri, asset, date='', bands=[], public=False):
         params['bands'] = bands
     # create a new task ID to ingest this asset
     task_id = ee.data.newTaskId()[0]
-    print('Ingesting {} to {}: {}'.format(gcs_uri, asset, task_id))
+    logger.debug('Ingesting {} to {}: {}'.format(gcs_uri, asset, task_id))
     # start ingestion process
     uploaded = False
     print(gcs_uri)
@@ -73,14 +76,14 @@ def gee_ingest(gcs_uri, asset, date='', bands=[], public=False):
         try:
             ee.data.getAsset(asset)
             uploaded = True
-            print('GEE asset created: {}'.format(asset))
+            logger.debug('GEE asset created: {}'.format(asset))
         except:
             time.sleep(30)
     if public==True:
         # set dataset privacy to public
         acl = {"all_users_can_read": True}
         ee.data.setAssetAcl(asset, acl)
-        print('Privacy set to public.')
+        logger.debug('Privacy set to public.')
     return task_id
 
 def gcs_remove(gcs_uris, gcs_bucket=None):
@@ -106,12 +109,11 @@ def aws_upload(local_file, bucket, s3_file):
     s3 = boto3.client('s3', aws_access_key_id=os.getenv('aws_access_key_id'), aws_secret_access_key=os.getenv('aws_secret_access_key'))
     try:
         s3.upload_file(local_file, bucket, s3_file)
-        print("Upload Successful")
-        print("http://{}.s3.amazonaws.com/{}".format(bucket, s3_file))
+        logger.info("AWS upload successful: http://{}.s3.amazonaws.com/{}".format(bucket, s3_file))
         return True
     except FileNotFoundError:
-        print("The file was not found")
+        logger.error("aws_upload - file was not found: + local_file.")
         return False
     except NoCredentialsError:
-        print("Credentials not available")
+        logger.error("aws_upload - credentials not available.")
         return False
