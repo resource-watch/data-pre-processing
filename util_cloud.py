@@ -41,40 +41,51 @@ def gcs_upload(files, prefix='', gcs_bucket=None):
         gcs_uris.append(uri)
     return gcs_uris
 
-def gee_ingest(gcs_uri, asset, date='', bands=[], public=False):
-    '''
-    Upload asset from Google Cloud Storage to Google Earth Engine
-    INPUT   gcs_uri: data file location on GCS, should be formatted `gs://<bucket>/<blob>` (string)
-            asset: name of GEE asset destination path
-            date: optional, date tag for asset (datetime.datetime or int ms since epoch)
-            bands: optional, band name dictionary (list of dictionaries)
-            public: do you want this asset to be public (Boolean)
-    RETURN  task_id: Earth Engine task ID for file upload (string)
-    '''
+def gee_manifest_bands(bands_dict, dataset_name):
+    bands_mf = []
+    i = 0
+    for key, val in bands_dict.items():
+        mf_element = {
+            'id': key,
+            'tileset_band_index': i,
+            'tileset_id': dataset_name,
+            'missing_data': {
+                'values': val['missing_data'],
+            },
+            'pyramiding_policy': val['pyramiding_policy'],
+        }
+        i += 1
+        bands_mf.append(mf_element)
+    return bands_mf
+
+def gee_manifest_complete(asset, gcs_uri, mf_bands, date=''):
     # set up parameters for image task ingestion
-    params = {'name': f'projects/earthengine-legacy/assets/{asset}',
+    manifest = {'name': f'projects/earthengine-legacy/assets/{asset}',
               'tilesets': [{'id': os.path.basename(gcs_uri).split('.')[0], 'sources': [{'uris': gcs_uri}]}]}
     # if a date was input into the function, add it to the parameters
     if date:
-        params['properties'] = {'time_start': formatDate(date),
+        manifest['properties'] = {'time_start': formatDate(date),
                                 'time_end': formatDate(date)}
-    # if band parameters were included add them to the parameters
-    if bands:
-        if isinstance(bands[0], str):
-            bands = [{'id': b} for b in bands]
-        params['bands'] = bands
+    manifest['bands'] = mf_bands
+    return manifest
+
+def gee_ingest(manifest, public=False):
+    '''
+    Upload asset from Google Cloud Storage to Google Earth Engine
+    INPUT   manifest: image manifest, specifying how asset should be ingested into GEE (dictionary)
+            public: whether the asset should be publicly available on GEE (boolean)
+    RETURN  task_id: Earth Engine task ID for file upload (string)
+    '''
     # create a new task ID to ingest this asset
     task_id = ee.data.newTaskId()[0]
-    logger.debug('Ingesting {} to {}: {}'.format(gcs_uri, asset, task_id))
     # start ingestion process
     uploaded = False
-    print(gcs_uri)
-    print(params)
-    ee.data.startIngestion(task_id, params, True)
+    logger.debug('Submitting asset for upload to GEE using the following manifest: \n' + str(manifest))
+    ee.data.startIngestion(task_id, manifest, True)
     # if process is still running, wait before checking ingestion again
     while uploaded == False:
         try:
-            ee.data.getAsset(asset)
+            ee.data.getAsset(manifest['name'])
             uploaded = True
             logger.debug('GEE asset created: {}'.format(asset))
         except:
@@ -82,7 +93,7 @@ def gee_ingest(gcs_uri, asset, date='', bands=[], public=False):
     if public==True:
         # set dataset privacy to public
         acl = {"all_users_can_read": True}
-        ee.data.setAssetAcl(asset, acl)
+        ee.data.setAssetAcl(manifest['name'], acl)
         logger.debug('Privacy set to public.')
     return task_id
 
