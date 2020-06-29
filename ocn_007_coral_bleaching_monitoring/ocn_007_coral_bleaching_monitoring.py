@@ -184,8 +184,8 @@ else:
 target_year = target_date.strftime('%Y')
 target_date = target_date.strftime('%Y%m%d')
 # can manual override date to test script when server is not updating
-# target_year = '2020'
-# target_date = '20200623'
+target_year = '2020'
+target_date = '20200623'
 
 for key, val in data_dict.items():
     val['url'] = val['url_template'].format(target_year, target_date)
