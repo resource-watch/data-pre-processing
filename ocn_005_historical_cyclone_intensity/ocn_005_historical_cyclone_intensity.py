@@ -84,12 +84,12 @@ gcs_uris = util_cloud.gcs_upload(processed_data_file, dataset_name, gcs_bucket=g
 
 print('Uploading processed data to Google Earth Engine.')
 # name bands according to variable names in original netcdf
-bands = [{'id': band_id, 'tileset_band_index': band_ids.index(band_id), 'tileset_id': dataset_name, 'pyramidingPolicy': pyramiding_policy} for band_id in band_ids]
+mf_bands = [{'id': band_id, 'tileset_band_index': band_ids.index(band_id), 'tileset_id': dataset_name, 'pyramidingPolicy': pyramiding_policy} for band_id in band_ids]
 
 # Upload processed data file to GEE
 asset_name = f'projects/resource-watch-gee/{dataset_name}'
-
-task_id = util_cloud.gee_ingest(gcs_uris[0], asset=asset_name, bands=bands, public=True)
+manifest = util_cloud.gee_manifest_complete(asset_name, gcs_uris[0], mf_bands)
+task_id = util_cloud.gee_ingest(manifest, public=True)
 
 util_cloud.gcs_remove(gcs_uris, gcs_bucket=gcs_bucket)
 print('Files deleted from Google Cloud Storage.')
