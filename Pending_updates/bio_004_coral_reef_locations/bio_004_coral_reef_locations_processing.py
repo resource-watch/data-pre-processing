@@ -7,6 +7,9 @@ import cartosql
 from zipfile import ZipFile
 from carto.datasets import DatasetManager
 from carto.auth import APIKeyAuthClient
+import boto3
+from zipfile import ZipFile
+from botocore.exceptions import NoCredentialsError
 
 
 # name of table on Carto where you want to upload data
@@ -190,6 +193,42 @@ dataset = dataset_manager.get(dataset_name+'_edit')
 dataset.privacy = 'LINK'
 dataset.save()
 print('Privacy set to public with link.')
+
+'''
+Upload original data and processed data to Amazon S3 storage
+'''
+def upload_to_aws(local_file, bucket, s3_file):
+    s3 = boto3.client('s3', aws_access_key_id=os.getenv('aws_access_key_id'),
+                      aws_secret_access_key=os.getenv('aws_secret_access_key'))
+    try:
+        s3.upload_file(local_file, bucket, s3_file)
+        print("Upload Successful")
+        print("http://{}.s3.amazonaws.com/{}".format(bucket, s3_file))
+        return True
+    except FileNotFoundError:
+        print("The file was not found")
+        return False
+    except NoCredentialsError:
+        print("Credentials not available")
+        return False
+
+print('Uploading original data to S3.')
+# Copy the raw data into a zipped file to upload to S3
+raw_data_dir = os.path.join(data_dir, dataset_name+'.zip')
+with ZipFile(raw_data_dir, 'w') as zip:
+    zip.write(raw_data_file, os.path.basename(raw_data_file))
+
+# Upload raw data file to S3
+uploaded = upload_to_aws(raw_data_dir, 'wri-public-data', 'resourcewatch/'+os.path.basename(raw_data_dir))
+
+print('Uploading processed data to S3.')
+# Copy the processed data into a zipped file to upload to S3
+processed_data_dir = os.path.join(data_dir, dataset_name+'_edit.zip')
+with ZipFile(processed_data_dir, 'w') as zip:
+    zip.write(processed_data_file, os.path.basename(processed_data_file))
+
+# Upload processed data file to S3
+uploaded = upload_to_aws(processed_data_dir, 'wri-public-data', 'resourcewatch/'+os.path.basename(processed_data_dir))
 
 
 
