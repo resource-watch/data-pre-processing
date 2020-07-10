@@ -52,7 +52,7 @@ Process data
 shapefile = glob.glob(os.path.join(raw_data_file_unzipped, '14_001_WCMC008_CoralReefs2018_v4', '01_Data', '*Py_v4.shp'))[0]
 gdf = gpd.read_file(shapefile)
 
-# convert the data type of column 'PROTECT' and 'PROTECT_FE' to integer
+# convert the data type of column 'PROTECT', 'PROTECT_FE', and 'METADATA_I' to integer
 gdf['PROTECT'] = gdf['PROTECT'].astype(int)
 gdf['PROTECT_FE'] = gdf['PROTECT_FE'].astype(int)
 gdf['METADATA_I'] = gdf['METADATA_I'].astype(int)
@@ -60,6 +60,39 @@ gdf['METADATA_I'] = gdf['METADATA_I'].astype(int)
 
 # create a path to save the processed shapefile later
 processed_data_file = os.path.join(data_dir, dataset_name+'_edit.shp')
+# create an index column to use as cartodb_id
+gdf['id'] = gdf.index
+
+# reorder the columns 
+gdf = gdf[['id',
+           'LAYER_NAME',
+           'METADATA_I',
+           'PARENT_ISO',
+           'ISO3',
+           'SUB_LOC',
+           'ORIG_NAME',
+           'FAMILY', 
+           'GENUS'
+           'SPECIES',
+           'DATA_TYPE',
+           'START_DATE',
+           'END_DATE',
+           'DATE_TYPE',
+           'PROTECT',
+           'PROTECT_FE',
+           'VERIF',
+           'PROTECT_ST',
+           'NAME',
+           'LOC_DEF',
+           'SURVEY_MET',
+           'GIS_AREA_K',
+           'Shape_Leng',
+           'Shape_Area',
+           'REP_AREA_K',
+           'geometry']]
+                       
+#save processed dataset to shapefile
+gdf.to_file(processed_data_file,driver='ESRI Shapefile')
 
 '''
 Upload processed data to Carto
@@ -142,43 +175,8 @@ CARTO_SCHEMA = OrderedDict([
 # create empty table for dataset on Carto
 checkCreateTable(os.path.basename(processed_data_file).split('.')[0], CARTO_SCHEMA)
 
-# create an index column to use as cartodb_id
-gdf['id'] = gdf.index
-
-# reorder the columns 
-gdf = gdf[['id',
-                       'LAYER_NAME',
-                       'METADATA_I',
-                       'PARENT_ISO',
-                       'ISO3',
-                       'SUB_LOC',
-                       'ORIG_NAME',
-                       'FAMILY',
-                       'GENUS',
-                       'SPECIES',
-                       'DATA_TYPE',
-                       'START_DATE',
-                       'END_DATE',
-                       'DATE_TYPE',
-                       'PROTECT',
-                       'PROTECT_FE',
-                       'VERIF',
-                       'PROTECT_ST',
-                       'NAME',
-                       'LOC_DEF',
-                       'SURVEY_MET',
-                       'GIS_AREA_K',
-                       'Shape_Leng',
-                       'Shape_Area',
-                       'REP_AREA_K',
-                       'geometry']]
-
-#save processed dataset to shapefile
-gdf.to_file(processed_data_file,driver='ESRI Shapefile')
-
 # convert the geometry of the file from shapely to geojson
 gdf['geometry'] = convert_geometry(gdf['geometry'])
-
 
 # upload the shapefile to the empty carto table
 cartosql.insertRows(dataset_name+'_edit', CARTO_SCHEMA.keys(),CARTO_SCHEMA.values(), gdf.values.tolist(), user=CARTO_USER, key=CARTO_KEY)
@@ -229,7 +227,3 @@ with ZipFile(processed_data_dir, 'w') as zip:
 
 # Upload processed data file to S3
 uploaded = upload_to_aws(processed_data_dir, 'wri-public-data', 'resourcewatch/'+os.path.basename(processed_data_dir))
-
-
-
-

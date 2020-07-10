@@ -9,7 +9,7 @@ import datetime
 import shutil
 # name of table on Carto where you want to upload data
 # this should be a table name that is not currently in use
-dataset_name = 'cit_022a_road_traffic_death_rates' #check
+dataset_name = 'cit_022_road_traffic_death_rates' #check
 # first, set the directory that you are working in with the path variable
 # you can use an environmental variable, as we did, or directly enter the directory name as a string
 # example: path = '/home/cit_022_road_traffic_death_rates'
@@ -27,10 +27,12 @@ https://apps.who.int/gho/data/node.main.A997?lang=en
 Above the data table, you will see a 'CSV table' button on the right side of 'Download filtered data as:' text.
 Once you click this button, a prompt will appear to download a file titled 'data.csv' to your Downloads folder.
 '''
-download = os.path.join(os.path.expanduser("~"), 'Downloads', 'data.csv')
-# Move this file into your data directory
-raw_data_file = os.path.join(data_dir, os.path.basename(download))
-shutil.move(download,raw_data_file)
+# insert the url used to download the data from the source website
+url = 'https://apps.who.int/gho/athena/data/GHO/RS_196,RS_198?filter=COUNTRY:*&x-sideaxis=COUNTRY&x-topaxis=GHO;YEAR&profile=crosstable&format=csv'
+
+# download the data from the source
+raw_data_file = os.path.join(data_dir, 'data.csv')
+urllib.request.urlretrieve(url, raw_data_file)
 '''
 Process data
 '''
