@@ -5,10 +5,10 @@ The source provided the dataset as a csv file.
 
 Below, we describe the steps used to reformat the table so that it is formatted correctly to upload to Carto. 
 1. Read in the data as a pandas dataframe and rename all the columns.
-2. We split the 'estimated_number_of_road_traffic_deaths_data' column and stored the lower and upper bound of the estimates in two new columns.
-3. We added a column for datetime with January 1, 2016 for every row.
-4. We reordered the columns.
-5. We removed all the spaces within numbers in the 'estimated_number_of_road_traffic_deaths_data' column.
+2. Split the 'estimated_number_of_road_traffic_deaths_data' column and stored the lower and upper bound of the estimates in two new columns.
+3. Add a column for datetime with January 1, 2016 for every row.
+4. Reorder the columns.
+5. Remove all the spaces within numbers in the 'estimated_number_of_road_traffic_deaths_data' column.
 
 Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/cit_022_road_traffic_death_rates/cit_022a_road_traffic_death_rates_processing.py) for more details on this processing.
 
