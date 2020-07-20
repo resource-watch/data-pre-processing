@@ -14,7 +14,7 @@ dataset_name = 'com_002_airports' #check
 
 # set the directory that you are working in with the path variable
 # you can use an environmental variable, as we did, or directly enter the directory name as a string
-# example: path = '/home/cli_029a_vulnerability_to_cc'
+# example: path = '/home/com_002_airports'
 dir = os.path.join(os.getenv('PROCESSING_DIR'), dataset_name)
 #move to this directory
 os.chdir(dir)
