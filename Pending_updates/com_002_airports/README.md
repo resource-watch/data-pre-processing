@@ -5,12 +5,11 @@ The source provided the data in a dat format.
 
 Below, we describe the steps used to reformat the table before we uploaded it to Carto.
 
-1. We read in the data as a pandas data frame and removed the extra column containing indexes.
-2. We reordered the index and gave the columns the correct header.
-3. We replaced '\N' and 'NaN' in the data frame with None.
-4. We changed the data types of the 'latitude', 'longitude', and 'daylight_savings_time' columns to float.
-5. We changed the data types of the 'altitude' column to integer.
-
+1. Read in the data as a pandas data frame and remove the extra column containing indexes.
+2. Reorder the index and give the columns the correct header.
+3. Replace '\N' and 'NaN' in the data frame with None.
+4. Change the data types of the 'latitude', 'longitude', and 'daylight_savings_time' columns to float.
+5. Change the data types of the 'altitude' column to integer.
 
 Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/com_002_airports/com_002_airports_processing.py) for more details on this processing.
 
