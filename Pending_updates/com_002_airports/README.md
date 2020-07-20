@@ -3,7 +3,7 @@ This file describes the data pre-processing that was done to [the Airports](http
 
 The source provided the data in a dat format.
 
-Below, we describe the steps used to reformat the table before we uploaded it to carto.
+Below, we describe the steps used to reformat the table before we uploaded it to Carto.
 
 1. We read in the data as a pandas data frame and removed the extra column containing indexes.
 2. We reordered the index and gave the columns the correct header.
