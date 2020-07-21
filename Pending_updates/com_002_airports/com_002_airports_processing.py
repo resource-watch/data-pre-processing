@@ -32,7 +32,7 @@ url = 'https://raw.githubusercontent.com/jpatokal/openflights/master/data/airpor
 
 # read in data to pandas dataframe
 r = requests.get(url)
-df = pd.read_csv(io.BytesIO(r.content), encoding='utf8')
+df = pd.read_csv(io.BytesIO(r.content), encoding='utf8', header=None)
 
 # save unprocessed source data to put on S3 (below)
 raw_data_file = os.path.join(data_dir, os.path.basename(url))
@@ -41,13 +41,11 @@ df.to_csv(raw_data_file, header = False, index = False)
 '''
 Process data
 '''
-# remove the column '1' from the data frame
-df = df.drop('1', axis=1)
 
-# make sure the data frame has the right header
-df.loc[-1] = df.columns
-df.index = df.index + 1
-df = df.sort_index()
+# set index column of dataframe
+df = df.set_index(0)
+
+# set column names in dataframe
 df.columns = ['name', 'city', 'country', 'iata', 'icao', 'latitude', 'longitude', 'altitude', 'daylight_savings_time', 'tz_database', 'time_zone', 'type', 'source']
 
 # replace all NaN with None
