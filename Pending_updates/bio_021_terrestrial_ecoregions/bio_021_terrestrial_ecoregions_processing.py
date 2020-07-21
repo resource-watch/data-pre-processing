@@ -17,7 +17,7 @@ dataset_name = 'bio_021_terrestrial_ecoregions' #check
 
 # set the directory that you are working in with the path variable
 # you can use an environmental variable, as we did, or directly enter the directory name as a string
-# example: path = '/home/cli_029a_vulnerability_to_cc'
+# example: path = '/home/bio_021_terrestrial_ecoregions'
 dir = os.path.join(os.getenv('PROCESSING_DIR'), dataset_name)
 #move to this directory
 os.chdir(dir)
@@ -121,7 +121,7 @@ def carto_schema(dataframe):
     # column names and types for data table
     # column types should be one of the following: geometry, text, numeric, timestamp
     for col in list(dataframe):
-        if (gdf[col].dtypes  == 'float64')| (gdf[col].dtypes  == 'int64'):
+        if (dataframe[col].dtypes  == 'float64')| (dataframe[col].dtypes  == 'int64'):
             list_cols.append((col, 'numeric'))
         elif col  == 'geometry':
             list_cols.append(('the_geom', 'geometry'))
