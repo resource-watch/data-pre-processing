@@ -28,24 +28,6 @@ import time
 import logging
 
 
-# ### Set dataset-specific variables
-
-# name of asset on GEE where you want to upload data
-# this should be an asset name that is not currently in use
-dataset_name = 'ocn_009_sea_surface_temperature_variability'
-
-# netcdf subdatasets that will be used in processing
-subdatasets = ['stdv_maxmonth',
-               'stdv_annual',
-               'mask',
-              ]
-
-# nedcdf subdatasets that will be uploaded as bands to GEE
-band_ids = ['stdv_maxmonth',
-            'stdv_annual',
-           ]
-# ### Set/initialize/authenticate general variables
-
 # Get the top-level logger object
 logger = logging.getLogger()
 for handler in logger.handlers: logger.removeHandler(handler)
@@ -54,6 +36,11 @@ logger.setLevel(logging.INFO)
 console = logging.StreamHandler()
 logger.addHandler(console)
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+# ### Set dataset-specific variables
+
+# name of asset on GEE where you want to upload data
+# this should be an asset name that is not currently in use
+dataset_name = 'ocn_009_sea_surface_temperature_variability'
 
 logger.info('Executing script for dataset: ' + dataset_name)
 # create a new sub-directory within your specified dir called 'data'
@@ -61,16 +48,32 @@ logger.info('Executing script for dataset: ' + dataset_name)
 data_dir = util_files.prep_dirs(dataset_name)
 logger.debug('Data directory relative path: '+data_dir)
 logger.debug('Data directory absolute path: '+os.path.abspath(data_dir))
+'''
+Download data and save to your data directory
+'''
 logger.info('Downloading raw data')
 
+# insert the url used to download the data from the source website
 url='ftp://ftp.star.nesdis.noaa.gov/pub/sod/mecb/crw/data/thermal_history/v2.1/noaa_crw_thermal_history_sst_variability_v2.1.nc'
+
+# download the data from the source
 raw_data_file = os.path.join(data_dir,os.path.basename(url))
 urllib.request.urlretrieve(url, raw_data_file)
 
 logger.debug('Raw data file path: ' + raw_data_file)
 
+'''
+Process data
+'''
 logger.info('Extracting relevant GeoTIFFs from source NetCDF')
 
+# netcdf subdatasets that will be used in processing
+subdatasets = ['stdv_maxmonth',
+               'stdv_annual',
+               'mask',
+              ]
+
+# convert netcdf to individual tif files for each of the subdatasets specified
 tifs = util_files.convert_netcdf(raw_data_file, subdatasets)
 
 logger.info('Mask extracted GeoTIFFs using dataset mask')
@@ -80,6 +83,11 @@ sds_file_dict=dict(zip(subdatasets,tifs))
 nodata=-128
 
 # cycle through target tifs (corresponding to bands) and mask them with mask tif
+# netcdf subdatasets that will be uploaded as bands to GEE
+band_ids = ['stdv_maxmonth',
+            'stdv_annual',
+           ]
+           
 masked_tifs = []
 for band_id in band_ids:
     sds_file = sds_file_dict[band_id]
