@@ -122,7 +122,7 @@ task_id = util_cloud.gee_ingest(manifest, public=True)
 
 task_id = util_cloud.gee_ingest(manifest, public=True)
 
-util_cloud.gcs_remove(gcs_uris, gcs_bucket=gcs_bucket)
+util_cloud.gcs_remove(gcs_uris, gcs_bucket=gcsBucket)
 logger.info('Files deleted from Google Cloud Storage.')
 
 '''
