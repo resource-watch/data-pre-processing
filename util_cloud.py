@@ -89,8 +89,8 @@ def gee_manifest_complete(asset, gcs_uri, mf_bands, date=''):
               'tilesets': [{'id': os.path.basename(gcs_uri).split('.')[0], 'sources': [{'uris': gcs_uri}]}]}
     # if a date was input into the function, add it to the parameters
     if date:
-        manifest['properties'] = {'time_start': formatDate(date),
-                                'time_end': formatDate(date)}
+        manifest['properties'] = {'time_start': millis_since_epoch(date),
+                                'time_end': millis_since_epoch(date)}
     manifest['bands'] = mf_bands
     return manifest
 
