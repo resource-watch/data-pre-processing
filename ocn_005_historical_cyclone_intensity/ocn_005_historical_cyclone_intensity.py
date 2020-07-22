@@ -91,7 +91,7 @@ asset_name = f'projects/resource-watch-gee/{dataset_name}'
 manifest = util_cloud.gee_manifest_complete(asset_name, gcs_uris[0], mf_bands)
 task_id = util_cloud.gee_ingest(manifest, public=True)
 
-util_cloud.gcs_remove(gcs_uris, gcs_bucket=gcs_bucket)
+util_cloud.gcs_remove(gcs_uris, gcs_bucket=gcsBucket)
 print('Files deleted from Google Cloud Storage.')
 
 '''
