@@ -7,14 +7,15 @@ import ee
 import subprocess
 from google.cloud import storage
 import time
+import glob
 
 # name of asset on GEE where you want to upload data
 # this should be an asset name that is not currently in use
-dataset_name = 'ocn_008_historic_coral_bleaching_stress_frequency' #check
+dataset_name = 'cli_030_aridity' #check
 
 # first, set the directory that you are working in with the path variable
 # you can use an environmental variable, as we did, or directly enter the directory name as a string
-# example: path = '/home/ocn_008_historic_coral_bleaching_stress_frequency'
+# example: path = '/home/cli_030_aridity'
 path = os.path.join(os.getenv('PROCESSING_DIR'),dataset_name)
 #move to this directory
 os.chdir(path)
@@ -24,61 +25,31 @@ os.chdir(path)
 data_dir = 'data'
 if not os.path.exists(data_dir):
     os.mkdir(data_dir)
-
+    
 '''
 Download data and save to your data directory
 '''
 # insert the url used to download the data from the source website
-url='ftp://ftp.star.nesdis.noaa.gov/pub/sod/mecb/crw/data/thermal_history/v2.1/noaa_crw_thermal_history_stress_freq_v2.1.nc'  #check
+url = 'https://ndownloader.figshare.com/files/14118800' #check
 
 # download the data from the source
-raw_data_file = os.path.join(data_dir,os.path.basename(url))
+raw_data_file = os.path.join(data_dir, 'global-ai_et0.zip')
 urllib.request.urlretrieve(url, raw_data_file)
 
-'''
-Process data
-'''
-def convert(file, vars, outfile_name):
-    '''
-    Convert netcdf files to tifs
-    INPUT   file: file name for netcdf that we want to convert (string)
-            vars: list of variables we want to pull from the source dataset (list of strings)
-            outfile_name: file name for tif we will generate (string)
-    '''
-    # create an empty list to store the names of the tifs we generate from this netcdf file
-    band_tifs = []
-    # go through each variables to process in this netcdf file
-    for var in vars:
-        # extract subdataset by name
-        # should be of the format 'NETCDF:"filename.nc":variable'
-        sds_path = f'NETCDF:"{file}":{var}'
-        # generate a name to save the tif file we will translate the netcdf file's subdataset into
-        band_tif = '{}_{}.tif'.format(os.path.splitext(file)[0], sds_path.split(':')[-1])
-        # translate the netcdf file's subdataset into a tif
-        cmd = ['gdal_translate','-q', '-a_srs', 'EPSG:4326', sds_path, band_tif]
-        subprocess.call(cmd)
-        # add the new subdataset tif files to the list of tifs generated from this netcdf file
-        band_tifs.append(band_tif)
-    # merge all the sub tifs from this netcdf to create an overall tif representing all variable
-    merge_cmd = ['gdal_merge.py', '-separate'] + band_tifs + ['-o', outfile_name]
-    separator = " "
-    merge_cmd = separator.join(merge_cmd)
-    subprocess.call(merge_cmd, shell=True)
+# unzip source data
+raw_data_file_unzipped = raw_data_file.split('.')[0]
+zip_ref = ZipFile(raw_data_file, 'r')
+zip_ref.extractall(raw_data_file_unzipped)
+zip_ref.close()
 
-# variables in netcdf to be converted to tifs
-vars = ['n_gt0', # The number of events for which the thermal stress, measured by Degree Heating Weeks, exceeded 0 degC-weeks.
-        'n_ge4', # The number of events for which the thermal stress, measured by Degree Heating Weeks, reached or exceeded 4 degC-weeks.
-        'n_ge8', # The number of events for which the thermal stress, measured by Degree Heating Weeks, reached or exceeded 8 degC-weeks.
-        'rp_gt0', # The average time between events for which the thermal stress, measured by Degree Heating Weeks, exceeded 0 degC-weeks.
-        'rp_ge4', # The average time between events for which the thermal stress, measured by Degree Heating Weeks, reached or exceeded 4 degC-weeks.
-        'rp_ge8' # The average time between events for which the thermal stress, measured by Degree Heating Weeks, reached or exceeded 8 degC-weeks.
-        ]
+# the path to the unprocessed data
+raster = glob.glob(os.path.join(raw_data_file_unzipped, 'ai_et0', '*.tif'))[0]
 
-# generate a name for processed tif
+# generate a name for processed tif 
 processed_data_file = os.path.join(data_dir, dataset_name+'.tif')
-
-# convert the listed variables into tif files then merge them into a single tif file with a band for each variable
-convert(raw_data_file, vars, processed_data_file)
+# save the processed data
+cmd = ['gdalwarp', raster, processed_data_file]
+subprocess.call(cmd)
 
 '''
 Upload processed data to Google Earth Engine
@@ -128,22 +99,8 @@ ee.Initialize(auth)
 # set pyramiding policy for GEE upload
 pyramiding_policy = 'MEAN' #check
 
-# name bands according to variable names in original netcdf
-bands = [{'id': var, 'tileset_band_index': vars.index(var), 'tileset_id': dataset_name, 'pyramidingPolicy': pyramiding_policy} for var in vars]
-
 # Upload processed data file to GEE
 asset_name = f'projects/resource-watch-gee/{dataset_name}'
-
-def formatDate(date):
-    '''
-    Format date as milliseconds since last epoch
-    INPUT   date: datetime to be converted (datetime)
-    RETURN date in milliseconds since last epoch (integer)
-    '''
-    if isinstance(date, int):
-        return date
-    seconds = (date - datetime.datetime.utcfromtimestamp(0)).total_seconds()
-    return int(seconds * 1000)
 
 def ingestAsset(gs_uri, asset, date='', bands=[], public=False):
     '''
@@ -188,8 +145,7 @@ def ingestAsset(gs_uri, asset, date='', bands=[], public=False):
         print('Privacy set to public.')
     return task_id
 
-task_id = ingestAsset(gs_uris[0], asset=asset_name, bands=bands, public=True)
-
+task_id = ingestAsset(gs_uris[0], asset=asset_name, public=True)
 
 def gsRemove(gs_uris):
     '''
