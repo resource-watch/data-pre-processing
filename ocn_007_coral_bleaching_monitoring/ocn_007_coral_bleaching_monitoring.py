@@ -1,5 +1,4 @@
 # # RW Data Script: ocn_007_coral_bleaching_monitoring  
-# [Metadata](https://docs.google.com/document/d/1JFncI1CT1kvy1YB83gCm4aV_X_c-Hxt41epLB_jX2T0/edit)  
 # [Info](https://coralreefwatch.noaa.gov/product/5km/index.php)  
 # [Sources](ftp://ftp.star.nesdis.noaa.gov/pub/sod/mecb/crw/data/5km/v3.1/nc/v1.0/daily/)  
 # 
