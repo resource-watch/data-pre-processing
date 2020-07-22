@@ -213,6 +213,10 @@ logger.info('Uploading processed data to Google Cloud Storage.')
 gcs_uris = util_cloud.gcs_upload(multitif, dataset_name, gcs_bucket=gcs_bucket)
 
 logger.info('Uploading processed data to Google Earth Engine.')
+# initialize ee module for uploading to Google Earth Engine
+auth = ee.ServiceAccountCredentials(os.getenv('GEE_SERVICE_ACCOUNT'), os.getenv('GOOGLE_APPLICATION_CREDENTIALS'))
+ee.Initialize(auth)
+
 # name bands according to variable names in original netcdf
 mf_bands = util_cloud.gee_manifest_bands(data_dict, dataset_name)
 # Upload processed data file to GEE
