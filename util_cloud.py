@@ -42,6 +42,12 @@ def gcs_upload(files, prefix='', gcs_bucket=None):
     return gcs_uris
 
 def gee_manifest_bands(bands_dict, dataset_name):
+    '''
+    Create bands manifest for image upload to GEE (https://developers.google.com/earth-engine/image_manifest)
+    INPUT   bands_dict: dictionary in which keys are band names and values are dictionaries containing a list of no-data values and the pyramiding policy to use in Google Earth Engine (dictionary)
+            dataset_name: name of the asset being uploaded to GEE (string)
+    RETURN  bands_mf: band manifest for asset upload into GEE, in the form of a list of dictionaries, with each dictionary containing parameters for an image band (list of dictionaries)
+    '''
     bands_mf = []
     i = 0
     for key, val in bands_dict.items():
