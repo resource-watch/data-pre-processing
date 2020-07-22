@@ -119,11 +119,11 @@ def gsStage(files, prefix=''):
 # upload local files to Google Cloud Storage
 gs_uris = gsStage(processed_data_file, dataset_name)
 
+print('Uploading processed data to Google Earth Engine.')
+
 # initialize ee and eeUtil modules for uploading to Google Earth Engine
 auth = ee.ServiceAccountCredentials(os.getenv('GEE_SERVICE_ACCOUNT'), os.getenv('GOOGLE_APPLICATION_CREDENTIALS'))
 ee.Initialize(auth)
-
-print('Uploading processed data to Google Earth Engine.')
 
 # set pyramiding policy for GEE upload
 pyramiding_policy = 'MEAN' #check
