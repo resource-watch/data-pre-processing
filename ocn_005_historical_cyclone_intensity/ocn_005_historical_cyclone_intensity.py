@@ -1,4 +1,5 @@
-# ## Preparation
+# Author: Peter Kerins  
+# Date: 2020 Jun 23  
 
 # #### Import
 
