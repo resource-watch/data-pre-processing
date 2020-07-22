@@ -109,6 +109,7 @@ def scale_geotiff(tif, scaledtif=None, scale_factor=None, nodata=None, gdal_type
             scale_factor: scale factor to be applied; if None, value is drawn from metadata (numeric)
             nodata: value to indicate no data in output raster; if None, original value is used (numeric)
             gdal_type: GDAL numeric type of the output raster (gdalconst(int))
+    RETURN scaledtif: filename of scaled output raster (string)
     '''
     geotiff = gdal.Open(tif, gdal.gdalconst.GA_ReadOnly)
     assert (geotiff.RasterCount == 1)
