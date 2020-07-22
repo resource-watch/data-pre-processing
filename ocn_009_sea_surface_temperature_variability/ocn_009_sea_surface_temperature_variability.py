@@ -100,6 +100,13 @@ logger.info('Uploading processed data to Google Cloud Storage.')
 gcs_uris= util_cloud.gcs_upload(multitif, dataset_name, gcs_bucket=gcs_bucket)
 
 logger.info('Uploading processed data to Google Earth Engine.')
+# initialize ee and eeUtil modules for uploading to Google Earth Engine
+auth = ee.ServiceAccountCredentials(os.getenv('GEE_SERVICE_ACCOUNT'), os.getenv('GOOGLE_APPLICATION_CREDENTIALS'))
+ee.Initialize(auth)
+
+# set pyramiding policy for GEE upload
+pyramiding_policy = 'MEAN' #check
+           
 # name bands according to variable names in original netcdf
 mf_bands = [{'id': band_id, 'tileset_band_index': band_ids.index(band_id), 'tileset_id': dataset_name, 'pyramidingPolicy': pyramiding_policy} for band_id in band_ids]
 
