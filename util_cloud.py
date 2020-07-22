@@ -41,6 +41,17 @@ def gcs_upload(files, prefix='', gcs_bucket=None):
         gcs_uris.append(uri)
     return gcs_uris
 
+def millis_since_epoch(date):
+    '''
+    Format date as milliseconds since last epoch
+    INPUT   date: datetime to be converted (datetime)
+    RETURN date in milliseconds since last epoch (integer)
+    '''
+    if isinstance(date, int):
+        return date
+    seconds = (date - datetime.datetime.utcfromtimestamp(0)).total_seconds()
+    return int(seconds * 1000)
+    
 def gee_manifest_bands(bands_dict, dataset_name):
     '''
     Create bands manifest for image upload to GEE (https://developers.google.com/earth-engine/image_manifest)
