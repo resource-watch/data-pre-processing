@@ -93,6 +93,10 @@ multitif = os.path.abspath(os.path.join(data_dir,dataset_name+'.tif'))
 util_files.merge_geotiffs(masked_tifs, multitif)
 processed_data_file = multitif
 
+'''
+Upload processed data to Google Earth Engine
+'''
+
 logger.info('Uploading processed data to Google Cloud Storage.')
 gcs_uris= util_cloud.gcs_upload(multitif, dataset_name, gcs_bucket=gcs_bucket)
 
