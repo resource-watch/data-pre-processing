@@ -152,19 +152,8 @@ logger.addHandler(console)
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
 logger.info('Executing script for dataset: ' + dataset_name)
-
-# set up Google Cloud Storage project and bucket objects
-gcs_client = storage.Client(os.environ.get("CLOUDSDK_CORE_PROJECT"))
-gcs_bucket = gcs_client.bucket(os.environ.get("GEE_STAGING_BUCKET"))
-
-# initialize ee and eeUtil modules for uploading to Google Earth Engine
-auth = ee.ServiceAccountCredentials(os.getenv('GEE_SERVICE_ACCOUNT'), os.getenv('GOOGLE_APPLICATION_CREDENTIALS'))
-ee.Initialize(auth)
-
-# amazon storage info
-aws_bucket = 'wri-projects'
-s3_prefix = 'resourcewatch/raster/'
-
+# create a new sub-directory within your specified dir called 'data'
+# within this directory, create files to store raw and processed data
 data_dir = util_files.prep_dirs(dataset_name)
 logger.debug('Data directory relative path: '+data_dir)
 logger.debug('Data directory absolute path: '+os.path.abspath(data_dir))
