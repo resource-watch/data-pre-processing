@@ -128,6 +128,14 @@ print('Uploading processed data to Google Earth Engine.')
 pyramiding_policy = 'MEAN' #check
 
 # Upload processed data file to GEE
+image_collection = f'projects/resource-watch-gee/{dataset_name}'
+ee.data.createAsset({'type': 'ImageCollection'}, image_collection)
+
+# set dataset privacy to public
+acl = {"all_users_can_read": True}
+ee.data.setAssetAcl(image_collection, acl)
+print('Privacy set to public.')
+
 def ingestAsset(gs_uri, asset, date='', bands=[], public=False):
     '''
     Upload asset from Google Cloud Storage to Google Earth Engine
@@ -173,8 +181,8 @@ def ingestAsset(gs_uri, asset, date='', bands=[], public=False):
 
 task_id = []
 for uri in gs_uris:
-    asset_name = f'projects/resource-watch-gee/{os.path.basename(uri)[:-4]}'
-    task = ingestAsset(uri, asset=asset_name, public=True)
+    asset_name = f'projects/resource-watch-gee/{dataset_name}/{os.path.basename(uri)[:-4]}'
+    task = ingestAsset(uri, asset=asset_name)
     print(asset_name + ' uploaded to GEE')
     task_id.append(task)
 
