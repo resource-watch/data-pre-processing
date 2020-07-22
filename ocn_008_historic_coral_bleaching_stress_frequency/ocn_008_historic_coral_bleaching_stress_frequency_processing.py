@@ -210,6 +210,10 @@ print('Files deleted from Google Cloud Storage.')
 '''
 Upload original data and processed data to Amazon S3 storage
 '''
+# initialize AWS variables
+aws_bucket = 'wri-projects'
+s3_prefix = 'resourcewatch/raster/'
+
 def upload_to_aws(local_file, bucket, s3_file):
     s3 = boto3.client('s3', aws_access_key_id=os.getenv('aws_access_key_id'), aws_secret_access_key=os.getenv('aws_secret_access_key'))
     try:
@@ -231,7 +235,7 @@ with ZipFile(raw_data_dir,'w') as zip:
     zip.write(raw_data_file, os.path.basename(raw_data_file))
 
 # Upload raw data file to S3
-uploaded = upload_to_aws(raw_data_dir, 'wri-projects', 'resourcewatch/raster/'+os.path.basename(raw_data_dir))
+uploaded = upload_to_aws(raw_data_dir, aws_bucket, s3_prefix+os.path.basename(raw_data_dir))
 
 print('Uploading processed data to S3.')
 # Copy the processed data into a zipped file to upload to S3
@@ -240,4 +244,4 @@ with ZipFile(processed_data_dir,'w') as zip:
     zip.write(processed_data_file, os.path.basename(processed_data_file))
 
 # Upload processed data file to S3
-uploaded = upload_to_aws(processed_data_dir, 'wri-projects', 'resourcewatch/raster/'+os.path.basename(processed_data_dir))
+uploaded = upload_to_aws(processed_data_dir, aws_bucket, s3_prefix+os.path.basename(processed_data_dir))
