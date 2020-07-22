@@ -2,7 +2,6 @@
 # coding: utf-8
 
 # # RW Data Script: ocn_009_sea_surface_temperature_variability
-# [Metadata](https://docs.google.com/document/d/1qIEaMfgPzo8IGBMut6EnaZi9J3xo42GgAiJh5VIjnLY/edit)  
 # [Info](https://coralreefwatch.noaa.gov/product/thermal_history/sst_variability.php)  
 # [Source](ftp://ftp.star.nesdis.noaa.gov/pub/sod/mecb/crw/data/thermal_history/v2.1)  
 # 
