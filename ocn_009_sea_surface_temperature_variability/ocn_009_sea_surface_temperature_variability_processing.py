@@ -8,8 +8,6 @@
 # Author: Peter Kerins  
 # Date: 2020 Jun 18  
 
-# ### Import
-
 import os
 import sys
 import dotenv
@@ -21,13 +19,10 @@ import util_cloud
 import urllib
 from zipfile import ZipFile
 import ee
-import subprocess
 from google.cloud import storage
-from shutil import copyfile
-import time
 import logging
 
-
+# Set up logging
 # Get the top-level logger object
 logger = logging.getLogger()
 for handler in logger.handlers: logger.removeHandler(handler)
@@ -36,7 +31,7 @@ logger.setLevel(logging.INFO)
 console = logging.StreamHandler()
 logger.addHandler(console)
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-# ### Set dataset-specific variables
+
 
 # name of asset on GEE where you want to upload data
 # this should be an asset name that is not currently in use
@@ -46,8 +41,7 @@ logger.info('Executing script for dataset: ' + dataset_name)
 # create a new sub-directory within your specified dir called 'data'
 # within this directory, create files to store raw and processed data
 data_dir = util_files.prep_dirs(dataset_name)
-logger.debug('Data directory relative path: '+data_dir)
-logger.debug('Data directory absolute path: '+os.path.abspath(data_dir))
+
 '''
 Download data and save to your data directory
 '''
@@ -60,12 +54,9 @@ url='ftp://ftp.star.nesdis.noaa.gov/pub/sod/mecb/crw/data/thermal_history/v2.1/n
 raw_data_file = os.path.join(data_dir,os.path.basename(url))
 urllib.request.urlretrieve(url, raw_data_file)
 
-logger.debug('Raw data file path: ' + raw_data_file)
-
 '''
 Process data
 '''
-logger.info('Extracting relevant GeoTIFFs from source NetCDF')
 
 # netcdf subdatasets that will be used in processing
 subdatasets = ['stdv_maxmonth',
@@ -73,21 +64,23 @@ subdatasets = ['stdv_maxmonth',
                'mask',
               ]
 
+logger.info('Extracting relevant GeoTIFFs from source NetCDF')
 # convert netcdf to individual tif files for each of the subdatasets specified
 tifs = util_files.convert_netcdf(raw_data_file, subdatasets)
 
 logger.info('Mask extracted GeoTIFFs using dataset mask')
 # create dict linking subdatasets from the netcdf to the geotiffs that now contain each
 sds_file_dict=dict(zip(subdatasets,tifs))
+
 # set nodata value for masking
 nodata=-128
 
-# cycle through target tifs (corresponding to bands) and mask them with mask tif
-# netcdf subdatasets that will be uploaded as bands to GEE
+# define netcdf subdatasets that will be uploaded as bands to GEE
 band_ids = ['stdv_maxmonth',
             'stdv_annual',
            ]
-           
+
+# cycle through target tifs (corresponding to bands) and mask them with mask tif
 masked_tifs = []
 for band_id in band_ids:
     sds_file = sds_file_dict[band_id]
@@ -119,17 +112,18 @@ ee.Initialize(auth)
 
 # set pyramiding policy for GEE upload
 pyramiding_policy = 'MEAN' #check
-           
-# name bands according to variable names in original netcdf
-mf_bands = [{'id': band_id, 'tileset_band_index': band_ids.index(band_id), 'tileset_id': dataset_name, 'pyramidingPolicy': pyramiding_policy} for band_id in band_ids]
 
-# Upload processed data file to GEE
+# set asset name to be used in GEE
 asset_name = f'projects/resource-watch-gee/{dataset_name}'
+
+# name bands according to variable names in original netcdf
+mf_bands = [{'id': band_id, 'tileset_band_index': band_ids.index(band_id), 'tileset_id': dataset_name,
+             'pyramidingPolicy': pyramiding_policy} for band_id in band_ids]
+# create manifest for asset upload
 manifest = util_cloud.gee_manifest_complete(asset_name, gcs_uris[0], mf_bands)
+# upload processed data file to GEE
 task_id = util_cloud.gee_ingest(manifest, public=True)
-
-task_id = util_cloud.gee_ingest(manifest, public=True)
-
+# remove files from Google Cloud Storage
 util_cloud.gcs_remove(gcs_uris, gcs_bucket=gcsBucket)
 logger.info('Files deleted from Google Cloud Storage.')
 
@@ -140,6 +134,7 @@ Upload original data and processed data to Amazon S3 storage
 # initialize AWS variables
 aws_bucket = 'wri-projects'
 s3_prefix = 'resourcewatch/raster/'
+
 logger.info('Uploading original data to S3.')
 # Upload raw data file to S3
 
@@ -147,6 +142,7 @@ logger.info('Uploading original data to S3.')
 raw_data_dir = os.path.join(data_dir, dataset_name+'.zip')
 with ZipFile(raw_data_dir,'w') as zip:
     zip.write(raw_data_file, os.path.basename(raw_data_file))
+# Upload raw data file to S3
 uploaded = util_cloud.aws_upload(raw_data_dir, aws_bucket, s3_prefix+os.path.basename(raw_data_dir))
 
 logger.info('Uploading processed data to S3.')
