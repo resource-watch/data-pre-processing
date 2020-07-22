@@ -21,20 +21,6 @@ from google.cloud import storage
 from shutil import copyfile
 import time
 
-
-# #### Set/initialize/authenticate general variables
-
-# set up Google Cloud Storage project and bucket objects
-gcs_client = storage.Client(os.environ.get("CLOUDSDK_CORE_PROJECT"))
-gcs_bucket = gcs_client.bucket(os.environ.get("GEE_STAGING_BUCKET"))
-
-# initialize ee and eeUtil modules for uploading to Google Earth Engine
-auth = ee.ServiceAccountCredentials(os.getenv('GEE_SERVICE_ACCOUNT'), os.getenv('GOOGLE_APPLICATION_CREDENTIALS'))
-ee.Initialize(auth)
-
-aws_bucket = 'wri-projects'
-s3_prefix = 'resourcewatch/raster/'
-
 # #### Set dataset-specific variables
 
 # name of asset on GEE where you want to upload data
