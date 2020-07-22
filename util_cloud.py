@@ -131,6 +131,12 @@ def gcs_remove(gcs_uris, gcs_bucket=None):
     gcs_bucket.delete_blobs(paths, lambda x:x)
     
 def aws_upload(local_file, bucket, s3_file):
+    '''
+    Upload original data and processed data to Amazon S3 storage
+    INPUT   local_file: local file to be uploaded to AWS (string)
+        bucket: AWS bucket where file should be uploaded (string)
+        s3_file: path where file should be uploaded within the input AWS bucket (string)
+    '''
     s3 = boto3.client('s3', aws_access_key_id=os.getenv('aws_access_key_id'), aws_secret_access_key=os.getenv('aws_secret_access_key'))
     try:
         s3.upload_file(local_file, bucket, s3_file)
