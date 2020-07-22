@@ -40,6 +40,7 @@ subdatasets = ['stdv_maxmonth',
                'mask',
               ]
 
+# nedcdf subdatasets that will be uploaded as bands to GEE
 band_ids = ['stdv_maxmonth',
             'stdv_annual',
            ]
