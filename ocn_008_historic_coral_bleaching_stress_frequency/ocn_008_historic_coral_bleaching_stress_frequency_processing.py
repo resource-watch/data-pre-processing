@@ -85,8 +85,8 @@ Upload processed data to Google Earth Engine
 '''
 print('Uploading processed data to Google Cloud Storage.')
 # set up Google Cloud Storage project and bucket objects
-gsClient = storage.Client(os.environ.get("CLOUDSDK_CORE_PROJECT"))
-gsBucket = gsClient.bucket(os.environ.get("GEE_STAGING_BUCKET"))
+gcsClient = storage.Client(os.environ.get("CLOUDSDK_CORE_PROJECT"))
+gcsBucket = gcsClient.bucket(os.environ.get("GEE_STAGING_BUCKET"))
 
 def gsStage(files, prefix=''):
     '''
@@ -96,9 +96,9 @@ def gsStage(files, prefix=''):
     RETURN  gs_uris: list of uploaded data file locations on GCS (list of strings)
     '''
     # make sure the GCS bucket exists, create it if it does not
-    if not gsBucket.exists():
+    if not gcsBucket.exists():
         print('Bucket {} does not exist, creating'.format(bucket))
-        gsBucket.create()
+        gcsBucket.create()
     # make sure files to be uploaded are formatted as a tuple
     files = (files,) if isinstance(files, str) else files
     # create an empty list to store the list of files we have uploaded to GCS
@@ -108,7 +108,7 @@ def gsStage(files, prefix=''):
         # define location within GCS bucket where the file should go
         path = '{}/{}'.format(prefix, os.path.basename(f))
         # format the full GCS path for the file
-        uri = 'gs://{}/{}'.format(gsBucket.name, path)
+        uri = 'gs://{}/{}'.format(gcsBucket.name, path)
         print('Uploading {} to {}'.format(f, uri))
         # upload the file to GCS
         gsBucket.blob(path).upload_from_filename(f)
