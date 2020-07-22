@@ -43,10 +43,6 @@ subdatasets = ['stdv_maxmonth',
 band_ids = ['stdv_maxmonth',
             'stdv_annual',
            ]
-
-# set pyramiding policy for GEE upload
-pyramiding_policy = 'MEAN' #check
-
 # ### Set/initialize/authenticate general variables
 
 # Get the top-level logger object
