@@ -38,7 +38,9 @@ pyramiding_policy = 'MEAN' #check
 
 data_dir = util_files.prep_dirs(dataset_name)
 
-# acquire raw data
+'''
+Download data and save to your data directory
+'''
 
 # data source page:
 #     https://preview.grid.unep.ch/index.php?preview=data&events=cyclones&evcat=4&lang=eng
