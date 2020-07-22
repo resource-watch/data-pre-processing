@@ -134,6 +134,17 @@ bands = [{'id': var, 'tileset_band_index': vars.index(var), 'tileset_id': datase
 # Upload processed data file to GEE
 asset_name = f'projects/resource-watch-gee/{dataset_name}'
 
+def formatDate(date):
+    '''
+    Format date as milliseconds since last epoch
+    INPUT   date: datetime to be converted (datetime)
+    RETURN date in milliseconds since last epoch (integer)
+    '''
+    if isinstance(date, int):
+        return date
+    seconds = (date - datetime.datetime.utcfromtimestamp(0)).total_seconds()
+    return int(seconds * 1000)
+
 def ingestAsset(gs_uri, asset, date='', bands=[], public=False):
     '''
     Upload asset from Google Cloud Storage to Google Earth Engine
