@@ -65,6 +65,14 @@ def gee_manifest_bands(bands_dict, dataset_name):
     return bands_mf
 
 def gee_manifest_complete(asset, gcs_uri, mf_bands, date=''):
+    '''
+    Create complete manifest for image upload to GEE (https://developers.google.com/earth-engine/image_manifest)
+    INPUT   asset: name of the asset being uploaded to GEE (string)
+            gs_uri: data file location on GCS, should be formatted `gs://<bucket>/<blob>` (string)
+            mf_bands: band manifest, created with gee_manifest_bands function (dictionary)
+            date: optional, date tag for asset (datetime.datetime or int ms since epoch)
+    RETURN  manifest: complete manifest for asset upload into GEE (dictionary)
+    '''
     # set up parameters for image task ingestion
     manifest = {'name': f'projects/earthengine-legacy/assets/{asset}',
               'tilesets': [{'id': os.path.basename(gcs_uri).split('.')[0], 'sources': [{'uris': gcs_uri}]}]}
