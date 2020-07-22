@@ -34,6 +34,7 @@ import logging
 # this should be an asset name that is not currently in use
 dataset_name = 'ocn_009_sea_surface_temperature_variability'
 
+# netcdf subdatasets that will be used in processing
 subdatasets = ['stdv_maxmonth',
                'stdv_annual',
                'mask',
