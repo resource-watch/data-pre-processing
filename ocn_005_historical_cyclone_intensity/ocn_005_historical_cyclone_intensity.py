@@ -66,6 +66,10 @@ processed_data_file = os.path.join(data_dir,dataset_name+'.tif')
 print (processed_data_file)
 copyfile(unprocessed_data_file, processed_data_file)
 
+'''
+Upload processed data to Google Earth Engine
+'''
+
 print('Uploading processed data to Google Cloud Storage.')
 # set up Google Cloud Storage project and bucket objects
 gcsClient = storage.Client(os.environ.get("CLOUDSDK_CORE_PROJECT"))
