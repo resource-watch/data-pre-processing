@@ -61,6 +61,9 @@ with ZipFile(raw_data_file, 'r') as zip:
         raise Exception()
     tifname = tifnames[0]
     zip.extractall(data_dir)
+'''
+Process data
+'''
 # in this case "processed" data file is just unzipped tif
 # but we have to rename it
 unprocessed_data_file = (os.path.join(data_dir,tifname))
