@@ -67,7 +67,11 @@ print (processed_data_file)
 copyfile(unprocessed_data_file, processed_data_file)
 
 print('Uploading processed data to Google Cloud Storage.')
-gcs_uris = util_cloud.gcs_upload(processed_data_file, dataset_name, gcs_bucket=gcs_bucket)
+# set up Google Cloud Storage project and bucket objects
+gcsClient = storage.Client(os.environ.get("CLOUDSDK_CORE_PROJECT"))
+gcsBucket = gcsClient.bucket(os.environ.get("GEE_STAGING_BUCKET"))
+
+gcs_uris = util_cloud.gcs_upload(processed_data_file, dataset_name, gcs_bucket=gcsBucket )
 
 print('Uploading processed data to Google Earth Engine.')
 # name bands according to variable names in original netcdf
