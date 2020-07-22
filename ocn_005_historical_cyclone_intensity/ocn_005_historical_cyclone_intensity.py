@@ -81,6 +81,13 @@ task_id = util_cloud.gee_ingest(manifest, public=True)
 util_cloud.gcs_remove(gcs_uris, gcs_bucket=gcs_bucket)
 print('Files deleted from Google Cloud Storage.')
 
+'''
+Upload original data and processed data to Amazon S3 storage
+'''
+
+# initialize AWS variables
+aws_bucket = 'wri-projects'
+s3_prefix = 'resourcewatch/raster/'
 print('Uploading original data to S3.')
 # Upload raw data file to S3
 uploaded = util_cloud.aws_upload(raw_data_file, aws_bucket, s3_prefix+os.path.basename(raw_data_file))
