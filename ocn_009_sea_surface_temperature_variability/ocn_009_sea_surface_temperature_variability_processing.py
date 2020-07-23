@@ -103,6 +103,7 @@ logger.info('Uploading processed data to Google Cloud Storage.')
 gcsClient = storage.Client(os.environ.get("CLOUDSDK_CORE_PROJECT"))
 gcsBucket = gcsClient.bucket(os.environ.get("GEE_STAGING_BUCKET"))
 
+# upload files to Google Cloud Storage
 gcs_uris= util_cloud.gcs_upload(multitif, dataset_name, gcs_bucket=gcsBucket)
 
 logger.info('Uploading processed data to Google Earth Engine.')
