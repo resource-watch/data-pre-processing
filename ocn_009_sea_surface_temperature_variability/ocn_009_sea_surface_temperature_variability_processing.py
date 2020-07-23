@@ -13,7 +13,7 @@ import sys
 import dotenv
 dotenv.load_dotenv(os.path.abspath(os.getenv('RW_ENV')))
 if os.getenv('PROCESSING_DIR') not in sys.path:
-    sys.path.append(os.path.abspath(os.getenv('PROCESSING_DIR'))+'utils')
+    sys.path.append(os.path.abspath(os.getenv('PROCESSING_DIR')))
 import util_files
 import util_cloud
 import urllib
