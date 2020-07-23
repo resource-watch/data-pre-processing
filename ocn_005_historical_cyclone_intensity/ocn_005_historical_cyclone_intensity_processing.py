@@ -5,8 +5,9 @@ import sys
 import dotenv
 dotenv.load_dotenv(os.path.abspath(os.getenv('RW_ENV')))
 
-if os.getenv('PROCESSING_DIR') not in sys.path:
-    sys.path.append(os.path.abspath(os.getenv('PROCESSING_DIR')))
+utils_path = os.path.join(os.path.abspath(os.getenv('PROCESSING_DIR')),'utils')
+if utils_path not in sys.path:
+    sys.path.append(utils_path)
 import util_files
 import util_cloud
 from zipfile import ZipFile
