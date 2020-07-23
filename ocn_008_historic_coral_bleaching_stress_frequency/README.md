@@ -15,6 +15,6 @@ Please see the [Python script](https://github.com/resource-watch/data-pre-proces
 
 You can view the processed dataset for [display on Resource Watch](https://resourcewatch.org/data/explore/4c64fb3d-a05e-45ef-b886-2a75f418e00b).
 
-You can also download original dataset [from the source website](ftp://ftp.star.nesdis.noaa.gov/pub/sod/mecb/crw/data/thermal_history/v2.1).
+You can also download original dataset [from the source website](https://coralreefwatch.noaa.gov/product/thermal_history/stress_frequency.php).
 
 ###### Note: This dataset processing was done by [Amelia Snyder](https://www.wri.org/profile/amelia-snyder).
