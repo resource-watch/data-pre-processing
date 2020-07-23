@@ -18,7 +18,7 @@ dataset_name = 'cit_031_air_quality_PM25_concentration' #check
 
 # first, set the directory that you are working in with the path variable
 # you can use an environmental variable, as we did, or directly enter the directory name as a string
-# example: path = '/home/ene_034_electricity_consumption'
+# example: path = '/home/cit_031_air_quality_PM25_concentration'
 path = os.path.join(os.getenv('PROCESSING_DIR'),dataset_name)
 #move to this directory
 os.chdir(path)
