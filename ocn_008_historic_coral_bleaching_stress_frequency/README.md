@@ -13,7 +13,7 @@ To process this data for display on Resource Watch, the data in each of these ne
 
 Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/ocn_008_historic_coral_bleaching_stress_frequency/ocn_008_historic_coral_bleaching_stress_frequency_processing.py) for more details on this processing.
 
-You can view the processed dataset for [display on Resource Watch](https://resourcewatch.org/data/explore/).
+You can view the processed dataset for [display on Resource Watch](https://resourcewatch.org/data/explore/4c64fb3d-a05e-45ef-b886-2a75f418e00b).
 
 You can also download original dataset [from the source website](ftp://ftp.star.nesdis.noaa.gov/pub/sod/mecb/crw/data/thermal_history/v2.1).
 
