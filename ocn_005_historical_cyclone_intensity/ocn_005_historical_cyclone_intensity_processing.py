@@ -14,7 +14,7 @@ from zipfile import ZipFile
 import ee
 from google.cloud import storage
 from shutil import copyfile
-
+import logging
 # Set up logging
 # Get the top-level logger object
 logger = logging.getLogger()
@@ -114,11 +114,12 @@ s3_prefix = 'resourcewatch/raster/'
 
 logger.info('Uploading original data to S3.')
 # Upload raw data file to S3
-raw_data_dir = os.path.join(data_dir, dataset_name+'.zip')
-with ZipFile(raw_data_dir,'w') as zip:
-    zip.write(raw_data_file, os.path.basename(raw_data_file))
+print('Uploading original data to S3.')
+renamed_raw_file = os.path.join(data_dir, dataset_name+'.zip')
+copyfile(raw_data_file,renamed_raw_file)
+
 # Upload raw data file to S3
-uploaded = util_cloud.aws_upload(raw_data_dir, aws_bucket, s3_prefix+os.path.basename(raw_data_dir))
+uploaded = util_cloud.aws_upload(renamed_raw_file, aws_bucket, s3_prefix+os.path.basename(renamed_raw_file))
 
 logger.info('Uploading processed data to S3.')
 # Copy the processed data into a zipped file to upload to S3
