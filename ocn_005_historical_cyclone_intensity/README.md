@@ -10,6 +10,6 @@ Please see the [Python script](https://github.com/resource-watch/data-pre-proces
 
 You can view the processed dataset for [display on Resource Watch](https://resourcewatch.org/data/explore/).
 
-You can also download original dataset [from the source website](https://preview.grid.unep.ch/index.php?preview=data&events=cyclones&evcat=4&lang=eng).
+You can also download the original dataset [from the source website](https://preview.grid.unep.ch/index.php?preview=data&events=cyclones&evcat=4&lang=eng).
 
 ###### Note: This dataset processing was done by [Peter Kerins](https://www.wri.org/profile/peter-kerins).
