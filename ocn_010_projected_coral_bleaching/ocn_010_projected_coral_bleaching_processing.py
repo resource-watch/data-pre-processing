@@ -33,6 +33,7 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 dataset_name = 'ocn_010_projected_coral_bleaching'
 logger.info('Executing script for dataset: ' + dataset_name)
 
+# set working directory for processing dataset, and creates needed directories as necessary
 data_dir = util_files.prep_dirs(dataset_name)
 logger.debug('Data directory relative path: '+data_dir)
 logger.debug('Data directory absolute path: '+os.path.abspath(data_dir))
