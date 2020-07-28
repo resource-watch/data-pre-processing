@@ -107,12 +107,14 @@ ee.Initialize(auth)
 
 # set pyramiding policy for GEE upload
 pyramiding_policy = 'MEAN' #check
+missing_data_values = [-128]
 
 # set asset name to be used in GEE
 asset_name = f'projects/resource-watch-gee/{dataset_name}'
 
 # name bands according to variable names in original netcdf
 mf_bands = [{'id': band_id, 'tileset_band_index': band_ids.index(band_id), 'tileset_id': dataset_name,
+             'missing_data': {'values': missing_data_values},
              'pyramidingPolicy': pyramiding_policy} for band_id in band_ids]
 # create manifest for asset upload
 manifest = util_cloud.gee_manifest_complete(asset_name, gcs_uris[0], mf_bands)
