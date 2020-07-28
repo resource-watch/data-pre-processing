@@ -17,4 +17,4 @@ You can view the processed Airports dataset [on Resource Watch](https://resource
 
 You can also download the original dataset [directly through Resource Watch]({s3 link if available}), or [from the source website](https://raw.githubusercontent.com/jpatokal/openflights/master/data/airports.dat).
 
-###### Note: This dataset processing was done by Matthew Iceland and [Yujing Wu](https://www.wri.org/profile/yujing-wu), and QC'd by [Amelia Snyder](https://www.wri.org/profile/amelia-snyder).
+###### Note: This dataset processing was done by [Matthew Iceland](https://github.com/miceland2) and [Yujing Wu](https://www.wri.org/profile/yujing-wu), and QC'd by [Amelia Snyder](https://www.wri.org/profile/amelia-snyder).
