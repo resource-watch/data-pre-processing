@@ -24,22 +24,3 @@ def upload_to_carto(file):
     logger.info('Privacy set to public with link.')
     dataset.save()
     
-def upload_to_aws(local_file, bucket, s3_file):
-    '''
-    Upload data to Amazon S3 storage
-    INPUT   local_file: local file to be uploaded to AWS (string)
-            bucket: AWS bucket where file should be uploaded (string)
-            s3_file: path where file should be uploaded within the input AWS bucket (string)
-    '''
-    s3 = boto3.client('s3', aws_access_key_id=os.getenv('aws_access_key_id'),
-                      aws_secret_access_key=os.getenv('aws_secret_access_key'))
-    try:
-        s3.upload_file(local_file, bucket, s3_file)
-        logger.info("AWS upload successful: http://{}.s3.amazonaws.com/{}".format(bucket, s3_file))
-        return True
-    except FileNotFoundError:
-        logger.error("aws_upload - file was not found: + local_file.")
-        return False
-    except NoCredentialsError:
-        logger.error("aws_upload - credentials not available.")
-        return False
