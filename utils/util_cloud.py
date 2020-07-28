@@ -62,17 +62,31 @@ def gee_manifest_bands(bands_dict, dataset_name):
     bands_mf = []
     i = 0
     for key, val in bands_dict.items():
-        mf_element = {
-            'id': key,
-            'tileset_band_index': i,
-            'tileset_id': dataset_name,
-            'missing_data': {
-                'values': val['missing_data'],
-            },
-            'pyramiding_policy': val['pyramiding_policy'],
-        }
-        i += 1
-        bands_mf.append(mf_element)
+        if 'band_ids' not in val:
+            mf_element = {
+                'id': key,
+                'tileset_band_index': i,
+                'tileset_id': dataset_name,
+                'missing_data': {
+                    'values': val['missing_data'],
+                },
+                'pyramiding_policy': val['pyramiding_policy'],
+            }
+            i += 1
+            bands_mf.append(mf_element)
+        else:
+            for band_id in val['band_ids']:
+                mf_element = {
+                    'id': band_id,
+                    'tileset_band_index': i,
+                    'tileset_id': dataset_name,
+                    'missing_data': {
+                        'values': val['missing_data'],
+                    },
+                    'pyramiding_policy': val['pyramiding_policy'],
+                }
+                i += 1
+                bands_mf.append(mf_element)            
     return bands_mf
 
 def gee_manifest_complete(asset, gcs_uri, mf_bands, date=''):

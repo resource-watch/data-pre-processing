@@ -28,11 +28,10 @@ console = logging.StreamHandler()
 logger.addHandler(console)
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
-logger.info('Executing script for dataset: ' + dataset_name)
-
 # name of asset on GEE where you want to upload data
 # this should be an asset name that is not currently in use
 dataset_name = 'ocn_003_projected_sea_level_rise'
+logger.info('Executing script for dataset: ' + dataset_name)
 
 data_dir = util_files.prep_dirs(dataset_name)
 logger.debug('Data directory relative path: '+data_dir)
@@ -125,7 +124,6 @@ aws_bucket = 'wri-projects'
 s3_prefix = 'resourcewatch/raster/'
 
 logger.info('Uploading original data to S3.')
-# Upload raw data file to S3
 # Copy the raw data into a zipped file to upload to S3
 raw_data_dir = os.path.join(data_dir, dataset_name+'.zip')
 with ZipFile(raw_data_dir,'w') as zip:
