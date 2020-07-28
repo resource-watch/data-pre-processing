@@ -7,7 +7,7 @@ import logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-def upload_to_carto(file):
+def upload_to_carto(file, privacy):
     '''
     Upload tables to Carto
     INPUT   file: location of file on local computer that you want to upload (string)
