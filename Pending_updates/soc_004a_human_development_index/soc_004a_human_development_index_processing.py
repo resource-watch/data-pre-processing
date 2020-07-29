@@ -78,7 +78,6 @@ df.columns = headers
 columns = [c for c in df.columns if len(c) > 1]
 df = df[columns].reset_index(drop=True)
 
-# delete rows with missing values
 # delete rows that do not contain country information (identified by an empty 'HDI rank' column)
 df = df.dropna(subset=['HDI_rank'])
 
