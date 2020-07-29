@@ -73,7 +73,9 @@ def convert(input_file, output_file):
     # translate the netcdf file into a tif
     PM25.rio.to_raster(output_file[:-4] + '_pre.tif')
     
-    # reexport the tif using gdalwarp to fix the origin issue
+    # traditionally, the origin of a raster dataset should be its upper left corner
+    # however, after being transposed, the origin of this raster dataset is its lower left corner
+    # the step below reexports the tif using gdalwarp so its origin is now its upper left corner
     cmd = ['gdalwarp', output_file[:-4] + '_pre.tif', output_file]
     subprocess.call(cmd)
 
