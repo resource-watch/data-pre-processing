@@ -36,7 +36,7 @@ data_dir = util_files.prep_dirs(dataset_name)
 Download data and save to your data directory
 '''
 logger.info('Downloading raw data')
-# insert the url used to download the data from the source website
+# list the urls used to download the data from the source website
 url_list = ['http://fizz.phys.dal.ca/~atmos/datasets/EST2020/ACAG_PM25_GWR_V4GL03_201101_201112_0p01.nc',
             'http://fizz.phys.dal.ca/~atmos/datasets/EST2020/ACAG_PM25_GWR_V4GL03_201201_201212_0p01.nc',
             'http://fizz.phys.dal.ca/~atmos/datasets/EST2020/ACAG_PM25_GWR_V4GL03_201301_201312_0p01.nc',
