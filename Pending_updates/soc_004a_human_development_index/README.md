@@ -5,8 +5,8 @@ The source provided the data in a .xlsx format.
 
 Below, we describe the steps used to reformat the table so that it is formatted correctly to upload to Carto.
 
-1. Read in the data as a pandas data frame and remove columns and rows with missing data.
-2. Give columns the correct headers.
+1. Read in the data as a pandas dataframe and remove empty columns and rows.
+2. Remove header rows containing metadata, and give columns the correct headers.
 3. Replace ".." with None.
 
 Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/soc_004a_human_development_index/soc_004a_human_development_index_processing.py) for more details on this processing.
