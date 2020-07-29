@@ -8,7 +8,8 @@ Below, we describe the steps used to reformat the table so that it is formatted 
 1. Read in the data as a pandas dataframe.
 2. Remove rows containing metadata (headers, sub-sections names, footnotes, etc.).
 3. Name columns based on the year, title, and unit provided in the metadata.
-3. Replace ".." with None.
+4. Remove columns containing flags to reference footnotes.
+5. Replace "..", which is used to indicate no-data, with None.
 
 Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/soc_004a_human_development_index/soc_004a_human_development_index_processing.py) for more details on this processing.
 
