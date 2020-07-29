@@ -50,19 +50,26 @@ df.to_excel(raw_data_file, header=False, index=False)
 '''
 Process data
 '''
-# drop header rows
-df = df[7:].reset_index()
+# store the information in the metadata rows 
+titles = list(df.iloc[3].fillna(''))
+units = list(df.iloc[4].fillna(''))
+years = list(df.iloc[5].fillna(''))
+headers = []
+for title, year, unit in zip(titles, years, units):
+    headers.append((year + ' ' + title + ' ' + unit).strip())
 
-# delete columns with missing values
-df = df.drop(['index', 'Unnamed: 3', 'Unnamed: 5', 'Unnamed: 7', 'Unnamed: 9', 'Unnamed: 11', 'Unnamed: 13'], axis=1)
+# drop metadata rows
+df = df[7:]
+# assign correct headers to the columns 
+df.columns = headers
+# remove columns with unimportant information or no values at all 
+columns = [c for c in df.columns if len(c) > 1]
+df = df[columns].reset_index(drop=True)
 
 # delete rows with missing values
 df = df.dropna()
-
-# give columns the proper headers
-df.columns = ['HDI_rank', 'Country', 'HDI', '2018_Life_expectancy_at_birth', '2018_Expected_years_of_schooling', '2018_Mean_years_of_schooling',
-              '2018_GNI_per_capita_in_2011PPP',
-              '2018_GNI_per_capita_rank_minus_HDI_rank', '2017_HDI_rank'] #check
+#replace all '..' with None
+df = df.replace({'..':None})
 
 # save processed dataset to csv
 processed_data_file = os.path.join(data_dir, dataset_name+'_edit.csv')
