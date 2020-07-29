@@ -3,9 +3,7 @@ This file describes the data pre-processing that was done to [the Municipal Wast
 
 The source provided the data as a csv file.
 
-Below, we describe the steps used to reformat the table so that it is formatted correctly to upload to Carto.
-
-1. Read in the data as a pandas dataframe and remove the duplicated column 'YEA'. 
+In order to process this data for display on Resource Watch, the data was read into python as a pandas dataframe. The columns 'YEA' and 'Year' are identical, so the 'YEA' column was removed. 
 
 Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/cit_029_municipal_waste/cit_029_municipal_waste_processing.py) for more details on this processing.
 
