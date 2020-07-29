@@ -1,7 +1,7 @@
 ## Aridity Dataset Pre-processing
 This file describes the data pre-processing that was done to [the Global Aridity - Annual](http://www.cgiar-csi.org/data/global-aridity-and-pet-database) for [display on Resource Watch](https://resourcewatch.org/data/explore/99075509-df36-461e-abb0-659cee555bd0).
 
-The source provided the data as a GeoTIFF file within a zipped folder.
+The source provided the data as a GeoTIFF file within a zipped folder. The GeoTIFF inside the zipped folder was not modified from the original version for display on Resource Watch.
 
 Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/cli_030_aridity/cli_030_aridity_processing.py) for more details on this processing.
 

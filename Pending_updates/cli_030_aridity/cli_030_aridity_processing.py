@@ -48,12 +48,16 @@ zip_ref = ZipFile(raw_data_file, 'r')
 zip_ref.extractall(raw_data_file_unzipped)
 zip_ref.close()
 
+'''
+Process data
+'''
 # the path to the unprocessed data
 raster = glob.glob(os.path.join(raw_data_file_unzipped, 'ai_et0', '*.tif'))[0]
 
 # generate a name for processed tif 
 processed_data_file = os.path.join(data_dir, dataset_name+'.tif')
-# save the processed data
+
+# rename the tif file
 cmd = ['gdalwarp', raster, processed_data_file]
 subprocess.call(cmd)
 
