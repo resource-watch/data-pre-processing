@@ -84,8 +84,8 @@ util_carto.upload_to_carto(processed_data_file, 'LINK')
 Upload original data and processed data to Amazon S3 storage
 '''
 # initialize AWS variables
-aws_bucket = 'wri-projects'
-s3_prefix = 'resourcewatch/raster/'
+aws_bucket = 'wri-public-data'
+s3_prefix = 'resourcewatch/'
 
 logger.info('Uploading original data to S3.')
 # Upload raw data file to S3
