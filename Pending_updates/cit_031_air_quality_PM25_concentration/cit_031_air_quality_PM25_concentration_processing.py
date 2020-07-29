@@ -57,15 +57,20 @@ Process data
 def convert(input_file, output_file):
     '''
     Convert netcdf files to tifs 
-    Since the latitude and longitude of this netcdf is reversed, this function first transposes the 'LAT' and 'LON' dimension of the netcdf file before exporting it as a GeoTIFF
+    Since the latitude and longitude of this netcdf are reversed, this function first transposes
+    the 'LAT' and 'LON' dimensions of the netcdf file before exporting it as a GeoTIFF
     INPUT   file: file name for netcdf that we want to convert (string)
             outfile_name: file name for tif we will generate (string)
     '''
-    # translate the netcdf file into a tif
+    # open netcdf file
     xds = xarray.open_dataset(input_file)
+    # transpose 'LAT' and 'LON' dimensions because they were reversed
     PM25 = xds.PM25.transpose('LAT', 'LON')
+    # define the name of the variables to be used for the x and y dimensions in the dataset
     PM25.rio.set_spatial_dims(x_dim="LON", y_dim="LAT", inplace=True)
+    # add crs information to data
     PM25.rio.write_crs("EPSG:4326", inplace=True)
+    # translate the netcdf file into a tif
     PM25.rio.to_raster(output_file[:-4] + '_pre.tif')
     
     # reexport the tif using gdalwarp to fix the origin issue
@@ -75,15 +80,18 @@ def convert(input_file, output_file):
 # create a list containing the paths to the processed files 
 processed_data_file = []
 for url in url_list:
+    # find the index in the filename string where the underscore before the year begins
     year_loc = os.path.basename(url).index('_20')
+    # generate a name for the processed data file by joining the dataset name with an underscore and the year of data
     processed_file_name = dataset_name + os.path.basename(url)[year_loc: year_loc + 5] + '.tif'
+    # add the full processed data file location to the list of processed data file locations
     processed_data_file.append(os.path.join(data_dir, processed_file_name))
 
 logger.info('Extracting relevant GeoTIFFs from source NetCDF')
 # convert the netcdf files to tif files
 for raw_file, processed_file in zip(raw_data_file, processed_data_file):
     convert(raw_file, processed_file)
-    print(processed_file + ' created')
+    logger.info(processed_file + ' created')
     
 '''
 Upload processed data to Google Earth Engine
@@ -104,11 +112,11 @@ ee.Initialize(auth)
 # set pyramiding policy for GEE upload
 pyramiding_policy = 'MEAN' #check
 
-# Upload processed data file to GEE
+# Create an image collection where we will put the processed data files in GEE
 image_collection = f'projects/resource-watch-gee/{dataset_name}'
 ee.data.createAsset({'type': 'ImageCollection'}, image_collection)
 
-# set dataset privacy to public
+# set image collection's privacy to public
 acl = {"all_users_can_read": True}
 ee.data.setAssetAcl(image_collection, acl)
 print('Privacy set to public.')
@@ -117,12 +125,16 @@ print('Privacy set to public.')
 band_ids = ['PM25']
 
 task_id = []
+# Upload processed data files to GEE
 for uri in gcs_uris:
+    # generate an asset name for the current file by using the filename (minus the file type extension)
     asset_name = f'projects/resource-watch-gee/{dataset_name}/{os.path.basename(uri)[:-4]}'
+    # create the band manifest for this asset
     mf_bands = [{'id': band_id, 'tileset_band_index': band_ids.index(band_id), 'tileset_id': os.path.basename(uri)[:-4],
              'pyramidingPolicy': pyramiding_policy} for band_id in band_ids]
-    # create manifest for asset upload
+    # create complete manifest for asset upload
     manifest = util_cloud.gee_manifest_complete(asset_name, uri, mf_bands)
+    # upload the file from GCS to GEE
     task = util_cloud.gee_ingest(manifest)
     print(asset_name + ' uploaded to GEE')
     task_id.append(task)
