@@ -1,3 +1,5 @@
+import io
+import requests
 import pandas as pd
 import os
 import sys
@@ -7,9 +9,7 @@ if utils_path not in sys.path:
 import util_files
 import util_cloud
 import util_carto
-import urllib
 from zipfile import ZipFile
-import datetime
 import logging
 
 # Set up logging
@@ -22,9 +22,10 @@ console = logging.StreamHandler()
 logger.addHandler(console)
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
+
 # name of table on Carto where you want to upload data
 # this should be a table name that is not currently in use
-dataset_name = 'cit_022_road_traffic_death_rates' #check
+dataset_name = 'bio_041_ocean_health_index' #check
 
 logger.info('Executing script for dataset: ' + dataset_name)
 # create a new sub-directory within your specified dir called 'data'
@@ -36,44 +37,23 @@ Download data and save to your data directory
 '''
 logger.info('Downloading raw data')
 # insert the url used to download the data from the source website
-url = 'https://apps.who.int/gho/athena/data/GHO/RS_196,RS_198?filter=COUNTRY:*&x-sideaxis=COUNTRY&x-topaxis=GHO;YEAR&profile=crosstable&format=csv'
+url = 'https://raw.githubusercontent.com/OHI-Science/ohi-global/published/yearly_results/global2019/OHI_final_formatted_scores_2019-11-15.csv' #check
 
-# download the data from the source
-raw_data_file = os.path.join(data_dir, 'data.csv')
-urllib.request.urlretrieve(url, raw_data_file)
+# read in data to pandas dataframe
+r = requests.get(url)
+df = pd.read_csv(io.BytesIO(r.content))
+
+# save unprocessed source data to put on S3 (below)
+raw_data_file = os.path.join(data_dir, os.path.basename(url))
+df.to_csv(raw_data_file, header = False, index = False)
+
 '''
 Process data
 '''
-# read in csv file as Dataframe
-df=pd.read_csv(raw_data_file, header=1) # selecting 2nd row as the column names
-#rename all the columns
-df.rename(columns={df.columns[0]:'country'}, inplace=True)
-df.rename(columns={df.columns[1]:'estimated_number_of_road_traffic_deaths_data'}, inplace=True)
-df.rename(columns={df.columns[2]:'death_rate_per_100000'}, inplace=True)
-# get the Estimated number of road traffic deaths by splitting
-# 'estimated_number_of_road_traffic_deaths_data' column on '[' and getting the first
-# element from the split. Store the second element from split to a new column 'bounds'
-df[['estimated_number_of_road_traffic_deaths_data','bounds']]=df['estimated_number_of_road_traffic_deaths_data'].str.split('[', expand=True)
-# create a new column for lower bound of estimated number of road traffic deaths
-# split the values from column 'bounds' on '-' and insert the first element
-# to the column 'estimated_lower_bound'
-# replace values in the column 'bounds' with second element from this split
-df[['estimated_lower_bound','bounds']]=df['bounds'].str.split('-', expand=True)
-# rename 'bounds' column to 'estimated_upper_bound'
-df.rename(columns={'bounds': 'estimated_upper_bound'}, inplace=True)
-# remove unnecessary character ']' from the end of each row in 'estimated_upper_bound' column
-df['estimated_upper_bound'] = df['estimated_upper_bound'].str[:-1]
-# add a column for datetime with January 1, 2016 for every row
-df['datetime'] = datetime.datetime(2016, 1, 1)
-# rearrange the column names
-df = df[['country', 'datetime', 'death_rate_per_100000','estimated_lower_bound',
-         'estimated_number_of_road_traffic_deaths_data','estimated_upper_bound']]
-# there are some rows which has empty spaces in between numbers in the
-# 'estimated_number_of_road_traffic_deaths_data' column. remove those empty spaces
-df['estimated_number_of_road_traffic_deaths_data'] = df['estimated_number_of_road_traffic_deaths_data'].str.replace(' ', '')
 #save processed dataset to csv
 processed_data_file = os.path.join(data_dir, dataset_name+'_edit.csv')
 df.to_csv(processed_data_file, index=False)
+
 '''
 Upload processed data to Carto
 '''
