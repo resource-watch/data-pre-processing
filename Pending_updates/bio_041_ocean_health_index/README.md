@@ -1,7 +1,7 @@
 ## Ocean Health Index Dataset Pre-processing
 This file describes the data pre-processing that was done to [the Ocean Health Index](http://www.oceanhealthindex.org/) for [display on Resource Watch](https://resourcewatch.org/data/explore/d0b93d79-3391-4590-b4a6-fb741678a746).
 
-The source provided the data in a csv file.
+The source provided the data in a csv file. This data file was not modified from the original version for display on Resource Watch.
 
 Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/bio_041_ocean_health_index/bio_041_ocean_health_index_processing.py) for more details on this processing.
 
