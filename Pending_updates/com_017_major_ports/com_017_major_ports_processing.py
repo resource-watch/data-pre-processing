@@ -51,6 +51,7 @@ zip_ref.close()
 '''
 Process data
 '''
+# read the data into a pandas dataframe
 df = pd.read_excel(os.path.join(raw_data_file_unzipped, 'WPI2019.xls'), encoding='utf-8', header=0)
 
 # save dataset to csv

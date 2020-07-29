@@ -1,7 +1,7 @@
 ## Major Ports Dataset Pre-processing
 This file describes the data pre-processing that was done to [the World Port Index](https://stats.oecd.org/Index.aspx?DataSetCode=MUNW) for [display on Resource Watch](https://resourcewatch.org/data/explore/31976299-3bd7-4926-acb0-8daadf7d9863).
 
-The data source provided the dataset as one shapefile and one csv file. This data file was not modified from the original version for display on Resource Watch.
+The data source provided the dataset as one shapefile and one csv file. The csv file was used and was not modified from the original version for display on Resource Watch.
 
 Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/com_017_major_ports/com_017_major_ports_processing.py) for more details on this processing.
 
