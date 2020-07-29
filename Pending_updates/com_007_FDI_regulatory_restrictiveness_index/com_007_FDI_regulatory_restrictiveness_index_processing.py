@@ -10,6 +10,7 @@ import util_carto
 from zipfile import ZipFile
 import shutil
 import logging
+import glob
 
 # Set up logging
 # Get the top-level logger object
@@ -23,7 +24,7 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 
 # name of table on Carto where you want to upload data
 # this should be a table name that is not currently in use
-dataset_name = 'com_007_FDI_regulatory_restrictiveness_Index' #check
+dataset_name = 'com_007_FDI_regulatory_restrictiveness_index' #check
 
 logger.info('Executing script for dataset: ' + dataset_name)
 # create a new sub-directory within your specified dir called 'data'
@@ -38,7 +39,7 @@ Above the table, there is a 'export' button that will lead to a dropdown menu co
 Once you select 'Text file (CSV)' from the menu, a new window will occur and allow you to download the data as a csv file to your Downloads folder.
 '''
 logger.info('Downloading raw data')
-download = os.path.join(os.path.expanduser("~"), 'Downloads', 'FDIINDEX_23072020142137563.csv')
+download = glob.glob(os.path.join(os.path.expanduser("~"), 'Downloads', 'FDIINDEX_*.csv'))[0]
 
 # Move this file into your data directory
 raw_data_file = os.path.join(data_dir, os.path.basename(download))
@@ -79,8 +80,8 @@ util_carto.upload_to_carto(processed_data_file, 'LINK')
 Upload original data and processed data to Amazon S3 storage
 '''
 # initialize AWS variables
-aws_bucket = 'wri-projects'
-s3_prefix = 'resourcewatch/raster/'
+aws_bucket = 'wri-public-data'
+s3_prefix = 'resourcewatch/'
 
 logger.info('Uploading original data to S3.')
 # Upload raw data file to S3
