@@ -54,21 +54,35 @@ Process data
 titles = list(df.iloc[3].fillna(''))
 units = list(df.iloc[4].fillna(''))
 years = list(df.iloc[5].fillna(''))
+# generate headers for the data columns
 headers = []
 for title, year, unit in zip(titles, years, units):
-    headers.append((year + ' ' + title + ' ' + unit).strip())
+    # remove any extra whitespace from year
+    # add space before year because Carto column name cannot begin with number
+    year_edited = ' ' + year.strip()
+    # remove any parentheses and extra whitespace from title
+    # add space before title because it will follow year
+    title_edited = ' ' + title.strip().replace('(', '').replace(')', '')
+    # remove any parentheses and extra whitespace from unit
+    # replace $ with dollars because Carto cannot have symbols in headers
+    # add space before unit because it will follow title
+    unit_edited = ' ' + unit.strip().replace('(', '').replace(')', '').replace('$', 'dollars')
+    # join year, title, unit into one string and replace spaces with underscores
+    headers.append((year_edited + title_edited + unit_edited).strip().replace(' ', '_'))
 
 # drop metadata rows
 df = df[7:]
 # assign correct headers to the columns 
 df.columns = headers
-# remove columns with unimportant information or no values at all 
+# remove unnamed columns because they contain flags to reference footers that are no longer in the table, or contain no values at all
 columns = [c for c in df.columns if len(c) > 1]
 df = df[columns].reset_index(drop=True)
 
 # delete rows with missing values
-df = df.dropna()
-#replace all '..' with None
+# delete rows that do not contain country information (identified by an empty 'HDI rank' column)
+df = df.dropna(subset=['HDI_rank'])
+
+# replace all '..', which is used to mark no-data, with None
 df = df.replace({'..':None})
 
 # save processed dataset to csv
