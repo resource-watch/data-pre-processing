@@ -10,6 +10,7 @@ import util_cloud
 import util_carto
 from zipfile import ZipFile
 import logging
+import glob 
 
 # Set up logging
 # Get the top-level logger object
@@ -38,7 +39,7 @@ https://stats.oecd.org/Index.aspx?DataSetCode=MUNW
 Above the table, there is a 'export' button that will lead to a dropdown menu containing different export options.
 Once you select 'Text file (CSV)' from the menu, a new window will occur and allow you to download the data as a csv file to your Downloads folder.
 '''
-download = os.path.join(os.path.expanduser("~"), 'Downloads', 'MUNW_20072020191307889.csv')
+download = glob.glob(os.path.join(os.path.expanduser("~"), 'Downloads', 'MUNW_*.csv'))[0]
 
 # Move this file into your data directory
 raw_data_file = os.path.join(data_dir, os.path.basename(download))
