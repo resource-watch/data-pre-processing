@@ -46,7 +46,7 @@ urllib.request.urlretrieve(url, raw_data_file)
 Process data
 '''
 # read in data from Table 2.1 GLOBAL HUNGER INDEX SCORES BY 2019 GHI RANK, which is on page 17 of the report
-df_raw=tabula.read_pdf(raw_data_file,pages=17) #check
+df_raw=tabula.read_pdf(raw_data_file,pages=17)[0] #check
 
 #remove headers and poorly formatted column names (rows 0, 1)
 df_raw=df_raw.iloc[2:]
