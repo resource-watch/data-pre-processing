@@ -12,7 +12,7 @@ Below, we describe the steps used to reformat the table so that it is formatted 
 5. Remove the column 'SECTOR' since it contains the same information as the column 'Sector / Industry'.
 6. Convert the format of the data frame from long to wide so each sector will have its own column.
 
-Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/com_007_FDI_regulatory_restrictiveness_Index/com_007_FDI_regulatory_restrictiveness_Index_processing.py) for more details on this processing.
+Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/com_007_fdi_regulatory_restrictiveness_index/com_007_fdi_regulatory_restrictiveness_index_processing.py) for more details on this processing.
 
 You can view the processed FDI Regulatory Restrictiveness Index dataset [on Resource Watch](https://resourcewatch.org/data/explore/fe311144-8c0e-4440-b068-6efd057e0f6a).
 

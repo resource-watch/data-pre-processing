@@ -1,4 +1,4 @@
-## {Terrestrial Ecoregions} Dataset Pre-processing
+## Terrestrial Ecoregions Dataset Pre-processing
 This file describes the data pre-processing that was done to [the Terrestrial Ecoregions](http://maps.tnc.org/files/metadata/TerrEcos.xml) for [display on Resource Watch](https://resourcewatch.org/data/explore/d9034fa9-8db0-4d52-b018-46fae37d3136).
 
 The source provided the data as a shapefile.
