@@ -37,9 +37,9 @@ Download data and save to your data directory
 Country-level data for total energy consumption can be downloaded at the following link:
 https://www.eia.gov/international/data/world/total-energy/total-energy-consumption?pd=44&p=0000000010000000000000000000000000000000000000000000000000u&u=0&f=A&v=mapbubble&a=-&i=none&vo=value&&t=C&g=00000000000000000000000000000000000000000000000001&l=249-ruvvvvvfvtvnvv1vrvvvvfvvvvvvfvvvou20evvvvvvvvvvvvvvs&s=315532800000&e=1483228800000
 
-Below the map and above the data table, you will see a 'Download' button on the right side of the screen
-Once you click this button, a dropdown menu will appear. Click on 'Table' under the 'Data (CSV)' section.
-This will download a file titled 'International_data.csv' to your Downloads folder.
+Above the data table, you will see a 'Download Options' button
+Once you click this button, a dropdown menu will appear. Click on 'Export CSV (table)' 
+This will download a file to your Downloads folder.
 '''
 download = glob.glob(os.path.join(os.path.expanduser("~"), 'Downloads', 'INT-Export*.csv'))[0]
 
