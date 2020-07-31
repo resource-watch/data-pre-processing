@@ -56,7 +56,7 @@ df = pd.read_csv(raw_data_file, header=[1])
 #drop first column from table with no data in it
 df = df.drop(df.columns[0], axis=1)
 
-#drop first two rows from table since we are interestedin energy consumption of each country
+#drop first two rows from table since we are interested in energy consumption of each country
 df = df.drop([0,1], axis=0)
 df=df.reset_index(drop=True)
 
