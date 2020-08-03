@@ -22,7 +22,7 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 
 # name of asset on GEE where you want to upload data
 # this should be an asset name that is not currently in use
-dataset_name = 'ocn_008_historic_coral_bleaching_stress_frequency' #check
+dataset_name = 'ocn_008_historical_coral_bleaching_stress_frequency' #check
 
 logger.info('Executing script for dataset: ' + dataset_name)
 # create a new sub-directory within your specified dir called 'data'
