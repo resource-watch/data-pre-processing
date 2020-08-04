@@ -1,9 +1,9 @@
+import shutil
+import glob
 import os
 import pandas as pd
-import sys
-import glob
 from zipfile import ZipFile
-import shutil
+import sys
 utils_path = os.path.join(os.path.abspath(os.getenv('PROCESSING_DIR')),'utils')
 if utils_path not in sys.path:
     sys.path.append(utils_path)
@@ -24,7 +24,7 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 
 # name of table on Carto where you want to upload data
 # this should be a table name that is not currently in use
-dataset_name = 'ene_033_energy_consumption' #check
+dataset_name = 'ene_034_electricity_consumption' #check
 
 logger.info('Executing script for dataset: ' + dataset_name)
 # create a new sub-directory within your specified dir called 'data'
@@ -34,8 +34,8 @@ data_dir = util_files.prep_dirs(dataset_name)
 '''
 Download data and save to your data directory
 
-Country-level data for total energy consumption can be downloaded at the following link:
-https://www.eia.gov/international/data/world/total-energy/total-energy-consumption?pd=44&p=0000000010000000000000000000000000000000000000000000000000u&u=0&f=A&v=mapbubble&a=-&i=none&vo=value&&t=C&g=00000000000000000000000000000000000000000000000001&l=249-ruvvvvvfvtvnvv1vrvvvvfvvvvvvfvvvou20evvvvvvvvvvvvvvs&s=315532800000&e=1483228800000
+Country-level data for net electricity consumption can be downloaded at the following link:
+https://www.eia.gov/international/data/world/electricity/electricity-consumption?pd=2&p=0000002&u=0&f=A&v=mapbubble&a=-&i=none&vo=value&&t=C&g=00000000000000000000000000000000000000000000000001&l=249-ruvvvvvfvtvnvv1vrvvvvfvvvvvvfvvvou20evvvvvvvvvvvvvvs&s=315532800000&e=1514764800000
 
 Above the data table, you will see a 'Download Options' button
 Once you click this button, a dropdown menu will appear. Click on 'Export CSV (table)' 
@@ -56,7 +56,7 @@ df = pd.read_csv(raw_data_file, header=[1])
 #drop first column from table with no data in it
 df = df.drop(df.columns[0], axis=1)
 
-#drop first two rows from table since we are interested in energy consumption of each country
+#drop first two rows from table since we are interested in the electricity consumption of each country
 df = df.drop([0,1], axis=0)
 df=df.reset_index(drop=True)
 
@@ -67,20 +67,19 @@ df.rename(columns={df.columns[0]:'country'}, inplace=True)
 df = df.replace({'--': None})
 
 #convert tables from wide form (each year is a column) to long form (a single column of years and a single column of values)
-year_list = [str(year) for year in range(1980, 2018)] #check
+year_list = [str(year) for year in range(1980, 2019)] #check
 df_long = pd.melt (df, id_vars= ['country'],
                    value_vars = year_list,
                    var_name = 'year',
-                   value_name = 'energy_consumption_quadBTU')
+                   value_name = 'electricity_consumption_billionkwh')
 
 #convert year and value column from object to integer
 df_long.year=df_long.year.astype('int64')
-df_long.energy_consumption_quadBTU=df_long.energy_consumption_quadBTU.astype('float64')
+df_long.electricity_consumption_billionkwh=df_long.electricity_consumption_billionkwh.astype('float64')
 
 #save processed dataset to csv
 processed_data_file = os.path.join(data_dir, dataset_name+'_edit.csv')
 df_long.to_csv(processed_data_file, index=False)
-
 
 '''
 Upload processed data to Carto
