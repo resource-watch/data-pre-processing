@@ -1,5 +1,5 @@
 ## Airports Dataset Pre-processing
-This file describes the data pre-processing that was done to [the Airports](https://openflights.org/data.html) for [display on Resource Watch](https://resourcewatch.org/data/explore/c111725c-e1c5-467b-a367-742db1c70893).
+This file describes the data pre-processing that was done to [the Airports dataset](https://openflights.org/data.html) for [display on Resource Watch](https://resourcewatch.org/data/explore/c111725c-e1c5-467b-a367-742db1c70893).
 
 The source provided the data in a dat format.
 
