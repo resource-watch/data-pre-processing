@@ -1,7 +1,10 @@
 import os
 import sys
-if os.path.join(os.getenv('PROCESSING_DIR'), 'utils') not in sys.path:
-    sys.path.append(os.path.join(os.getenv('PROCESSING_DIR'), 'utils'))
+import dotenv
+dotenv.load_dotenv(os.path.abspath(os.getenv('RW_ENV')))
+utils_path = os.path.join(os.path.abspath(os.getenv('PROCESSING_DIR')),'utils')
+if utils_path not in sys.path:
+    sys.path.append(utils_path)
 import util_files
 import util_cloud
 import urllib
@@ -52,17 +55,29 @@ subdatasets = ['n_gt0', # The number of events for which the thermal stress, mea
                'rp_ge4', # The average time between events for which the thermal stress, measured by Degree Heating Weeks, reached or exceeded 4 degC-weeks.
                'rp_ge8' # The average time between events for which the thermal stress, measured by Degree Heating Weeks, reached or exceeded 8 degC-weeks.
               ]
+mask_sds = ['mask']
 
 logger.info('Extracting relevant GeoTIFFs from source NetCDF')
 # convert netcdf to individual tif files for each of the subdatasets specified
 tifs = util_files.convert_netcdf(raw_data_file, subdatasets)
+mask = util_files.convert_netcdf(raw_data_file, mask_sds)[0]
+
+logger.info('Masking GeoTIFFs to reflect dataset coverage')
+nodata = -128
+i = 0
+maskedtifs = []
+for target in tifs:
+    sds = subdatasets[i]
+    maskedtif = os.path.join(data_dir,os.path.basename(target)[:-4]+'_masked.tif')
+    util_files.mask_geotiff(target, mask, maskedtif, nodata=nodata)
+    maskedtifs.append(maskedtif)
 
 # generate a name for processed tif
 processed_data_file = os.path.join(data_dir, dataset_name+'.tif')
 
 logger.info('Merge single-band GeoTIFFs into single, multiband GeoTIFF.')
 # merge all the sub tifs from this netcdf to create an overall tif representing all variable
-util_files.merge_geotiffs(tifs, processed_data_file)
+util_files.merge_geotiffs(maskedtifs, processed_data_file, ot='Float32')
 
 '''
 Upload processed data to Google Earth Engine
@@ -87,7 +102,7 @@ pyramiding_policy = 'MEAN' #check
 asset_name = f'projects/resource-watch-gee/{dataset_name}'
 
 # name bands according to variable names in original netcdf
-bands = [{'id': var, 'tileset_band_index': subdatasets.index(var), 'tileset_id': dataset_name, 'pyramidingPolicy': pyramiding_policy} for var in subdatasets]
+bands = [{'id': var, 'tileset_band_index': subdatasets.index(var), 'missing_data': {'values': [nodata]}, 'tileset_id': dataset_name, 'pyramidingPolicy': pyramiding_policy} for var in subdatasets]
 
 # create manifest for asset upload
 manifest = util_cloud.gee_manifest_complete(asset_name, gcs_uris[0], bands)
