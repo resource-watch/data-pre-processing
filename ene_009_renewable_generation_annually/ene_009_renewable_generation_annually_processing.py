@@ -28,6 +28,7 @@ utils_path = os.path.join(os.path.abspath(os.getenv('PROCESSING_DIR')),'utils')
 if utils_path not in sys.path:
     sys.path.append(utils_path)
 import util_files
+import util_cloud
 import util_carto
 import logging
 
