@@ -14,7 +14,7 @@ from botocore.exceptions import NoCredentialsError
 
 # name of table on Carto where you want to upload data
 # this should be a table name that is not currently in use
-dataset_name = 'bio_004_coral_reef_locations' 
+dataset_name = 'bio_004a_coral_reef_locations' 
 
 # set the directory that you are working in with the path variable
 # you can use an environmental variable, as we did, or directly enter the directory name as a string
@@ -72,7 +72,7 @@ gdf = gdf[['id',
            'SUB_LOC',
            'ORIG_NAME',
            'FAMILY', 
-           'GENUS'
+           'GENUS',
            'SPECIES',
            'DATA_TYPE',
            'START_DATE',
