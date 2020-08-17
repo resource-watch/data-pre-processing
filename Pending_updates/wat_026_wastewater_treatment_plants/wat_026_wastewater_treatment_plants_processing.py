@@ -3,30 +3,38 @@ import glob
 import requests
 import os
 import urllib.request
+import sys
 from collections import OrderedDict
 import cartosql
-from zipfile import ZipFile
 from carto.datasets import DatasetManager
 from carto.auth import APIKeyAuthClient
-import boto3
-from botocore.exceptions import NoCredentialsError
+utils_path = os.path.join(os.path.abspath(os.getenv('PROCESSING_DIR')),'utils')
+if utils_path not in sys.path:
+    sys.path.append(utils_path)
+import util_files
+import util_cloud
+from zipfile import ZipFile
+import logging
+
+# Set up logging
+# Get the top-level logger object
+logger = logging.getLogger()
+for handler in logger.handlers: logger.removeHandler(handler)
+logger.setLevel(logging.INFO)
+# make it print to the console.
+console = logging.StreamHandler()
+logger.addHandler(console)
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
 # name of table on Carto where you want to upload data
 # this should be a table name that is not currently in use
 dataset_name = 'wat_026_wastewater_treatment_plants' #check
 
-# set the directory that you are working in with the path variable
-# you can use an environmental variable, as we did, or directly enter the directory name as a string
-# example: path = '/home/wat_026_wastewater_treatment_plants'
-dir = os.path.join(os.getenv('PROCESSING_DIR'), dataset_name)
-#move to this directory
-os.chdir(dir)
-
+logger.info('Executing script for dataset: ' + dataset_name)
 # create a new sub-directory within your specified dir called 'data'
-data_dir = 'data'
-if not os.path.exists(data_dir):
-    os.mkdir(data_dir)
-    
+# within this directory, create files to store raw and processed data
+data_dir = util_files.prep_dirs(dataset_name)
+
 '''
 Download data and save to your data directory
 '''
@@ -57,7 +65,7 @@ gdf['geometry'] = gdf['geometry'].to_crs(epsg=4326)
 # create an index column to use as cartodb_id
 gdf['cartodb_id'] = gdf.index
 
-# reorder the columns 
+# reorder the columns
 gdf = gdf[['cartodb_id'] + list(gdf)[:-1]]
 
 # change the data type of the column 'REGISTRY_I' to integer
@@ -102,7 +110,7 @@ def checkCreateTable(table, schema, id_field='', time_field=''):
         # if a time_field is specified, set it as an index in the Carto table; this is not a unique index
         if time_field:
             cartosql.createIndex(table, time_field, user=CARTO_USER, key=CARTO_KEY)
-            
+
 def convert_geometry(geometries):
     '''
     Function to convert shapely geometries to geojsons
@@ -132,7 +140,7 @@ def carto_schema(dataframe):
             list_cols.append((col, 'text'))
     output = OrderedDict(list_cols)
     return output
-    
+
 # create empty table for dataset on Carto
 CARTO_SCHEMA = carto_schema(gdf)
 checkCreateTable(os.path.basename(processed_data_file).split('.')[0], CARTO_SCHEMA)
@@ -152,40 +160,32 @@ dataset_manager = DatasetManager(auth_client)
 dataset = dataset_manager.get(dataset_name+'_edit')
 dataset.privacy = 'LINK'
 dataset.save()
-print('Privacy set to public with link.')
+logger.info('Privacy set to public with link.')
 
 '''
 Upload original data and processed data to Amazon S3 storage
 '''
-def upload_to_aws(local_file, bucket, s3_file):
-    s3 = boto3.client('s3', aws_access_key_id=os.getenv('aws_access_key_id'),
-                      aws_secret_access_key=os.getenv('aws_secret_access_key'))
-    try:
-        s3.upload_file(local_file, bucket, s3_file)
-        print("Upload Successful")
-        print("http://{}.s3.amazonaws.com/{}".format(bucket, s3_file))
-        return True
-    except FileNotFoundError:
-        print("The file was not found")
-        return False
-    except NoCredentialsError:
-        print("Credentials not available")
-        return False
+'''
+Upload original data and processed data to Amazon S3 storage
+'''
+# initialize AWS variables
+aws_bucket = 'wri-public-data'
+s3_prefix = 'resourcewatch/'
 
-print('Uploading original data to S3.')
+logger.info('Uploading original data to S3.')
+# Upload raw data file to S3
+
 # Copy the raw data into a zipped file to upload to S3
 raw_data_dir = os.path.join(data_dir, dataset_name+'.zip')
-with ZipFile(raw_data_dir, 'w') as zip:
+with ZipFile(raw_data_dir,'w') as zip:
     zip.write(raw_data_file, os.path.basename(raw_data_file))
-
 # Upload raw data file to S3
-uploaded = upload_to_aws(raw_data_dir, 'wri-public-data', 'resourcewatch/'+os.path.basename(raw_data_dir))
+uploaded = util_cloud.aws_upload(raw_data_dir, aws_bucket, s3_prefix+os.path.basename(raw_data_dir))
 
-print('Uploading processed data to S3.')
+logger.info('Uploading processed data to S3.')
 # Copy the processed data into a zipped file to upload to S3
 processed_data_dir = os.path.join(data_dir, dataset_name+'_edit.zip')
-with ZipFile(processed_data_dir, 'w') as zip:
+with ZipFile(processed_data_dir,'w') as zip:
     zip.write(processed_data_file, os.path.basename(processed_data_file))
-
 # Upload processed data file to S3
-uploaded = upload_to_aws(processed_data_dir, 'wri-public-data', 'resourcewatch/'+os.path.basename(processed_data_dir))
+uploaded = util_cloud.aws_upload(processed_data_dir, aws_bucket, s3_prefix+os.path.basename(processed_data_dir))
