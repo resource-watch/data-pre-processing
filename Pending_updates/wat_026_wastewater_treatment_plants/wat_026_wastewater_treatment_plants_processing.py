@@ -59,7 +59,7 @@ Process data
 shapefile = glob.glob(os.path.join(raw_data_file_unzipped, '*.shp'))[0]
 gdf = gpd.read_file(shapefile)
 
-# Reproject geometries to epsg 4326
+# Reproject geometries to WGS84 (epsg 4326)
 gdf['geometry'] = gdf['geometry'].to_crs(epsg=4326)
 
 # create an index column to use as cartodb_id
@@ -162,9 +162,6 @@ dataset.privacy = 'LINK'
 dataset.save()
 logger.info('Privacy set to public with link.')
 
-'''
-Upload original data and processed data to Amazon S3 storage
-'''
 '''
 Upload original data and processed data to Amazon S3 storage
 '''
