@@ -5,7 +5,7 @@ The source provided the data as a shapefile.
 
 Below, we describe the steps used to reformat the shapefile to upload it to Carto.
 
-1. Read in the polygon shapefile as a geopandas data frame.
+1. Read in the polygon shapefile as a geopandas dataframe.
 2. Project the data so its coordinate system is WGS84.
 3. Convert the geometries of the data from shapely objects to geojsons.
 4. Create a new column from the index of the dataframe to use as a unique id column (cartodb_id) in Carto.
