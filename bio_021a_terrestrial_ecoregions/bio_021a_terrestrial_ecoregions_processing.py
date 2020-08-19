@@ -56,6 +56,8 @@ zip_ref.close()
 '''
 Process data
 '''
+logger.info('Downloading raw data')
+
 # load in the polygon shapefile
 shapefile = glob.glob(os.path.join(raw_data_file_unzipped, '*.shp'))[0]
 gdf = gpd.read_file(shapefile)
