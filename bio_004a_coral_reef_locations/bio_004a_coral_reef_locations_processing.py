@@ -247,8 +247,11 @@ logger.info('Uploading processed data to S3.')
 
 # Copy the processed data into a zipped file to upload to S3
 processed_data_dir = os.path.join(data_dir, dataset_name+'_edit.zip')
+processed_data_files = glob.glob(os.path.join(data_dir, dataset_name + '_edit.*'))
+processed_mask_files = glob.glob(os.path.join(data_dir, dataset_name +'_mask.*'))
 with ZipFile(processed_data_dir,'w') as zip:
-    zip.write(processed_data_file, os.path.basename(processed_data_file))
-    zip.write(processed_data_mask, os.path.basename(processed_data_mask))
+    for file in processed_data_files + processed_mask_files:
+        zip.write(file, os.path.basename(file))
+        
 # Upload processed data file to S3
 uploaded = util_cloud.aws_upload(processed_data_dir, aws_bucket, s3_prefix+os.path.basename(processed_data_dir))
