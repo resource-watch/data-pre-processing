@@ -39,6 +39,8 @@ data_dir = util_files.prep_dirs(dataset_name)
 '''
 Download data and save to your data directory
 '''
+logger.info('Downloading raw data')
+
 # insert the url used to download the data from the source website
 url = 'https://opendata.arcgis.com/datasets/7b7fb9d945544d41b3e7a91494c42930_0.zip?outSR=%7B%22latestWkid%22%3A3857%2C%22wkid%22%3A102100%7D' #check
 
@@ -56,8 +58,6 @@ zip_ref.close()
 '''
 Process data
 '''
-logger.info('Downloading raw data')
-
 # load in the polygon shapefile
 shapefile = glob.glob(os.path.join(raw_data_file_unzipped, '*.shp'))[0]
 gdf = gpd.read_file(shapefile)
@@ -190,8 +190,6 @@ aws_bucket = 'wri-public-data'
 s3_prefix = 'resourcewatch/'
 
 logger.info('Uploading original data to S3.')
-# Upload raw data file to S3
-
 # Copy the raw data into a zipped file to upload to S3
 raw_data_dir = os.path.join(data_dir, dataset_name+'.zip')
 with ZipFile(raw_data_dir,'w') as zip:
@@ -202,7 +200,10 @@ uploaded = util_cloud.aws_upload(raw_data_dir, aws_bucket, s3_prefix+os.path.bas
 logger.info('Uploading processed data to S3.')
 # Copy the processed data into a zipped file to upload to S3
 processed_data_dir = os.path.join(data_dir, dataset_name+'_edit.zip')
+# Find al the necessary components of the shapefile 
+processed_data_files = glob.glob(os.path.join(data_dir, dataset_name + '_edit.*'))
 with ZipFile(processed_data_dir,'w') as zip:
-    zip.write(processed_data_file, os.path.basename(processed_data_file))
+     for file in processed_data_files:
+        zip.write(file, os.path.basename(file))
 # Upload processed data file to S3
 uploaded = util_cloud.aws_upload(processed_data_dir, aws_bucket, s3_prefix+os.path.basename(processed_data_dir))

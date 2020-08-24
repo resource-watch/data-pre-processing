@@ -234,7 +234,6 @@ aws_bucket = 'wri-public-data'
 s3_prefix = 'resourcewatch/'
 
 logger.info('Uploading original data to S3.')
-# Upload raw data file to S3
 
 # Copy the raw data into a zipped file to upload to S3
 raw_data_dir = os.path.join(data_dir, dataset_name+'.zip')
@@ -247,6 +246,7 @@ logger.info('Uploading processed data to S3.')
 
 # Copy the processed data into a zipped file to upload to S3
 processed_data_dir = os.path.join(data_dir, dataset_name+'_edit.zip')
+# find all the necessary components of the two shapefiles
 processed_data_files = glob.glob(os.path.join(data_dir, dataset_name + '_edit.*'))
 processed_mask_files = glob.glob(os.path.join(data_dir, dataset_name +'_mask.*'))
 with ZipFile(processed_data_dir,'w') as zip:
