@@ -20,13 +20,13 @@ def upload_to_carto(file, privacy):
     # upload dataset to carto
     dataset = dataset_manager.create(file)
     logger.info('Carto table created: {}'.format(os.path.basename(file).split('.')[0]))
-    # set dataset privacy to 'Public with link'
+    # set dataset privacy
     dataset.privacy = privacy
     dataset.save()
 
 def create_carto_schema(gdf):
     '''
-    Function to create a dictionary of column names and data types 
+    Function to create a dictionary of column names and data types
     in order to the upload the data to Carto
     INPUT   gdf: geodataframe storing the data (dataframe)
     RETURN  ouput: an ordered dictionary (dictionary of strings)
@@ -47,9 +47,9 @@ def create_carto_schema(gdf):
             list_cols.append((col, 'text'))
     # create an ordered dictionary using the list
     output = OrderedDict(list_cols)
-    
+
     return output
-    
+
 def checkCreateTable(table, schema, id_field='', time_field=''):
     '''
     Create the table if it does not exist, and pull list of IDs already in the table if it does
@@ -77,7 +77,7 @@ def checkCreateTable(table, schema, id_field='', time_field=''):
         # if a time_field is specified, set it as an index in the Carto table; this is not a unique index
         if time_field:
             cartosql.createIndex(table, time_field, user=os.getenv('CARTO_WRI_RW_USER'), key=os.getenv('CARTO_WRI_RW_KEY'))
-            
+
 def convert_geometry(geometries):
     '''
     Function to convert shapely geometries to geojsons
@@ -97,19 +97,19 @@ def shapefile_to_carto(table_name, schema, gdf, privacy):
           gdf: a geodataframe storing all the data to upload (geodataframe)
           privacy: the privacy setting of the dataset to upload to Carto (string)
     '''
-    # create a copy of the geodataframe 
+    # create a copy of the geodataframe
     gdf_converted = gdf.copy()
     # convert the geometry of the geodataframe copy to geojsons
     gdf_converted['geometry'] = convert_geometry(gdf_converted.geometry)
-    # insert the rows contained in the geodataframe copy to the empty new table on Carto 
+    # insert the rows contained in the geodataframe copy to the empty new table on Carto
     cartosql.insertRows(table_name, schema.keys(), schema.values(), gdf_converted.values.tolist(), user=os.getenv('CARTO_WRI_RW_USER'), key=os.getenv('CARTO_WRI_RW_KEY'))
-    
+
     # Change privacy of table on Carto
     #set up carto authentication using local variables for username (CARTO_WRI_RW_USER) and API key (CARTO_WRI_RW_KEY)
     auth_client = APIKeyAuthClient(api_key=os.getenv('CARTO_WRI_RW_KEY'), base_url="https://{user}.carto.com/".format(user=os.getenv('CARTO_WRI_RW_USER')))
     #set up dataset manager with authentication
     dataset_manager = DatasetManager(auth_client)
-    #set dataset privacy to 'Public with link'
+    #set dataset privacy
     dataset = dataset_manager.get(table_name)
     dataset.privacy = privacy
     dataset.save()
