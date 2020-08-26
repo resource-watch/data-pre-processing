@@ -82,6 +82,7 @@ Create a mask for the data
 To create a mask for the dataset, you need to first create a 10km buffer around each coral reef polygon
 Considering the time and computation power needed to complete this operation, 
 we recommend you create the buffer in Google Earth Engine and export it as a shapefile to Google Drive
+(the code used to do this is provided in the README for this pre-processing)
 You will then be able to download the buffer shapefile from your Google Drive
 '''
 # download the shapefile from the Google Drive
