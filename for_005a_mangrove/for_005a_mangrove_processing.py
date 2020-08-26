@@ -2,14 +2,29 @@ import geopandas as gpd
 import numpy as np
 import glob
 import os
+import sys
 import urllib.request
 from collections import OrderedDict
 import cartosql
 from zipfile import ZipFile
 from carto.datasets import DatasetManager
 from carto.auth import APIKeyAuthClient
-import boto3
-from botocore.exceptions import NoCredentialsError
+utils_path = os.path.join(os.path.abspath(os.getenv('PROCESSING_DIR')),'utils')
+if utils_path not in sys.path:
+    sys.path.append(utils_path)
+import util_files
+import util_cloud
+import logging
+
+# Set up logging
+# Get the top-level logger object
+logger = logging.getLogger()
+for handler in logger.handlers: logger.removeHandler(handler)
+logger.setLevel(logging.INFO)
+# make it print to the console.
+console = logging.StreamHandler()
+logger.addHandler(console)
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
 # The purpose of this python code is to upload data from Global Mangrove Watch into the Resource Watch Carto account
 # Global Mangrove Watch (GMW) provides version 2 of its data available from this website:
@@ -19,22 +34,14 @@ from botocore.exceptions import NoCredentialsError
 # This code uploads the data from each shapefile into one table in the Resource Watch Carto account
 # We also overwrite the unique ID fields of the GMW data in order to provide continuous unique ID's in the Carto table
 
-
 # name of table on Carto where you want to upload data
 # this should be a table name that is not currently in use
 dataset_name = 'for_005a_mangrove' #check
 
-# first, set the directory that you are working in with the path variable
-# you can use an environmental variable, as we did, or directly enter the directory name as a string
-# example: path = '/home/for_005a_mangrove'
-path = os.path.join(os.getenv('PROCESSING_DIR'), dataset_name)
-#move to this directory
-os.chdir(path)
-
+logger.info('Executing script for dataset: ' + dataset_name)
 # create a new sub-directory within your specified dir called 'data'
-data_dir = 'data'
-if not os.path.exists(data_dir):
-    os.mkdir(data_dir)
+# within this directory, create files to store raw and processed data
+data_dir = util_files.prep_dirs(dataset_name)
 
 '''
 Download data and save to your data directory
@@ -178,34 +185,25 @@ print('Privacy set to public with link.')
 '''
 Upload original data and processed data to Amazon S3 storage
 '''
-def upload_to_aws(local_file, bucket, s3_file):
-    s3 = boto3.client('s3', aws_access_key_id=os.getenv('aws_access_key_id'), aws_secret_access_key=os.getenv('aws_secret_access_key'))
-    try:
-        s3.upload_file(local_file, bucket, s3_file)
-        print("Upload Successful")
-        print("http://{}.s3.amazonaws.com/{}".format(bucket, s3_file))
-        return True
-    except FileNotFoundError:
-        print("The file was not found")
-        return False
-    except NoCredentialsError:
-        print("Credentials not available")
-        return False
+# initialize AWS variables
+aws_bucket = 'wri-public-data'
+s3_prefix = 'resourcewatch/'
 
-print('Uploading original data to S3.')
+logger.info('Uploading original data to S3.')
 # Copy the raw data into a zipped file to upload to S3
 raw_data_dir = os.path.join(data_dir, dataset_name+'.zip')
 with ZipFile(raw_data_dir,'w') as zip:
     zip.write(raw_data_file, os.path.basename(raw_data_file))
-
 # Upload raw data file to S3
-uploaded = upload_to_aws(raw_data_dir, 'wri-public-data', 'resourcewatch/'+os.path.basename(raw_data_dir))
+uploaded = util_cloud.aws_upload(raw_data_dir, aws_bucket, s3_prefix+os.path.basename(raw_data_dir))
 
-print('Uploading processed data to S3.')
+logger.info('Uploading processed data to S3.')
 # Copy the processed data into a zipped file to upload to S3
 processed_data_dir = os.path.join(data_dir, dataset_name+'_edit.zip')
+# Find al the necessary components of the shapefile 
+processed_data_files = glob.glob(os.path.join(data_dir, dataset_name + '_edit.*'))
 with ZipFile(processed_data_dir,'w') as zip:
-    zip.write(processed_data_file, os.path.basename(processed_data_file))
-
+    for file in processed_data_files:
+        zip.write(file, os.path.basename(file))
 # Upload processed data file to S3
-uploaded = upload_to_aws(processed_data_dir, 'wri-public-data', 'resourcewatch/'+os.path.basename(processed_data_dir))
+uploaded = util_cloud.aws_upload(processed_data_dir, aws_bucket, s3_prefix+os.path.basename(processed_data_dir))
