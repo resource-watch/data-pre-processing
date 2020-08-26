@@ -28,16 +28,16 @@ def create_carto_schema(gdf):
     '''
     Function to create a dictionary of column names and data types
     in order to the upload the data to Carto
-    INPUT   gdf: geodataframe storing the data (dataframe)
+    INPUT   df: dataframe storing the data (dataframe)
     RETURN  ouput: an ordered dictionary (dictionary of strings)
     '''
     # create an empty list to store column names
     list_cols = []
-    # column names and types for data table
+    # get column names and types for data table
     # column types should be one of the following: geometry, text, numeric, timestamp
-    for col in list(gdf):
+    for col in list(df):
         # if the column type is float64 or int64, assign the column type as numeric
-        if (gdf[col].dtypes  == 'float')| (gdf[col].dtypes  == 'int'):
+        if (df[col].dtypes  == 'float')| (df[col].dtypes  == 'int'):
             list_cols.append((col, 'numeric'))
         # if the column type is geometry, assign the column type as geometry
         elif col  == 'geometry':
