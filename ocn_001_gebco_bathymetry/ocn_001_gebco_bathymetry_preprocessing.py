@@ -12,7 +12,7 @@ import shutil
 import glob
 import subprocess
 import rasterio
-load_dotenv(dotenv_path='/Users/kristine/WRI/cred/.env')
+load_dotenv(dotenv_path='.env')
 
 # name of asset on GEE where you want to upload data
 # this should be an asset name that is not currently in use
