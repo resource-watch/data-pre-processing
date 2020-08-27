@@ -107,7 +107,7 @@ ee.Initialize(auth)
 
 # set pyramiding policy for GEE upload
 pyramiding_policy = 'MEAN' #check
-missing_data_values = [-128]
+missing_data_values = [-128.0]
 
 # set asset name to be used in GEE
 asset_name = f'projects/resource-watch-gee/{dataset_name}'
