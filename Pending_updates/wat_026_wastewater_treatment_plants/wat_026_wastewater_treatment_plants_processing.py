@@ -4,15 +4,12 @@ import requests
 import os
 import urllib.request
 import sys
-from collections import OrderedDict
-import cartosql
-from carto.datasets import DatasetManager
-from carto.auth import APIKeyAuthClient
 utils_path = os.path.join(os.path.abspath(os.getenv('PROCESSING_DIR')),'utils')
 if utils_path not in sys.path:
     sys.path.append(utils_path)
 import util_files
 import util_cloud
+import util_carto
 from zipfile import ZipFile
 import logging
 
@@ -80,87 +77,13 @@ gdf.to_file(processed_data_file,driver='ESRI Shapefile')
 '''
 Upload processed data to Carto
 '''
-# Carto username and API key for account where we will store the data
-CARTO_USER = os.getenv('CARTO_WRI_RW_USER')
-CARTO_KEY = os.getenv('CARTO_WRI_RW_KEY')
-
-def checkCreateTable(table, schema, id_field='', time_field=''):
-    '''
-    Create the table if it does not exist, and pull list of IDs already in the table if it does
-    INPUT   table: Carto table to check or create (string)
-            schema: dictionary of column names and types, used if we are creating the table for the first time (dictionary)
-            id_field: optional, name of column that we want to use as a unique ID for this table; this will be used to compare the
-                    source data to the our table each time we run the script so that we only have to pull data we
-                    haven't previously uploaded (string)
-            time_field:  optional, name of column that will store datetime information (string)
-    '''
-    # check it the table already exists in Carto
-    if cartosql.tableExists(table, user=CARTO_USER, key=CARTO_KEY):
-        # if the table does exist, get a list of all the values in the id_field column
-        print('Carto table already exists.')
-    else:
-        # if the table does not exist, create it with columns based on the schema input
-        print('Table {} does not exist, creating'.format(table))
-        cartosql.createTable(table, schema, user=CARTO_USER, key=CARTO_KEY)
-        # if a unique ID field is specified, set it as a unique index in the Carto table; when you upload data, Carto
-        # will ensure no two rows have the same entry in this column and return an error if you try to upload a row with
-        # a duplicate unique ID
-        if id_field:
-            cartosql.createIndex(table, id_field, unique=True, user=CARTO_USER, key=CARTO_KEY)
-        # if a time_field is specified, set it as an index in the Carto table; this is not a unique index
-        if time_field:
-            cartosql.createIndex(table, time_field, user=CARTO_USER, key=CARTO_KEY)
-
-def convert_geometry(geometries):
-    '''
-    Function to convert shapely geometries to geojsons
-    INPUT   geometries: shapely geometries (list of shapely geometries)
-    RETURN  output: geojsons (list of geojsons)
-    '''
-    output = []
-    for geom in geometries:
-        output.append(geom.__geo_interface__)
-    return output
-
-def carto_schema(dataframe):
-    '''
-    Function to create a dictionary of column names and data types in order to the upload the data to Carto
-    INPUT   dataframe: the geopandas dataframe containing the data
-    RETURN  ouput: an ordered dictionary
-    '''
-    list_cols = []
-    # column names and types for data table
-    # column types should be one of the following: geometry, text, numeric, timestamp
-    for col in list(dataframe):
-        if (dataframe[col].dtypes  == 'float64')| (dataframe[col].dtypes  == 'int64'):
-            list_cols.append((col, 'numeric'))
-        elif col  == 'geometry':
-            list_cols.append(('the_geom', 'geometry'))
-        else:
-            list_cols.append((col, 'text'))
-    output = OrderedDict(list_cols)
-    return output
 
 # create empty table for dataset on Carto
-CARTO_SCHEMA = carto_schema(gdf)
-checkCreateTable(os.path.basename(processed_data_file).split('.')[0], CARTO_SCHEMA)
-
-# convert the geometry of the file from shapely to geojson
-gdf['geometry'] = convert_geometry(gdf['geometry'])
+CARTO_SCHEMA = util_carto.create_carto_schema(gdf)
+util_carto.checkCreateTable(os.path.basename(processed_data_file).split('.')[0], CARTO_SCHEMA)
 
 # upload the shapefile to the empty carto table
-cartosql.insertRows(os.path.basename(processed_data_file).split('.')[0], CARTO_SCHEMA.keys(), CARTO_SCHEMA.values(), gdf.values.tolist(), user=CARTO_USER, key=CARTO_KEY)
-
-# Change privacy of table on Carto
-#set up carto authentication using local variables for username (CARTO_WRI_RW_USER) and API key (CARTO_WRI_RW_KEY)
-auth_client = APIKeyAuthClient(api_key=os.getenv('CARTO_WRI_RW_KEY'), base_url="https://{user}.carto.com/".format(user=os.getenv('CARTO_WRI_RW_USER')))
-#set up dataset manager with authentication
-dataset_manager = DatasetManager(auth_client)
-#set dataset privacy to 'Public with link'
-dataset = dataset_manager.get(dataset_name+'_edit')
-dataset.privacy = 'LINK'
-dataset.save()
-logger.info('Privacy set to public with link.')
+util_carto.shapefile_to_carto(os.path.basename(processed_data_file).split('.')[0], CARTO_SCHEMA, gdf, 'LINK')
 
 '''
 Upload original data and processed data to Amazon S3 storage
