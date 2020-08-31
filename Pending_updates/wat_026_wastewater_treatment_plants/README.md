@@ -3,7 +3,7 @@ This file describes the data pre-processing that was done to [the Environmental 
 
 The source provided the data as a shapefile.
 
-Below, we describe the steps used to reformat the shapefile to upload it to Carto}.
+Below, we describe the steps used to reformat the shapefile to upload it to Carto.
 
 1. Read in the shapefile as a geopandas data frame.
 2. Project the data so its coordinate system is WGS84.

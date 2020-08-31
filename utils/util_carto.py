@@ -24,7 +24,7 @@ def upload_to_carto(file, privacy):
     dataset.privacy = privacy
     dataset.save()
 
-def create_carto_schema(gdf):
+def create_carto_schema(df):
     '''
     Function to create a dictionary of column names and data types
     in order to the upload the data to Carto
