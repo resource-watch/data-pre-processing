@@ -11,4 +11,4 @@ You can view the processed Political Rights and Civil Liberties Index dataset [o
 
 You can also download the original dataset [directly through Resource Watch]({s3 link if available}), or [from the source website](https://freedomhouse.org/report/freedom-world/2020/leaderless-struggle-democracy).
 
-###### Note: This dataset processing was done by [Matthew Iceland](https://github.com/miceland2) and [Yujing Wu](https://www.wri.org/profile/yujing-wu), and QC'd by [Amelia Snyder](https://www.wri.org/profile/amelia-snyder).
+###### Note: This dataset processing was done by [Matthew Iceland](https://github.com/miceland2) and [Yujing Wu](https://www.wri.org/profile/yujing-wu), and QC'd by [Taufiq Rashid](https://www.wri.org/profile/taufiq-rashid).
