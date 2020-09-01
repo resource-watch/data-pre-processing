@@ -53,31 +53,37 @@ Process data
 # read in csv file as Dataframe
 df = pd.read_csv(raw_data_file, header=[1])
 
-#drop first column from table with no data in it
+# drop first column from table with no data in it
 df = df.drop(df.columns[0], axis=1)
 
-#drop first two rows from table since we are interested in the electricity consumption of each country
+# drop first two rows from table since we are interested in the electricity consumption of each country
 df = df.drop([0,1], axis=0)
 df=df.reset_index(drop=True)
 
-#rename first two unnamed columns
+# rename first two unnamed columns
 df.rename(columns={df.columns[0]:'country'}, inplace=True)
 
-#replace — in table with None
+# replace — in table with None
 df = df.replace({'--': None})
 
-#convert tables from wide form (each year is a column) to long form (a single column of years and a single column of values)
+# remove the leading white spaces from the 'country' column 
+df['country'] = [x.strip() for x in df.country]
+
+# convert tables from wide form (each year is a column) to long form (a single column of years and a single column of values)
 year_list = [str(year) for year in range(1980, 2019)] #check
 df_long = pd.melt (df, id_vars= ['country'],
                    value_vars = year_list,
                    var_name = 'year',
                    value_name = 'electricity_consumption_billionkwh')
 
-#convert year and value column from object to integer
+# convert year and value column from object to integer
 df_long.year=df_long.year.astype('int64')
 df_long.electricity_consumption_billionkwh=df_long.electricity_consumption_billionkwh.astype('float64')
 
-#save processed dataset to csv
+# add a column 'electricity_consumption_ktoe' to include electricity consumption in Kilotonne of Oil Equivalent (ktoe)
+df_long['electricity_consumption_ktoe']= [x * 1000000000/11630000 for x in df_long.electricity_consumption_billionkwh]
+
+# save processed dataset to csv
 processed_data_file = os.path.join(data_dir, dataset_name+'_edit.csv')
 df_long.to_csv(processed_data_file, index=False)
 
