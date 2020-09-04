@@ -15,7 +15,7 @@ This dataset is provided by the source as a single NetCDF file. The following va
 
 To display these data on Resource Watch, a multiband GeoTIFF file was extracted from one subdataset within the source NetCDF file, with each band in the resulting GeoTIFF corresponding to one year in the time series. This GeoTIFF was then translated into the appropriate coordinates for web display.
 
-Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/ocn_003_projected_sea_level_rise/ocn_003_projected_sea_level_rise.py) for more details on this processing.
+Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/ocn_003_projected_sea_level_rise/ocn_003_projected_sea_level_rise_processing.py) for more details on this processing.
 
 You can view the processed dataset for [display on Resource Watch](https://resourcewatch.org/data/explore/).
 

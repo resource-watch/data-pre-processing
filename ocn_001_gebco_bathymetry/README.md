@@ -1,7 +1,7 @@
 ## GEBCO Bathymetry
 This file describes the data pre-processing that was done to the [GEBCO_2020 Grid](https://www.gebco.net/data_and_products/gridded_bathymetry_data/) for [display on Resource Watch](https://resourcewatch.org/data/explore/).
 
-Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/ocn_001_gebco_bathymetry/ocn_001_gebco_bathymetry_preprocessing.py) for more details on this processing.
+Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/ocn_001_gebco_bathymetry/ocn_001_gebco_bathymetry_processing.py) for more details on this processing.
 
 You can view the processed dataset for [display on Resource Watch](https://resourcewatch.org/data/explore/).
 
