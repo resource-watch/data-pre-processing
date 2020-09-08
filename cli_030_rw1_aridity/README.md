@@ -7,6 +7,6 @@ Please see the [Python script](https://github.com/resource-watch/data-pre-proces
 
 You can view the processed Aridity dataset [on Resource Watch](https://resourcewatch.org/data/explore/43d9dac0-88be-4db1-b71e-482756220817).
 
-You can also download the original dataset [directly through Resource Watch](http://wri-projects.s3.amazonaws.com/resourcewatch/raster/cli_030_aridity.zip), or [from the source website](https://cgiarcsi.community/2019/01/24/global-aridity-index-and-potential-evapotranspiration-climate-database-v2/).
+You can also download the original dataset [directly through Resource Watch](http://wri-projects.s3.amazonaws.com/resourcewatch/raster/cli_030_rw1_aridity.zip), or [from the source website](https://cgiarcsi.community/2019/01/24/global-aridity-index-and-potential-evapotranspiration-climate-database-v2/).
 
 ###### Note: This dataset processing was done by [Yujing Wu](https://www.wri.org/profile/yujing-wu), and QC'd by [Amelia Snyder](https://www.wri.org/profile/amelia-snyder).
