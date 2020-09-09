@@ -25,7 +25,7 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 
 # name of table on Carto where you want to upload data
 # this should be a table name that is not currently in use
-dataset_name = 'cli_049_rw1_pik_world_sectoral_ar4' #check
+dataset_name = 'dash_cli_049_rw1_pik_historical_emissions' #check
 
 logger.info('Executing script for dataset: ' + dataset_name)
 # create a new sub-directory within your specified dir called 'data'
