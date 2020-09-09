@@ -36,9 +36,7 @@ def gcs_upload(files, prefix='', gcs_bucket=None):
         uri = 'gs://{}/{}'.format(gcs_bucket.name, path)
         logger.debug('Uploading {} to {}'.format(f, uri))
         # upload the file to GCS
-        blob = gcs_bucket.blob(path)
-        blob._chunk_size = 5 * 1024* 1024
-        blob.upload_from_filename(f)
+        gcs_bucket.blob(path).upload_from_filename(f)
         # add the file location to our list of uploaded files
         gcs_uris.append(uri)
     return gcs_uris
