@@ -11,6 +11,7 @@ import ee
 import subprocess
 from google.cloud import storage
 import xarray
+import rioxarray
 import logging
 
 # Set up logging
@@ -25,13 +26,13 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 
 # name of asset on GEE where you want to upload data
 # this should be an asset name that is not currently in use
-dataset_name = 'cit_031_air_quality_PM25_concentration' #check
+dataset_name = 'cit_031_rw1_air_quality_PM25_concentration' #check
 
 logger.info('Executing script for dataset: ' + dataset_name)
 # create a new sub-directory within your specified dir called 'data'
 # within this directory, create files to store raw and processed data
 data_dir = util_files.prep_dirs(dataset_name)
-    
+
 '''
 Download data and save to your data directory
 '''
@@ -56,7 +57,7 @@ Process data
 '''
 def convert(input_file, output_file):
     '''
-    Convert netcdf files to tifs 
+    Convert netcdf files to tifs
     Since the latitude and longitude of this netcdf are reversed, this function first transposes
     the 'LAT' and 'LON' dimensions of the netcdf file before exporting it as a GeoTIFF
     INPUT   file: file name for netcdf that we want to convert (string)
@@ -72,14 +73,14 @@ def convert(input_file, output_file):
     PM25.rio.write_crs("EPSG:4326", inplace=True)
     # translate the netcdf file into a tif
     PM25.rio.to_raster(output_file[:-4] + '_pre.tif')
-    
+
     # traditionally, the origin of a raster dataset should be its upper left corner
     # however, after being transposed, the origin of this raster dataset is its lower left corner
     # the step below reexports the tif using gdalwarp so its origin is now its upper left corner
     cmd = ['gdalwarp', output_file[:-4] + '_pre.tif', output_file]
     subprocess.call(cmd)
 
-# create a list containing the paths to the processed files 
+# create a list containing the paths to the processed files
 processed_data_file = []
 for url in url_list:
     # find the index in the filename string where the underscore before the year begins
@@ -94,7 +95,7 @@ logger.info('Extracting relevant GeoTIFFs from source NetCDF')
 for raw_file, processed_file in zip(raw_data_file, processed_data_file):
     convert(raw_file, processed_file)
     logger.info(processed_file + ' created')
-    
+
 '''
 Upload processed data to Google Earth Engine
 '''

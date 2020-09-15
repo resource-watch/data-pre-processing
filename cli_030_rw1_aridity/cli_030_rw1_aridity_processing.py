@@ -25,13 +25,13 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 
 # name of asset on GEE where you want to upload data
 # this should be an asset name that is not currently in use
-dataset_name = 'cli_030_aridity' #check
+dataset_name = 'cli_030_rw1_aridity' #check
 
 logger.info('Executing script for dataset: ' + dataset_name)
 # create a new sub-directory within your specified dir called 'data'
 # within this directory, create files to store raw and processed data
 data_dir = util_files.prep_dirs(dataset_name)
-    
+
 '''
 Download data and save to your data directory
 '''
@@ -54,7 +54,7 @@ Process data
 # the path to the unprocessed data
 raster = glob.glob(os.path.join(raw_data_file_unzipped, 'ai_et0', '*.tif'))[0]
 
-# generate a name for processed tif 
+# generate a name for processed tif
 processed_data_file = os.path.join(data_dir, dataset_name+'.tif')
 
 # rename the tif file
