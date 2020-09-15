@@ -9,7 +9,6 @@ import util_carto
 import urllib
 from zipfile import ZipFile
 import logging
-import glob
 import pandas as pd
 import datetime
 

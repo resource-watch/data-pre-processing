@@ -1,6 +1,6 @@
 ## PIK Historical Emissions Dataset Pre-processing
 This file describes the data pre-processing that was done to [the PRIMAP-hist national historical emissions time series
-(1850-2017)](https://dataservices.gfz-potsdam.de/pik/showshort.php?id=escidoc:4736895) for [display on Resource Watch]({link to dataset's metadata page on Resource Watch}).
+(1850-2017)](https://dataservices.gfz-potsdam.de/pik/showshort.php?id=escidoc:4736895) for [display on Resource Watch](https://resourcewatch.org/embed/widget/1d736449-18cb-4757-8c6a-d8a175d906f0).
 
 The source provides the data as a csv file.
 
@@ -27,7 +27,7 @@ Below, we describe the steps used to reformat the table so that it is formatted 
 
 Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/cli_049_rw1_dash_historical_emissions/cli_049_rw1_dash_historical_emissions_processing.py) for more details on this processing.
 
-You can view the processed PIK Historical Emissions dataset [on Resource Watch]({link to dataset's metadata page on Resource Watch}).
+You can view the processed PIK Historical Emissions dataset [on Resource Watch](https://resourcewatch.org/embed/widget/1d736449-18cb-4757-8c6a-d8a175d906f0).
 
 You can also download the original dataset [directly through Resource Watch]({s3 link if available}), or [from the source website](https://dataservices.gfz-potsdam.de/pik/showshort.php?id=escidoc:4736895).
 
