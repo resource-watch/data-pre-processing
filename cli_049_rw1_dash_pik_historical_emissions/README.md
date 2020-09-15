@@ -25,7 +25,7 @@ Below, we describe the steps used to reformat the table so that it is formatted 
 17. Create a 'gas' column to indicate that the emissions values are the sum of all GHG emissions.
 18. Rename the 'category' column to 'sector'.
 
-Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/cli_049_rw1_dash_historical_emissions/cli_049_rw1_dash_historical_emissions_processing.py) for more details on this processing.
+Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/cli_049_rw1_dash_pik_historical_emissions/cli_049_rw1_dash_pik_historical_emissions_processing.py) for more details on this processing.
 
 You can view the processed PIK Historical Emissions dataset [on Resource Watch](https://resourcewatch.org/embed/widget/1d736449-18cb-4757-8c6a-d8a175d906f0).
 
