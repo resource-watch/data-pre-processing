@@ -22,8 +22,8 @@ console = logging.StreamHandler()
 logger.addHandler(console)
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
-# name of asset on GEE where you want to upload data
-# this should be an asset name that is not currently in use
+# name of table name on Carto where you want to upload data
+# this should be a table name that is not currently in use
 dataset_name = 'cli_049_rw1_dash_pik_historical_emissions' #check
 
 logger.info('Executing script for dataset: ' + dataset_name)
@@ -76,7 +76,7 @@ df.loc[df.entity == 'N2O', 'yr_data'] = 298 * df.loc[df.entity == 'N2O', 'yr_dat
 # convert the emission values to be in MtCO2eq
 df['yr_data'] = [x * 0.001 for x in df.yr_data]
 
-# change 'GgCO2eq' to be 'MtCO2eq' in the 'unit' column 
+# change the values of 'unit' column from 'GgCO2eq' to 'MtCO2eq'
 df['unit'] = 'MtCO2eq'
 
 # create a dictionary for all the major sectors generating GHG emissions
