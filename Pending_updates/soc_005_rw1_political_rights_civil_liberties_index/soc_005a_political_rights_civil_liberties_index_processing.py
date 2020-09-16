@@ -10,6 +10,7 @@ import util_files
 import util_cloud
 import util_carto
 from zipfile import ZipFile
+import datetime
 import logging
 
 # Set up logging
@@ -24,7 +25,7 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 
 # name of table on Carto where you want to upload data
 # this should be a table name that is not currently in use
-dataset_name = 'soc_005a_political_rights_civil_liberties_index' #check
+dataset_name = 'soc_005_rw1_political_rights_civil_liberties_index' #check
 
 logger.info('Executing script for dataset: ' + dataset_name)
 # create a new sub-directory within your specified dir called 'data'
@@ -52,6 +53,30 @@ Process data
 '''
 # remove empty columns
 df.dropna(axis = 1, how = 'all', inplace = True)
+
+# change the names of column 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'CL', 'PR', and 'Total'
+# to match the column names in the previous Carto table 
+df.rename(columns = {'A': 'a_aggr',
+                     'B': 'b_aggr',
+                     'C': 'c_aggr',
+                     'D': 'd_aggr',
+                     'E': 'e_aggr',
+                     'F': 'f_aggr',
+                     'G': 'g_aggr',
+                     'CL': 'cl_aggr',
+                     'PR': 'pr_aggr',
+                     'Total': 'total_aggr'},
+          inplace = True)						
+
+# rename the 'country/territory' and 'c/t?' columns to replace characters unsupported by Carto with underscores
+df.rename(columns = {'Country/Territory': 'country_territory',
+                     'C/T?': 'c_t_'}, inplace = True)	
+
+# convert the column names to lowercase letters and replace spaces with underscores
+df.columns = [x.lower().replace(' ', '_') for x in df.columns]
+
+# convert the years in the 'edition' column to datatime objects and store them in a new column 'datetime'
+df['datetime'] = [datetime.datetime(x, 1, 1) for x in df.edition]
 
 # save processed dataset to csv
 processed_data_file = os.path.join(data_dir, dataset_name+'_edit.csv')
