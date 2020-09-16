@@ -38,7 +38,20 @@ Download data and save to your data directory
 '''
 logger.info('Downloading raw data')
 # list the urls used to download the data from the source website
-url_list = ['http://fizz.phys.dal.ca/~atmos/datasets/EST2020/ACAG_PM25_GWR_V4GL03_201101_201112_0p01.nc',
+url_list = ['http://fizz.phys.dal.ca/~atmos/datasets/EST2020/ACAG_PM25_GWR_V4GL03_199801_199812_0p01.nc',
+            'http://fizz.phys.dal.ca/~atmos/datasets/EST2020/ACAG_PM25_GWR_V4GL03_199901_199912_0p01.nc',
+            'http://fizz.phys.dal.ca/~atmos/datasets/EST2020/ACAG_PM25_GWR_V4GL03_200001_200012_0p01.nc',
+            'http://fizz.phys.dal.ca/~atmos/datasets/EST2020/ACAG_PM25_GWR_V4GL03_200101_200112_0p01.nc',
+            'http://fizz.phys.dal.ca/~atmos/datasets/EST2020/ACAG_PM25_GWR_V4GL03_200201_200212_0p01.nc',
+            'http://fizz.phys.dal.ca/~atmos/datasets/EST2020/ACAG_PM25_GWR_V4GL03_200301_200312_0p01.nc',
+            'http://fizz.phys.dal.ca/~atmos/datasets/EST2020/ACAG_PM25_GWR_V4GL03_200401_200412_0p01.nc',
+            'http://fizz.phys.dal.ca/~atmos/datasets/EST2020/ACAG_PM25_GWR_V4GL03_200501_200512_0p01.nc',
+            'http://fizz.phys.dal.ca/~atmos/datasets/EST2020/ACAG_PM25_GWR_V4GL03_200601_200612_0p01.nc',
+            'http://fizz.phys.dal.ca/~atmos/datasets/EST2020/ACAG_PM25_GWR_V4GL03_200701_200712_0p01.nc',
+            'http://fizz.phys.dal.ca/~atmos/datasets/EST2020/ACAG_PM25_GWR_V4GL03_200801_200812_0p01.nc',
+            'http://fizz.phys.dal.ca/~atmos/datasets/EST2020/ACAG_PM25_GWR_V4GL03_200901_200912_0p01.nc',
+            'http://fizz.phys.dal.ca/~atmos/datasets/EST2020/ACAG_PM25_GWR_V4GL03_201001_201012_0p01.nc',
+            'http://fizz.phys.dal.ca/~atmos/datasets/EST2020/ACAG_PM25_GWR_V4GL03_201101_201112_0p01.nc',
             'http://fizz.phys.dal.ca/~atmos/datasets/EST2020/ACAG_PM25_GWR_V4GL03_201201_201212_0p01.nc',
             'http://fizz.phys.dal.ca/~atmos/datasets/EST2020/ACAG_PM25_GWR_V4GL03_201301_201312_0p01.nc',
             'http://fizz.phys.dal.ca/~atmos/datasets/EST2020/ACAG_PM25_GWR_V4GL03_201401_201412_0p01.nc',
