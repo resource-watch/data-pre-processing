@@ -1,5 +1,5 @@
 ## Human Development Index Dataset Pre-processing
-This file describes the data pre-processing that was done to [the Human Development Index (HDI)](http://hdr.undp.org/en/2016-report) for [display on Resource Watch](https://resourcewatch.org/data/explore/fc6dea95-37a6-41a0-8c99-38b7a2ea7301).
+This file describes the data pre-processing that was done to [the Human Development Index (HDI)](http://hdr.undp.org/en/2019-report) for [display on Resource Watch](https://resourcewatch.org/data/explore/fc6dea95-37a6-41a0-8c99-38b7a2ea7301).
 
 The source provided the data in a csv format.
 
@@ -22,6 +22,6 @@ Please see the [Python script](https://github.com/resource-watch/data-pre-proces
 
 You can view the processed Human Development Index dataset [on Resource Watch](https://resourcewatch.org/data/explore/fc6dea95-37a6-41a0-8c99-38b7a2ea7301).
 
-You can also download the original dataset [directly through Resource Watch]({s3 link if available}), or [from the source website](http://hdr.undp.org/en/data#).
+You can also download the original dataset [directly through Resource Watch](http://wri-public-data.s3.amazonaws.com/resourcewatch/soc_004_rw1_human_development_index.zip), or [from the source website](http://hdr.undp.org/en/indicators/137506#).
 
 ###### Note: This dataset processing was done by [Matthew Iceland](https://github.com/miceland2) and [Yujing Wu](https://www.wri.org/profile/yujing-wu), and QC'd by [Amelia Snyder](https://www.wri.org/profile/amelia-snyder).
