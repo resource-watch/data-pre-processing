@@ -25,7 +25,7 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 
 # name of table on Carto where you want to upload data
 # this should be a table name that is not currently in use
-dataset_name = 'wat_026_wastewater_treatment_plants' #check
+dataset_name = 'wat_026_rw1_wastewater_treatment_plants' #check
 
 logger.info('Executing script for dataset: ' + dataset_name)
 # create a new sub-directory within your specified dir called 'data'
@@ -44,9 +44,9 @@ raw_data_file = os.path.join(data_dir, 'Environmental_Protection_Agency__EPA__Fa
 urllib.request.urlretrieve(url, raw_data_file)
 
 # unzip source data
-raw_data_file_unzipped = os.path.join(data_dir, 'unzip')
+raw_data_file_unzipped = os.path.join(data_dir, 'unz')
 zip_ref = ZipFile(raw_data_file, 'r')
-zip_ref.extractall(raw_data_file_unzipped)
+zip_ref.extractall('data\\unz')
 zip_ref.close()
 
 '''
@@ -103,7 +103,7 @@ uploaded = util_cloud.aws_upload(raw_data_dir, aws_bucket, s3_prefix+os.path.bas
 logger.info('Uploading processed data to S3.')
 # Copy the processed data into a zipped file to upload to S3
 processed_data_dir = os.path.join(data_dir, dataset_name+'_edit.zip')
-# Find al the necessary components of the shapefile 
+# Find al the necessary components of the shapefile
 processed_data_files = glob.glob(os.path.join(data_dir, dataset_name + '_edit.*'))
 with ZipFile(processed_data_dir,'w') as zip:
     for file in processed_data_files:
