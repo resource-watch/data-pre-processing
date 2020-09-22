@@ -11,27 +11,15 @@
 
 # ### Import
 
-# In[ ]:
-
-
 import os
 import sys
 import dotenv
 dotenv.load_dotenv(os.path.abspath(os.getenv('RW_ENV')))
-
-
-# In[ ]:
-
-
 utils_path = os.path.join(os.path.abspath(os.getenv('PROCESSING_DIR')),'utils')
 if utils_path not in sys.path:
     sys.path.append(utils_path)
 import util_files
 import util_cloud
-
-
-# In[ ]:
-
 
 import urllib
 from zipfile import ZipFile
@@ -43,10 +31,6 @@ import logging
 from pprint import pprint
 from collections import OrderedDict 
 
-
-# In[ ]:
-
-
 # Get the top-level logger object
 logger = logging.getLogger()
 for handler in logger.handlers: logger.removeHandler(handler)
@@ -55,10 +39,6 @@ logger.setLevel(logging.INFO)
 console = logging.StreamHandler()
 logger.addHandler(console)
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-
-
-# In[ ]:
-
 
 # name of asset on GEE where you want to upload data
 # this should be an asset name that is not currently in use
@@ -70,10 +50,6 @@ data_dir = util_files.prep_dirs(dataset_name)
 logger.debug('Data directory relative path: '+data_dir)
 logger.debug('Data directory absolute path: '+os.path.abspath(data_dir))
 
-
-# In[ ]:
-
-
 '''
 Download data and save to your data directory
 '''
@@ -84,10 +60,6 @@ Download data and save to your data directory
 # files included `ensemble_mean_omega_ar_rcp85.nc` (as well as equivalent for other RCPs)
 # script describes subsequent processing of this file
 raw_data_zip = 'data\\ocn_006_projected_ocean_acidification.zip'
-
-
-# In[ ]:
-
 
 '''
 Process data
@@ -108,18 +80,10 @@ data_dict['aragonite_saturation'] = {
     'band_ids': ['ar_'+str(year) for year in range(2006,2100)],
 }
 
-
-# In[ ]:
-
-
 logger.info('Converting source NetCDF into multiband GeoTIFF')
 
 for key, val in data_dict.items():
     val['tifs'] = util_files.convert_netcdf(val['raw_data_file'], val['sds'])
-
-
-# In[ ]:
-
 
 logger.info('Creating new GeoTIFF with GEE-appropriate extent (longitude [0,360]->[-180,180])')
 # in this instance, only one dataset and one file
@@ -143,10 +107,6 @@ logger.debug(str(completed_process))
 if completed_process.returncode!=0:
     raise Exception('Creating GeoTIFF with new extent using gdalwarp failed! Command: '+str(cmd))
 
-
-# In[ ]:
-
-
 logger.info('Masking GeoTIFF to exclude all land masses')
 # using natural earth land polygons to represent land masses (and freshwater bodies)
 land_url = 'https://www.naturalearthdata.com/http//www.naturalearthdata.com/download/10m/physical/ne_10m_land.zip'
@@ -160,10 +120,6 @@ with ZipFile(land_zip, 'r') as zip_ref:
 # grab relevant file
 land_shp = os.path.join(data_dir,os.path.basename(land_url).split('.')[0]+'.shp')
 
-
-# In[ ]:
-
-
 processed_data_file = os.path.join(data_dir,dataset_name+'.tif')
 band_arg = ''
 for i in range(1,95):
@@ -174,10 +130,6 @@ completed_process = subprocess.run(cmd, shell=False)
 logger.debug(str(completed_process))
 if completed_process.returncode!=0:
     raise Exception('Masking using gdal_rasterize failed! Command: '+str(cmd))
-
-
-# In[ ]:
-
 
 '''
 Upload processed data to Google Earth Engine
@@ -206,10 +158,6 @@ task_id = util_cloud.gee_ingest(manifest, public=True)
 util_cloud.gcs_remove(gcs_uris, gcs_bucket=gcs_bucket)
 logger.info('Files deleted from Google Cloud Storage.')
 
-
-# In[ ]:
-
-
 '''
 Upload original data and processed data to Amazon S3 storage
 '''
@@ -227,10 +175,3 @@ with ZipFile(processed_data_dir,'w') as zip:
     zip.write(processed_data_file, os.path.basename(processed_data_file))
 # upload processed data file to S3
 uploaded = util_cloud.aws_upload(processed_data_dir, aws_bucket, s3_prefix+os.path.basename(processed_data_dir))
-
-
-# In[ ]:
-
-
-
-
