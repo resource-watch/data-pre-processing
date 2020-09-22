@@ -35,7 +35,7 @@ data_dir = util_files.prep_dirs(dataset_name)
 '''
 Download data and save to your data directory
 Data can be downloaded at the following link:
-http://stats.oecd.org/Index.aspx?datasetcode=FDIINDEX
+http://stats.oecd.org/Index.aspx?datasetcode=FDIINDEX#
 Above the table, there is a 'export' button that will lead to a dropdown menu containing different export options.
 Once you select 'Text file (CSV)' from the menu, a new window will occur and allow you to download the data as a csv file to your Downloads folder.
 '''
