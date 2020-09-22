@@ -54,6 +54,9 @@ Process data
 # read the data into a pandas dataframe
 df = pd.read_excel(os.path.join(raw_data_file_unzipped, 'WPI2019.xls'), encoding='utf-8', header=0)
 
+# convert the column names to lowercase to match the column name requirements of Carto 
+df.columns = [x.lower() for x in df.columns]
+
 # save dataset to csv
 processed_data_file = os.path.join(data_dir, dataset_name+'_edit.csv')
 df.to_csv(processed_data_file, index=False)
