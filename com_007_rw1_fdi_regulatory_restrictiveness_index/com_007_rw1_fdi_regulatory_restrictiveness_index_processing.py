@@ -12,6 +12,7 @@ import shutil
 import logging
 import glob
 import re
+import datetime
 
 # Set up logging
 # Get the top-level logger object
@@ -69,6 +70,9 @@ for col in df.columns:
 
 # reformat the dataframe so each sector becomes a new column
 pivoted = pd.pivot_table(df, index = ['LOCATION', 'Country','Year'], columns = 'Sector / Industry', values = 'Value').reset_index()
+
+# convert the years in the 'Year' column to datetime objects and store them in a new column 'datetime'
+pivoted['datetime'] = [datetime.datetime(x, 1, 1) for x in pivoted.Year]
 
 # rename columns, replacing or removing symbols and spaces, and
 # making them all lowercase so that it matches Carto column name requirements

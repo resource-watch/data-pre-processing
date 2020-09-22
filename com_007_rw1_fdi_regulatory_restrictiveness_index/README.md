@@ -11,7 +11,8 @@ Below, we describe the steps used to reformat the table so that it is formatted 
 4. Remove the column 'Type of restriction', 'SERIES', 'Series', and 'RESTYPE' since they only contain one unique value.
 5. Remove the column 'SECTOR' since it contains the same information as the column 'Sector / Industry'.
 6. Convert the format of the data frame from long to wide so each sector will have its own column.
-7. Replace the spaces within column names with underscores, remove the symbols, and convert the letters to lowercase to match Carto column name requirements.
+7. Convert the years in the 'Year' column to datetime objects and store them in a new column 'datetime'.
+8. Replace the spaces within column names with underscores, remove the symbols, and convert the letters to lowercase to match Carto column name requirements.
 
 Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/com_007_rw1_fdi_regulatory_restrictiveness_index/com_007_rw1_fdi_regulatory_restrictiveness_index_processing.py) for more details on this processing.
 
