@@ -107,7 +107,7 @@ ee.Initialize(auth)
 
 # set pyramiding policy for GEE upload
 pyramiding_policy = 'MEAN' #check
-missing_data_values = [-128]
+missing_data_values = [-128.0]
 
 # set asset name to be used in GEE
 asset_name = f'projects/resource-watch-gee/{dataset_name}'
@@ -118,6 +118,7 @@ mf_bands = [{'id': band_id, 'tileset_band_index': band_ids.index(band_id), 'tile
              'pyramidingPolicy': pyramiding_policy} for band_id in band_ids]
 # create manifest for asset upload
 manifest = util_cloud.gee_manifest_complete(asset_name, gcs_uris[0], mf_bands)
+print('manifest: ' + manifest)
 # upload processed data file to GEE
 task_id = util_cloud.gee_ingest(manifest, public=True)
 # remove files from Google Cloud Storage
