@@ -11,6 +11,7 @@ from zipfile import ZipFile
 import shutil
 import logging
 import glob
+import re
 
 # Set up logging
 # Get the top-level logger object
@@ -24,7 +25,7 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 
 # name of table on Carto where you want to upload data
 # this should be a table name that is not currently in use
-dataset_name = 'com_007_fdi_regulatory_restrictiveness_index' #check
+dataset_name = 'com_007_rw1_fdi_regulatory_restrictiveness_index' #check
 
 logger.info('Executing script for dataset: ' + dataset_name)
 # create a new sub-directory within your specified dir called 'data'
@@ -34,7 +35,7 @@ data_dir = util_files.prep_dirs(dataset_name)
 '''
 Download data and save to your data directory
 Data can be downloaded at the following link:
-http://stats.oecd.org/Index.aspx?datasetcode=FDIINDEX#
+http://stats.oecd.org/Index.aspx?datasetcode=FDIINDEX
 Above the table, there is a 'export' button that will lead to a dropdown menu containing different export options.
 Once you select 'Text file (CSV)' from the menu, a new window will occur and allow you to download the data as a csv file to your Downloads folder.
 '''
@@ -51,27 +52,27 @@ df = pd.read_csv(raw_data_file)
 '''
 Process data
 '''
-# remove 'TIME' column because it is identical to the 'year' column 
+# remove 'TIME' column because it is identical to the 'year' column
 df = df.drop(columns = 'TIME')
 
 # remove the column 'SECTOR' since it contains the same information as the column 'Sector/Industry'
 # (SECTOR is a numeric column, while Sector/Industry' is text, so we will keep the more informative column)
 df = df.drop(columns = 'SECTOR')
 
-# remove columns with no values 
+# remove columns with no values
 df.dropna(axis=1)
 
-# remove columns with only one unique value 
+# remove columns with only one unique value
 for col in df.columns:
     if len(df[col].unique()) == 1:
         df.drop(col,inplace=True,axis=1)
 
-# reformat the dataframe so each sector becomes a new column 
+# reformat the dataframe so each sector becomes a new column
 pivoted = pd.pivot_table(df, index = ['LOCATION', 'Country','Year'], columns = 'Sector / Industry', values = 'Value').reset_index()
 
-# rename columns, replacing or removing symbols and
+# rename columns, replacing or removing symbols and spaces, and
 # making them all lowercase so that it matches Carto column name requirements
-pivoted.columns = [re.sub('[().]', '', col.lower().replace('&', 'and')) for col in pivoted.columns]
+pivoted.columns = [re.sub('[().]', '', col.lower().replace('&', 'and').replace(' ', '_')) for col in pivoted.columns]
 
 # save processed dataset to csv
 processed_data_file = os.path.join(data_dir, dataset_name+'_edit.csv')
