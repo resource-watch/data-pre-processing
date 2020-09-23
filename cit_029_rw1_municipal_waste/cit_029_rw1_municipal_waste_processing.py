@@ -35,8 +35,10 @@ data_dir = util_files.prep_dirs(dataset_name)
 
 '''
 Download data and save to your data directory
+
 Data can be downloaded at the following link:
 https://stats.oecd.org/Index.aspx?DataSetCode=MUNW
+There is a dropdown menu right next to the header 'Variable' on the table. It allows users to choose which variable to view. Click to select 'Municipal waste generated per capita'.
 Above the table, there is a 'export' button that will lead to a dropdown menu containing different export options.
 Once you select 'Text file (CSV)' from the menu, a new window will occur and allow you to download the data as a csv file to your Downloads folder.
 '''
@@ -52,6 +54,9 @@ df = pd.read_csv(raw_data_file)
 '''
 Process data
 '''
+# subset the dataframe to obtain municipal waste generated per capita for each country 
+df = df[df.Variable == 'Municipal waste generated per capita']
+
 # 'YEA' and 'Year' columns are identical-remove one of the duplicate columns
 df = df.drop(columns = 'YEA')
 
