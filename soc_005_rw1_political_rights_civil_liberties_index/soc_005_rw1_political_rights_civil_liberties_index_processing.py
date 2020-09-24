@@ -75,8 +75,12 @@ df.rename(columns = {'Country/Territory': 'country_territory',
 # convert the column names to lowercase letters and replace spaces with underscores
 df.columns = [x.lower().replace(' ', '_') for x in df.columns]
 
-# convert the years in the 'edition' column to datatime objects and store them in a new column 'datetime'
-df['datetime'] = [datetime.datetime(x, 1, 1) for x in df.edition]
+# since the data cover the development in the year before they are released
+# create a new column 'year_reviewed' to indicate the year of development the data are based on 
+df['year_reviewed'] = [x-1 for x in df.edition]
+
+# convert the years in the 'year_reviewed' column to datatime objects and store them in a new column 'datetime'
+df['datetime'] = [datetime.datetime(x, 1, 1) for x in df.year_reviewed]
 
 # save processed dataset to csv
 processed_data_file = os.path.join(data_dir, dataset_name+'_edit.csv')
