@@ -2,6 +2,7 @@ import shutil
 import pandas as pd
 import os
 import sys
+import datetime
 utils_path = os.path.join(os.path.abspath(os.getenv('PROCESSING_DIR')),'utils')
 if utils_path not in sys.path:
     sys.path.append(utils_path)
@@ -10,7 +11,7 @@ import util_cloud
 import util_carto
 from zipfile import ZipFile
 import logging
-import glob 
+import glob
 
 # Set up logging
 # Get the top-level logger object
@@ -24,7 +25,7 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 
 # name of table on Carto where you want to upload data
 # this should be a table name that is not currently in use
-dataset_name = 'cit_029_municipal_waste' #check
+dataset_name = 'cit_029_rw1_municipal_waste' #check
 
 
 logger.info('Executing script for dataset: ' + dataset_name)
@@ -34,8 +35,10 @@ data_dir = util_files.prep_dirs(dataset_name)
 
 '''
 Download data and save to your data directory
+
 Data can be downloaded at the following link:
 https://stats.oecd.org/Index.aspx?DataSetCode=MUNW
+There is a dropdown menu right next to the header 'Variable' on the table. It allows users to choose which variable to view. Click to select 'Municipal waste generated per capita'.
 Above the table, there is a 'export' button that will lead to a dropdown menu containing different export options.
 Once you select 'Text file (CSV)' from the menu, a new window will occur and allow you to download the data as a csv file to your Downloads folder.
 '''
@@ -51,8 +54,17 @@ df = pd.read_csv(raw_data_file)
 '''
 Process data
 '''
-# 'YEA' and 'Year' columns are identical- remove one of the duplicate columns
+# subset the dataframe to obtain municipal waste generated per capita for each country 
+df = df[df.Variable == 'Municipal waste generated per capita']
+
+# 'YEA' and 'Year' columns are identical-remove one of the duplicate columns
 df = df.drop(columns = 'YEA')
+
+# replace the spaces within column names with underscores and convert column names to lowercase
+df.columns = [x.lower().replace(' ', '_') for x in df.columns]
+
+# convert the years in the 'year' column to datetime objects and store them in a new column 'datetime'
+df['datetime'] = [datetime.datetime(x, 1, 1) for x in df.year]
 
 # save processed dataset to csv
 processed_data_file = os.path.join(data_dir, dataset_name+'_edit.csv')
