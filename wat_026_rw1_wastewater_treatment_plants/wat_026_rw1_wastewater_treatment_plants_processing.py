@@ -25,7 +25,7 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 
 # name of table on Carto where you want to upload data
 # this should be a table name that is not currently in use
-dataset_name = 'wat_026_wastewater_treatment_plants' #check
+dataset_name = 'wat_026_rw1_wastewater_treatment_plants' #check
 
 logger.info('Executing script for dataset: ' + dataset_name)
 # create a new sub-directory within your specified dir called 'data'
@@ -36,15 +36,14 @@ data_dir = util_files.prep_dirs(dataset_name)
 Download data and save to your data directory
 '''
 # insert the url used to download the data from the source website
-url = 'https://opendata.arcgis.com/datasets/4b9bac25263047c19e617d7bd7b30701_0.zip?outSR=%7B%22latestWkid%22%3A3857%2C%22wkid%22%3A102100%7D' #check
-
+url = 'https://edg.epa.gov/data/PUBLIC/OEI/OIC/FRS_Wastewater.zip'
 # download the data from the source
 r = requests.get(url)
-raw_data_file = os.path.join(data_dir, 'Environmental_Protection_Agency__EPA__Facility_Registry_Service__FRS__Wastewater_Treatment_Plants-shp.zip')
+raw_data_file = os.path.join(data_dir, os.path.basename(url))
 urllib.request.urlretrieve(url, raw_data_file)
 
 # unzip source data
-raw_data_file_unzipped = os.path.join(data_dir, 'unzip')
+raw_data_file_unzipped = os.path.join(raw_data_file.split('.')[0])
 zip_ref = ZipFile(raw_data_file, 'r')
 zip_ref.extractall(raw_data_file_unzipped)
 zip_ref.close()
@@ -52,38 +51,38 @@ zip_ref.close()
 '''
 Process data
 '''
-# load in the polygon shapefile
-shapefile = glob.glob(os.path.join(raw_data_file_unzipped, '*.shp'))[0]
-gdf = gpd.read_file(shapefile)
+# load in the table from the geodatabase
+gdb = glob.glob(os.path.join(raw_data_file_unzipped, '*.gdb'))[0]
+gdf = gpd.read_file(gdb, driver='FileGDB', layer = 0, encoding='utf-8')
 
-# Reproject geometries to WGS84 (epsg 4326)
-gdf['geometry'] = gdf['geometry'].to_crs(epsg=4326)
+# rename the columns to be lowercase
+gdf.columns = [x.lower() for x in gdf.columns]
 
-# create an index column to use as cartodb_id
-gdf['cartodb_id'] = gdf.index
+# change the data type of the column 'registry_id' to integer
+gdf['registry_id'] = gdf['registry_id'].astype('int64')
 
-# reorder the columns
-gdf = gdf[['cartodb_id'] + list(gdf)[:-1]]
+# reproject geometries to WGS84 (epsg 4326)
+gdf = gdf.to_crs(epsg=4326)
 
-# change the data type of the column 'REGISTRY_I' to integer
-gdf['REGISTRY_I'] = gdf['REGISTRY_I'].astype('int64')
+# create a 'latitude' and 'longitude' column from the geometries in the geopandas dataframe
+gdf['latitude'] = [coor.y for coor in gdf.geometry]
+gdf['longitude'] = [coor.x for coor in gdf.geometry]
 
-# create a path to save the processed shapefile later
-processed_data_file = os.path.join(data_dir, dataset_name+'_edit.shp')
+# remove the geometry column from the geopandas dataframe
+gdf.drop(columns = 'geometry', inplace = True)
 
-# save processed dataset to shapefile
-gdf.to_file(processed_data_file,driver='ESRI Shapefile')
+# create a path to save the processed table 
+processed_data_file = os.path.join(data_dir, dataset_name+'_edit.csv')
+
+# save processed dataset as a csv file
+gdf.to_csv(processed_data_file, index = False)
 
 '''
 Upload processed data to Carto
 '''
-
 # create empty table for dataset on Carto
-CARTO_SCHEMA = util_carto.create_carto_schema(gdf)
-util_carto.checkCreateTable(os.path.basename(processed_data_file).split('.')[0], CARTO_SCHEMA)
-
-# upload the shapefile to the empty carto table
-util_carto.shapefile_to_carto(os.path.basename(processed_data_file).split('.')[0], CARTO_SCHEMA, gdf, 'LINK')
+logger.info('Uploading processed data to Carto.')
+util_carto.upload_to_carto(processed_data_file, 'LINK')
 
 '''
 Upload original data and processed data to Amazon S3 storage
@@ -103,7 +102,7 @@ uploaded = util_cloud.aws_upload(raw_data_dir, aws_bucket, s3_prefix+os.path.bas
 logger.info('Uploading processed data to S3.')
 # Copy the processed data into a zipped file to upload to S3
 processed_data_dir = os.path.join(data_dir, dataset_name+'_edit.zip')
-# Find al the necessary components of the shapefile 
+# Find al the necessary components of the shapefile
 processed_data_files = glob.glob(os.path.join(data_dir, dataset_name + '_edit.*'))
 with ZipFile(processed_data_dir,'w') as zip:
     for file in processed_data_files:
