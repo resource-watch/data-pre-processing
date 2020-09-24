@@ -8,7 +8,8 @@ Below, we describe the steps used to reformat the table so that it is formatted 
 2. Added '_aggr' to the end of the column names 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'CL', 'PR', and 'Total' to match the column names in the previous Carto table.
 3. Rename the 'country/territory' and 'c/t?' columns to replace characters unsupported by Carto with underscores.
 4. Convert the column names to lowercase letters and replace spaces with underscores.
-5. Convert the years in the 'edition' column to datatime objects and store them in a new column 'datetime'.
+5. Create a new column 'year_reviewed' to indicate the year of development the data are based on.
+5. Convert the years in the 'year_reviewed' column to datatime objects and store them in a new column 'datetime'.
 
 Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/soc_005_rw1_political_rights_civil_liberties_index/soc_005_rw1_political_rights_civil_liberties_index_processing.py) for more details on this processing.
 
