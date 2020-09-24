@@ -23,7 +23,7 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 
 # name of table on Carto where you want to upload data
 # this should be a table name that is not currently in use
-dataset_name = 'com_017_major_ports' #check
+dataset_name = 'com_017_rw2_major_ports' #check
 
 logger.info('Executing script for dataset: ' + dataset_name)
 # create a new sub-directory within your specified dir called 'data'
@@ -53,6 +53,9 @@ Process data
 '''
 # read the data into a pandas dataframe
 df = pd.read_excel(os.path.join(raw_data_file_unzipped, 'WPI2019.xls'), encoding='utf-8', header=0)
+
+# convert the column names to lowercase to match the column name requirements of Carto 
+df.columns = [x.lower() for x in df.columns]
 
 # save dataset to csv
 processed_data_file = os.path.join(data_dir, dataset_name+'_edit.csv')
