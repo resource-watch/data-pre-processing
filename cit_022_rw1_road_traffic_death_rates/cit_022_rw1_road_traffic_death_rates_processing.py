@@ -24,7 +24,7 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 
 # name of table on Carto where you want to upload data
 # this should be a table name that is not currently in use
-dataset_name = 'cit_022_road_traffic_death_rates' #check
+dataset_name = 'cit_022_rw1_road_traffic_death_rates' #check
 
 logger.info('Executing script for dataset: ' + dataset_name)
 # create a new sub-directory within your specified dir called 'data'
@@ -74,6 +74,7 @@ df['estimated_number_of_road_traffic_deaths_data'] = df['estimated_number_of_roa
 #save processed dataset to csv
 processed_data_file = os.path.join(data_dir, dataset_name+'_edit.csv')
 df.to_csv(processed_data_file, index=False)
+
 '''
 Upload processed data to Carto
 '''
