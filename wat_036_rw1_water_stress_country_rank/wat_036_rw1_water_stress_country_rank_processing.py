@@ -42,7 +42,7 @@ Click on it and the data will downloaded as an excel file to your Downloads fold
 logger.info('Downloading raw data')
 download = glob.glob(os.path.join(os.path.expanduser("~"), 'Downloads', 'Aqueduct30_Rankings_V01.xlsx'))[0]
 
-# Move this file into your data directory
+# move this file into your data directory
 raw_data_file = os.path.join(data_dir, os.path.basename(download))
 shutil.move(download,raw_data_file)
 
@@ -60,6 +60,9 @@ df = df[df.weight == 'Tot']
 
 # replace the '-9999' with nans 
 df.replace({-9999: np.nan}, inplace = True)
+
+# rename the column 'primary' to 'primary_country' since 'primary' is a reserved word in PostgreSQL
+df.rename(columns = {'primary': 'primary_country'}, inplace = True)
 
 # save processed dataset to csv
 processed_data_file = os.path.join(data_dir, dataset_name+'_edit.csv')
@@ -87,3 +90,11 @@ with ZipFile(raw_data_dir,'w') as zip:
     zip.write(raw_data_file, os.path.basename(raw_data_file))
 # Upload raw data file to S3
 uploaded = util_cloud.aws_upload(raw_data_dir, aws_bucket, s3_prefix+os.path.basename(raw_data_dir))
+
+logger.info('Uploading processed data to S3.')
+# Copy the processed data into a zipped file to upload to S3
+processed_data_dir = os.path.join(data_dir, dataset_name+'_edit.zip')
+with ZipFile(processed_data_dir,'w') as zip:
+    zip.write(processed_data_file, os.path.basename(processed_data_file))
+# Upload processed data file to S3
+uploaded = util_cloud.aws_upload(processed_data_dir, aws_bucket, s3_prefix+os.path.basename(processed_data_dir))
