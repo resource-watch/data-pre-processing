@@ -7,9 +7,10 @@ Below, we describe the steps used to used to reformat the table so that it is fo
 
 1. Read in the data from the 'results country' sheet of the excel file as a pandas dataframe.
 2. Subset the dataframe based on the 'indicator_name' column to select the baseline water stress indicator.
-3. Subset the dataframe based on the 'weight' column to select the total gross withdrawal.
-4. Replace the '-9999' in the dataframe with nans since they indicate invalid hydrology.
-5. Rename the column 'primary' to 'primary_country' since 'primary' is a reserved word in PostgreSQL.
+3. Replace the '-9999' in the dataframe with nans since they indicate invalid hydrology.
+4. Rename the column 'primary' to 'primary_country' since 'primary' is a reserved word in PostgreSQL.
+5. Convert the dataframe from long to wide format so the score, risk category, and country ranking calculated using different weights will be stored in separate columns.
+6. Rename the columns created in the previous step to indicate the weight used in the calculation of each column.
 
 Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/wat_036_rw1_water_stress_country_ranking/wat_036_rw1_water_stress_country_ranking_processing.py) for more details on this processing.
 
