@@ -55,14 +55,21 @@ Process data
 # subset the dataframe based on the 'indicator_name' column to select baseline water stress indicator
 df = df[df.indicator_name == 'bws']
 
-# subset the dataframe based on the 'weight' column to select the total gross withdrawal 
-df = df[df.weight == 'Tot']
-
 # replace the '-9999' with nans 
 df.replace({-9999: np.nan}, inplace = True)
 
 # rename the column 'primary' to 'primary_country' since 'primary' is a reserved word in PostgreSQL
 df.rename(columns = {'primary': 'primary_country'}, inplace = True)
+
+# convert the dataframe from long to wide format 
+# so the score, risk category, and country ranking calculated using different weights will be stored in separate columns 
+df = df.pivot_table(index = ['iso_a3','iso_n3','primary_country','name_0','indicator_name', 'un_region', 'wb_region', 'population_2019_million'],
+               columns = 'weight',
+               values = ['score', 'score_ranked', 'cat', 'label'],
+               aggfunc=lambda x: x).reset_index()
+
+# rename the columns created in the previous step to indicate the weight used in the calculation of each column  
+df.columns = [(weight + '_' + var).lower() if weight else var for (var, weight)in list(df)]
 
 # save processed dataset to csv
 processed_data_file = os.path.join(data_dir, dataset_name+'_edit.csv')
