@@ -62,13 +62,13 @@ Process data
 # create a new column 'unit' to store the unit of the pledged areas 
 df['unit'] = 'hectare'
 
-# remove 'hectare' from column 'pledged_area'
+# remove 'hectare' from the values in column 'pledged_area'
 df['pledged_area'] = [x.replace('hectares', '') for x in df.pledged_area]
 
 # set the data type of the 'pledged_area' column to integer
 df = df.astype({'pledged_area': int})
 
-#save processed dataset to csv
+# save processed dataset to csv
 processed_data_file = os.path.join(data_dir, dataset_name+'_edit.csv')
 df.to_csv(processed_data_file, index=False)
 
