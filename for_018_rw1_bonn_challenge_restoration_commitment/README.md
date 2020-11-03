@@ -8,7 +8,7 @@ Below, we describe the steps used to reformat the table so that it is formatted 
 1. Create a new column 'unit' to store the unit of the pledged areas.
 2. Remove 'hectare' from all the entries in the column 'pledged_area'.
 3. Convert the data type of the 'pledged_area' column to integer.
-4. Convert the values in the column 'pledged_area' to be in million hectares. 
+4. Convert the values in the column 'pledged_area' to be million hectares. 
 
 Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/for_018_rw1_bonn_challenge_restoration_commitment/for_018_rw1_bonn_challenge_restoration_commitment_processing.py) for more details on this processing.
 
