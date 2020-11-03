@@ -9,7 +9,6 @@ if utils_path not in sys.path:
 import util_files
 import util_cloud
 import util_carto
-import urllib
 from zipfile import ZipFile
 import logging
 
