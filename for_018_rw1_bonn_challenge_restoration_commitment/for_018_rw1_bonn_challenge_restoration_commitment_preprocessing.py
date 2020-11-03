@@ -11,7 +11,6 @@ import util_cloud
 import util_carto
 import urllib
 from zipfile import ZipFile
-import datetime
 import logging
 
 # Set up logging
@@ -60,13 +59,16 @@ df.to_csv(raw_data_file, index = False)
 Process data
 '''
 # create a new column 'unit' to store the unit of the pledged areas 
-df['unit'] = 'hectare'
+df['unit'] = 'million hectare'
 
-# remove 'hectare' from the values in column 'pledged_area'
+# remove 'hectare' from all the entries in the column 'pledged_area'
 df['pledged_area'] = [x.replace('hectares', '') for x in df.pledged_area]
 
-# set the data type of the 'pledged_area' column to integer
+# Convert the data type of the 'pledged_area' column to integer
 df = df.astype({'pledged_area': int})
+
+# convert the values in the column 'pledged_area' to be in million hectares
+df['pledged_area'] = [x/1000000 for x in df.pledged_area]
 
 # save processed dataset to csv
 processed_data_file = os.path.join(data_dir, dataset_name+'_edit.csv')
