@@ -44,9 +44,9 @@ with urllib.request.urlopen(url) as f:
     soup = BeautifulSoup(f)
     # extract all the data within the class "view__content-inner"
     table = soup.find("div", class_='view__content-inner')
-    # extract each row of data as a list of strings using the 'content__body' class
+    # extract each row of data as a list of strings from the class 'content__body'
     res_rows = soup.find_all("div", class_ = 'content__body')
-# split strings using newline delimiter and convert them to a pandas dataframe  
+# split strings using the newline delimiter and convert them to a pandas dataframe  
 df = pd.DataFrame([[x for x in row.get_text().split('\n') if x != ''] for row in res_rows],
                     columns = ['country', 'region', 'pledged_area'])
     
@@ -66,7 +66,7 @@ df['pledged_area'] = [x.replace('hectares', '') for x in df.pledged_area]
 # Convert the data type of the 'pledged_area' column to integer
 df = df.astype({'pledged_area': int})
 
-# convert the values in the column 'pledged_area' to be in million hectares
+# convert the values in the column 'pledged_area' to be million hectares
 df['pledged_area'] = [x/1000000 for x in df.pledged_area]
 
 # save processed dataset to csv
