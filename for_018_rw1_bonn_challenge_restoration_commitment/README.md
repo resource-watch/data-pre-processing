@@ -9,6 +9,7 @@ Below, we describe the steps used to reformat the table so that it is formatted 
 2. Remove 'hectare' from all the entries in the column 'pledged_area'.
 3. Convert the data type of the 'pledged_area' column to integer.
 4. Convert the values in the column 'pledged_area' to be million hectares.
+5. Subset the dataframe to remove data of pledgers that are not countries. 
 
 Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/for_018_rw1_bonn_challenge_restoration_commitment/for_018_rw1_bonn_challenge_restoration_commitment_processing.py) for more details on this processing.
 

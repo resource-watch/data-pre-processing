@@ -69,6 +69,15 @@ df = df.astype({'pledged_area': int})
 # convert the values in the column 'pledged_area' to be million hectares
 df['pledged_area'] = [x/1000000 for x in df.pledged_area]
 
+# find pledgers that are not countries in the 'country' column 
+# this list may change every time the dataset is updated 
+non_country = ['American Bird Conservancy', 'Bosques Modelo', 'Brazil - Espirito Santo', 'Conservación Patagonia',
+               "Brazil's Atlantic Forest Restoration Pact", 'Guatemala Private Natural Reserves',
+               'Brazil - Espirito Santo', 'Brazil - Mao Grosso', 'Brazil - Sao Paulo', 'Pakistan - Khyber Pakhtunkhwa',
+               'Mexico - Yucatan', 'Mexico - Quintana Roo', 'Mexico - Chiapas', 'Mexico - Campeche']
+
+# subset the data frame to include only pledgers that are countries 
+df = df[df.country.isin(non_country) == False]
 # save processed dataset to csv
 processed_data_file = os.path.join(data_dir, dataset_name+'_edit.csv')
 df.to_csv(processed_data_file, index=False)
