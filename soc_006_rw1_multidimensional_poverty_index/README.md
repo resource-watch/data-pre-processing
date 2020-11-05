@@ -1,5 +1,5 @@
 ## Multidimensional Poverty Index Dataset Pre-processing
-This file describes the data pre-processing that was done to [the {dataset formal name}](http://hdr.undp.org/en/2020-MPI) for [display on Resource Watch](https://resourcewatch.org/data/explore/d3486db9-5da4-4aee-a363-f71b643a7ce1).
+This file describes the data pre-processing that was done to [the Multidimensional Poverty Index](http://hdr.undp.org/en/2020-MPI) for [display on Resource Watch](https://resourcewatch.org/data/explore/d3486db9-5da4-4aee-a363-f71b643a7ce1).
 
 The source provided the data as an excel file.
 
