@@ -13,11 +13,12 @@ Below, we describe the steps used to reformat the table so that it is formatted 
 7. Extract the year values from the column 'Year and survey'(now 'Multidimensional Poverty IndexYear and survey2008-2019') and store them in a new column 'yr_survey'.
 8. Extract the survey codes from the column 'Year and survey'(now 'Multidimensional Poverty IndexYear and survey2008-2019') and store them in a new column 'survey'.
 9. Drop the columns 'index' and 'Year and survey'(now 'Multidimensional Poverty IndexYear and survey2008-2019').
-10. Rename the columns to be more concise and replace the spaces and special characters in column names with underscores.
-11. Subset the dataframe to only include data of countries.
-12. Replace the '..', which is used to indicate no-data, in the dataframe with None.
-13. Except the columns 'country', 'survey', and 'yr_survey', set the data type of the columns to float.
-14. Create a new column 'release_dt' to store the year the data was released in as the first date in that year.
+10. Rename the columns to be more concise.
+11. Replace '%' in column names with '_percent' and replace spaces and special characters with underscores.
+12. Subset the dataframe to only include data of countries.
+13. Replace the '..', which is used to indicate no-data, in the dataframe with None.
+14. Except the columns 'country', 'survey', and 'yr_survey', set the data type of the columns to float.
+15. Create a new column 'release_dt' to store the year the data was released in as the first date in that year.
 
 Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/soc_006_rw1_multidimensional_poverty_index/soc_006_rw1_multidimensional_poverty_index_processing.py) for more details on this processing.
 

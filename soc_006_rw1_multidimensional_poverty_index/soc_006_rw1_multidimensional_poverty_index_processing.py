@@ -96,7 +96,7 @@ df.rename(columns = {'IndexValue': 'index_value',
                      'SDG 1.1 PPP $1.90 a day2008-2018': 'percent_pop_below_190_2008_2018'},
           inplace = True)
 
-# replace space and special characters within the column names with underscores
+# replace % with '_percent' and replace space and special characters within the column names with underscores
 df.columns = [re.sub(' *.%.','_percent', x).lower().strip().replace(' ', '_') for x in df.columns]
 
 # remove data of regions 
