@@ -77,7 +77,7 @@ def mask_geotiff(target, mask, maskedtif, nodata=-128):
 #     !gdal_calc.py -A {annual} -B {mask} --outfile={annual_masked} --calc="((B==0)*{nodata})+((B==1)*A)"
     return    
                   
-def merge_geotiffs(tifs, multitif, ot=None):
+def merge_geotiffs(tifs, multitif, ot=None, nodata=None):
     '''
     Merge input single-band geotiffs into one multi-band geotiff. This is a "dumb" merge; for example,
     it destroys all band metadata.
@@ -89,13 +89,15 @@ def merge_geotiffs(tifs, multitif, ot=None):
     cmd = '{} "{}" '
     if ot is not None:
         cmd += '-ot {} '.format(ot)
+    if no_data is not None:
+        cmd += '-a_nodata {} '.format(nodata)
     cmd += '-o {} -separate {} '
     cmd = cmd.format(sys.executable, merge_path, multitif, ' '.join(tifs), )
     completed_process = subprocess.run(cmd, shell=False)
     logger.debug(str(completed_process))
     if completed_process.returncode!=0:
         raise Exception('Merging of GeoTiffs using gdal_merge.py failed! Command: '+str(cmd))
-    return    
+    return
               
 def scale_geotiff(tif, scaledtif=None, scale_factor=None, nodata=None, gdal_type=gdal.GDT_Float32):
     '''
