@@ -79,6 +79,19 @@ for name in vector_names:
     logger.debug(str(completed_process))
     raster_paths.append(raster_path)
 
+logger.info('Merging relevant GeoTIFFs into final, multiband GeoTIFF for display and storage')
+# this step includes some manual commands, because the default gdal tools are not robust enough
+# declare name of final geotiff, and merge components
+processed_data_file = os.path.join(data_dir,dataset_name+'.tif')
+
+cmd = 'gdalbuildvrt -separate data\\merge.vrt '+' '.join(raster_paths)
+completed_process = subprocess.run(cmd, shell=False)
+logger.info(completed_process)
+
+cmd = 'gdal_translate -of GTiff data\\merge.vrt {}'.format(processed_data_file)
+completed_process = subprocess.run(cmd, shell=False)
+logger.info(completed_process)
+
 # create dictionary for tracking info about individual variable datasets and
 # their representation on google earth engine
 data_dict = OrderedDict()
@@ -106,12 +119,6 @@ data_dict['total'] = {
         'pyramiding_policy': 'MEAN',
         'raw_data_file': raster_paths[2],
     }
-
-alltifs = raster_paths
-logger.info('Merging relevant GeoTIFFs into final, multiband GeoTIFF for display and storage')
-# declare name of final geotiff, and merge components
-processed_data_file = os.path.join(data_dir,dataset_name+'.tif')
-util_files.merge_geotiffs(alltifs, processed_data_file)
 
 '''
 Upload processed data to Google Earth Engine
