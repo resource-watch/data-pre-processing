@@ -51,6 +51,9 @@ df.to_csv(raw_data_file, header = False, index = False)
 '''
 Process data
 '''
+# year of data 
+year = 2019 # check 
+
 # remove empty columns
 df.dropna(axis = 1, how = 'all', inplace = True)
 
@@ -75,14 +78,16 @@ df = df[[x for x in headers if len(x) > 1]].reset_index()
 
 # extract the survey codes from the 'Multidimensional Poverty IndexYear and survey2008-2019' column
 # and store them in a new column 'survey'
-df['survey'] = [x[-1:] for x in df['Multidimensional Poverty IndexYear and survey2008-2019']]
+df['survey'] = [x[-1:] for x in df['Multidimensional Poverty IndexYear and survey{}-{}'.format(year-11, year)]]
 
 # extract the year of surveys from the 'Multidimensional Poverty IndexYear and survey2008-2019' column
 # and store them in a new column 'yr_survey'
-df['yr_survey'] = [x[:-1].strip() for x in df['Multidimensional Poverty IndexYear and survey2008-2019']]
+df['yr_survey'] = [x[:-1].strip() 
+                   for x in df['Multidimensional Poverty IndexYear and survey{}-{}'.format(year-11, year)]]
 
 # drop the column 'index', 'Multidimensional Poverty IndexYear and survey2008-2019'
-df.drop(columns = ['index', 'Multidimensional Poverty IndexYear and survey2008-2019'], inplace = True)
+df.drop(columns = ['index', 'Multidimensional Poverty IndexYear and survey{}-{}'.format(year-11, year)], 
+        inplace = True)
 
 # rename columns to make column names more concise 
 df.rename(columns = {'IndexValue': 'index_value',
@@ -91,12 +96,14 @@ df.rename(columns = {'IndexValue': 'index_value',
                      'Education': 'education_contri_deprivation_percent', 
                      'Standard of living': 'standard_living_contri_deprivation_percent',
                      'Number of poor (year of the survey)(thousands)': 'number_poor_yr_survey_thousands',
-                     'Number of poor (2018)(thousands)': 'number_poor_2018_thousands',
-                     'SDG 1.2Population living below income poverty line\n(%)National poverty line2008-2019': 'percent_pop_below_poverty_line_2008_2019',
-                     'SDG 1.1 PPP $1.90 a day2008-2018': 'percent_pop_below_190_2008_2018'},
+                     'Number of poor ({})(thousands)'.format(year-1): 'number_poor_{}_thousands'.format(year-1),
+                     'SDG 1.2Population living below income poverty line\n(%)National poverty line{}-{}'.format(year-11, year): 
+                         'percent_pop_below_poverty_line_{}_{}'.format(year-11, year),
+                     'SDG 1.1 PPP $1.90 a day{}-{}'.format(year-11, year-1): 'percent_pop_below_190_{}_{}'.format(year-11, year-1)},
           inplace = True)
 
 # replace % with '_percent' and replace space and special characters within the column names with underscores
+# also convert all the letters in column names to lower case 
 df.columns = [re.sub(' *.%.','_percent', x).lower().strip().replace(' ', '_') for x in df.columns]
 
 # remove data of regions 
