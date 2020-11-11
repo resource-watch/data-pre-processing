@@ -89,7 +89,7 @@ def merge_geotiffs(tifs, multitif, ot=None, nodata=None):
     cmd = '{} "{}" '
     if ot is not None:
         cmd += '-ot {} '.format(ot)
-    if no_data is not None:
+    if nodata is not None:
         cmd += '-a_nodata {} '.format(nodata)
     cmd += '-o {} -separate {} '
     cmd = cmd.format(sys.executable, merge_path, multitif, ' '.join(tifs), )
