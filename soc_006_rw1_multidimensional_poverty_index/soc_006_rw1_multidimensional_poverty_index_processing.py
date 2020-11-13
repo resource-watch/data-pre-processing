@@ -46,7 +46,7 @@ df = pd.read_excel(io.BytesIO(r.content), encoding='utf8', header=None, index = 
 
 # save unprocessed source data to put on S3 (below)
 raw_data_file = os.path.join(data_dir, os.path.basename(url))
-df.to_csv(raw_data_file, header = False, index = False)
+df.to_excel(raw_data_file, header = False, index = False)
 
 '''
 Process data
