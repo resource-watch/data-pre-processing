@@ -5,7 +5,7 @@ The source provided the data as an excel file.
 
 Below, we describe the steps used to reformat the table so that it is formatted correctly to upload to Carto.
 
-1. Read in the data as a pandas dataframe and cremove any notes or empty rows/columns the data table.
+1. Read in the data as a pandas dataframe and remove any notes or empty rows/columns the data table.
 2. Rename column headers to be more descriptive and to remove special characters so that it can be uploaded to Carto without losing information.
 3. Split the column 'Year and survey' into two new columns:
   - 'yr_survey', which contains the year
