@@ -5,20 +5,14 @@ The source provided the data as an excel file.
 
 Below, we describe the steps used to reformat the table so that it is formatted correctly to upload to Carto.
 
-1. Read in the data as a pandas dataframe.
-2. Remove empty columns and rows that contain only notes instead of actual data.
-4. Combine the strings in the first 4 rows of the dataframe to create headers.
-5. Remove the first 4 rows of the dataframe.
-6. Remove columns that contain footnotes instead of actual data.
-7. Extract the year values from the column 'Year and survey'(now 'Multidimensional Poverty IndexYear and survey2008-2019') and store them in a new column 'yr_survey'.
-8. Extract the survey codes from the column 'Year and survey'(now 'Multidimensional Poverty IndexYear and survey2008-2019') and store them in a new column 'survey'.
-9. Drop the columns 'index' and 'Year and survey'(now 'Multidimensional Poverty IndexYear and survey2008-2019').
-10. Rename the columns to be more concise.
-11. Replace '%' in column names with '_percent', replace spaces and special characters with underscores, and convert all letters in column names to lowercase.
-12. Subset the dataframe to only include data of countries.
-13. Replace the '..', which is used to indicate no-data, in the dataframe with None.
-14. Except the columns 'country', 'survey', and 'yr_survey', set the data type of the columns to float.
-15. Create a new column 'release_dt' to store the year the data was released in as the first date in that year.
+1. Read in the data as a pandas dataframe and cremove any notes or empty rows/columns the data table.
+2. Rename column headers to be more descriptive and to remove special characters so that it can be uploaded to Carto without losing information.
+3. Split the column 'Year and survey' into two new columns:
+  - 'yr_survey', which contains the year
+  - 'survey', which contains the survey codes
+4. Subset the dataframe to only include data of countries, removing any rows corresponding to regions.
+5. Replace the '..', which is used to indicate no-data in the dataframe, with None.
+6. Create a new column 'release_dt' to store the year the data was released in as the first date in that year (January 1, XXXX).
 
 Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/soc_006_rw1_multidimensional_poverty_index/soc_006_rw1_multidimensional_poverty_index_processing.py) for more details on this processing.
 
