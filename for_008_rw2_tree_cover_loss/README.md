@@ -1,10 +1,20 @@
-## Tree Cover Loss Dataset Pre-processing
-This file describes the data pre-processing that was done to [the Global Forest Change 2000–2019](http://earthenginepartners.appspot.com/science-2013-global-forest) for [display on Resource Watch](https://resourcewatch.org/data/explore/5c5e654e-182b-4ab4-8a3c-edff79cc68ea).
+## Coral Reef Locations Dataset Pre-processing
+This file describes the data pre-processing that was done to [the Global Distribution of Coral Reefs (2018)](http://data.unep-wcmc.org/datasets/1) for [display on Resource Watch](https://resourcewatch.org/data/explore/1d23838e-40da-4cf3-b61c-56258d3a5c56).
 
-The source provided the data as a Google Earth Engine asset. The asset was not modified from the original version for display on Resource Watch.
+The source provided this dataset as two shapefiles - one of which contains polygon data, and the other contains point data.
 
-You can view the processed Tree Cover Loss dataset [on Resource Watch](https://resourcewatch.org/data/explore/5c5e654e-182b-4ab4-8a3c-edff79cc68ea).
+Below, we describe the steps used to reformat the shapefile:
+1. Read in the polygon shapefile as a geopandas data frame.
+2. Change the data type of column 'PROTECT', 'PROTECT_FE', and 'METADATA_I' to integers.
+3. Convert the geometries of the data from shapely objects to geojsons.
+4. Create a new column from the index of the dataframe to use as a unique id column (cartodb_id) in Carto.
 
-You can also download the original dataset [from the source website](http://earthenginepartners.appspot.com/science-2013-global-forest/download_v1.7.html).
+Next, a mask layer was created so that it could be overlayed on top of other datasets to highlight where coral reefs were located. In order to create this, a 10km buffer was generated around each coral reef polygon. This was created and exported as a shapefile in Google Earth Engine, using the following code:
 
-###### Note: This dataset processing was done by [Yujing Wu](https://www.wri.org/profile/yujing-wu), and QC'd by [Yujing Wu](https://www.wri.org/profile/yujing-wu).
+Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/bio_004a_coral_reef_locations/bio_004a_coral_reef_locations_processing.py) for more details on this processing.
+
+You can view the processed Coral Reef Locations dataset [on Resource Watch](https://resourcewatch.org/data/explore/1d23838e-40da-4cf3-b61c-56258d3a5c56).
+
+You can also download the original dataset [directly through Resource Watch](https://wri-public-data.s3.amazonaws.com/resourcewatch/bio_004a_coral_reef_locations.zip), or [from the source website](http://data.unep-wcmc.org/datasets/1).
+
+###### Note: This dataset processing was done by [Yujing Wu](https://www.wri.org/profile/yujing-wu), and QC'd by [Amelia Snyder](https://www.wri.org/profile/amelia-snyder).
