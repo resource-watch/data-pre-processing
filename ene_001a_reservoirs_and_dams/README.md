@@ -1,47 +1,20 @@
-## Reservoirs and Dams Dataset Pre-processing
-This file describes the data pre-processing that was done to [the GRanD, v1.3 dataset](http://globaldamwatch.org/grand/) for [display on Resource Watch](https://resourcewatch.org/data/explore/ene001a-Global-Reservoir-and-Dam-GRanD-v13).
+## Coral Reef Locations Dataset Pre-processing
+This file describes the data pre-processing that was done to [the Global Distribution of Coral Reefs (2018)](http://data.unep-wcmc.org/datasets/1) for [display on Resource Watch](https://resourcewatch.org/data/explore/1d23838e-40da-4cf3-b61c-56258d3a5c56).
 
-This dataset comes in a zipped file containing two shapefiles - one containing the point locations of damns and the other containing polygons of reservoir areas.
+The source provided this dataset as two shapefiles - one of which contains polygon data, and the other contains point data.
 
-Below, we describe the steps used to combine these two datasets into one data table on Carto.
+Below, we describe the steps used to reformat the shapefile:
+1. Read in the polygon shapefile as a geopandas data frame.
+2. Change the data type of column 'PROTECT', 'PROTECT_FE', and 'METADATA_I' to integers.
+3. Convert the geometries of the data from shapely objects to geojsons.
+4. Create a new column from the index of the dataframe to use as a unique id column (cartodb_id) in Carto.
 
-1. Copy files associated with the reservoirs shapefile into a folder named grand_reservoirs_v1_3 and zip this file. Copy files associated with the dams shapefile into a folder named grand_dams_v1_3 and zip this file. Upload each of these shapefiles as a new table in Carto.
-2. For each table in Carto, add a text column called "type" - for example, the reservoirs table was modified with the following SQL statement:
-```
-ALTER TABLE "wri-rw".grand_reservoirs_v1_3
+Next, a mask layer was created so that it could be overlayed on top of other datasets to highlight where coral reefs were located. In order to create this, a 10km buffer was generated around each coral reef polygon. This was created and exported as a shapefile in Google Earth Engine, using the following code:
 
-ADD type text
-```
-3. Fill the "type" column with the type of data in the file (dam or reservoir). For the reservoirs table, the SQL statement would be:
+Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/bio_004a_coral_reef_locations/bio_004a_coral_reef_locations_processing.py) for more details on this processing.
 
-```
-UPDATE "wri-rw".grand_reservoirs_v1_3
+You can view the processed Coral Reef Locations dataset [on Resource Watch](https://resourcewatch.org/data/explore/1d23838e-40da-4cf3-b61c-56258d3a5c56).
 
-SET type='reservoir'
-```
-4. Change the name of one table to fit standardized Resource Watch naming conventions. In this case, the grand_dams_v1_3 was renamed as ene_001a_grand_dams_and_reservoirs_v1_3.
-5. Combine the reservoirs and dams tables into one with the following SQL statement:
-```
-INSERT INTO ene_001a_grand_dams_and_reservoirs_v1_3 
+You can also download the original dataset [directly through Resource Watch](https://wri-public-data.s3.amazonaws.com/resourcewatch/bio_004a_coral_reef_locations.zip), or [from the source website](http://data.unep-wcmc.org/datasets/1).
 
-(the_geom, grand_id, res_name, dam_name, alt_name, river, alt_river, main_basin, sub_basin, near_city, 
-alt_city, admin_unit, sec_admin, country, sec_cntry, year, alt_year, rem_year, dam_hgt_m, alt_hgt_m, 
-dam_len_m, alt_len_m, area_skm, area_poly, area_rep, area_max, area_min, cap_mcm, cap_max, cap_rep, 
-cap_min, depth_m, dis_avg_ls, dor_pc, elev_masl, catch_skm, catch_rep, data_info, use_irri, use_elec, 
-use_supp, use_fcon, use_recr, use_navi, use_fish, use_pcon, use_live, use_othr, main_use, lake_ctrl, multi_dams, 
-timeline, comments, url, quality, editor, long_dd, lat_dd, poly_src, type)
-
-SELECT the_geom, grand_id, res_name, dam_name, alt_name, river, alt_river, main_basin, sub_basin, near_city, 
-alt_city, admin_unit, sec_admin, country, sec_cntry, year, alt_year, rem_year, dam_hgt_m, alt_hgt_m, dam_len_m, 
-alt_len_m, area_skm, area_poly, area_rep, area_max, area_min, cap_mcm, cap_max, cap_rep, cap_min, depth_m, 
-dis_avg_ls, dor_pc, elev_masl, catch_skm, catch_rep, data_info, use_irri, use_elec, use_supp, use_fcon, use_recr, 
-use_navi, use_fish, use_pcon, use_live, use_othr, main_use, lake_ctrl, multi_dams, timeline, comments, url, 
-quality, editor, long_dd, lat_dd, poly_src, type 
- 
-FROM grand_reservoirs_v1_3
-```
-You can view the processed reservoirs and dams dataset [on Resource Watch](https://resourcewatch.org/data/explore/ene001a-Global-Reservoir-and-Dam-GRanD-v13).
-
-You can also download original dataset [directly through Resource Watch](http://wri-public-data.s3.amazonaws.com/resourcewatch/ene_001a_reservoirs_and_dams.zip), or [from the source website](https://ln.sync.com/dl/bd47eb6b0/anhxaikr-62pmrgtq-k44xf84f-pyz4atkm/view/default/447819520013).
-
-###### Note: This dataset processing was done by [Amelia Snyder](https://www.wri.org/profile/amelia-snyder).
+###### Note: This dataset processing was done by [Yujing Wu](https://www.wri.org/profile/yujing-wu), and QC'd by [Amelia Snyder](https://www.wri.org/profile/amelia-snyder).
