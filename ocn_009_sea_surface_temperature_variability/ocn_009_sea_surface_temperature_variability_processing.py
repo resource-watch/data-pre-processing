@@ -149,4 +149,5 @@ processed_data_dir = os.path.join(data_dir, dataset_name+'_edit.zip')
 with ZipFile(processed_data_dir,'w') as zip:
     zip.write(processed_data_file, os.path.basename(processed_data_file))
 # Upload processed data file to S3
+# adding a comment to see if my code works
 uploaded = util_cloud.aws_upload(processed_data_dir, aws_bucket, s3_prefix+os.path.basename(processed_data_dir))
