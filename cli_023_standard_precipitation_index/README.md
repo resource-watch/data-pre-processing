@@ -1,95 +1,20 @@
-## Standard Precipitation Index Dataset Retrieval and Pre-processing
-This file describes the process used to retrieve and pre-process Standard Precipitation Index from the [the CHIRPS precipitation dataset](https://pubs.usgs.gov/ds/832/) for [display on Resource Watch](https://resourcewatch.org/data/explore/cli023-Standard-Precipitation-Index).
+## Coral Reef Locations Dataset Pre-processing
+This file describes the data pre-processing that was done to [the Global Distribution of Coral Reefs (2018)](http://data.unep-wcmc.org/datasets/1) for [display on Resource Watch](https://resourcewatch.org/data/explore/1d23838e-40da-4cf3-b61c-56258d3a5c56).
 
-The Standard Precipitation Index dataset is calculated from CHIRPS precipitation data, using the [Climate Engine app](https://app.climateengine.org/climateEngine). Below, we list the parameters used in the Climate Engine app to produce and download the data shown on Resource Watch.
+The source provided this dataset as two shapefiles - one of which contains polygon data, and the other contains point data.
 
-##### Variable
-```
-Type: Climate
-Dataset: CHIRPS - Pentad
-Variable: Standard Precipiation Index (SPI)
-Computation Resolution (Scale): 4800 m (1/20-deg)
-```
-##### Processing
-```
-Statistic (over day range): No Statistic
-Calculation: Standardized Index
-```
-##### Time Period
-```
-Season: Custom Date Range
-Start Date: {YEAR}-01-01
-End Date: {YEAR}-12-31
-Year Range for Historical Avg/Distribution: 1981-2006
-```
-In the Time Period variables, above, the {YEAR} for Start Date and End Date should be replaced with the year for which you are currently pulling data.
+Below, we describe the steps used to reformat the shapefile:
+1. Read in the polygon shapefile as a geopandas data frame.
+2. Change the data type of column 'PROTECT', 'PROTECT_FE', and 'METADATA_I' to integers.
+3. Convert the geometries of the data from shapely objects to geojsons.
+4. Create a new column from the index of the dataframe to use as a unique id column (cartodb_id) in Carto.
 
-The 'Get Map Layer' button was then used to produce a map of the Standard Precipitation Index data.
+Next, a mask layer was created so that it could be overlayed on top of other datasets to highlight where coral reefs were located. In order to create this, a 10km buffer was generated around each coral reef polygon. This was created and exported as a shapefile in Google Earth Engine, using the following code:
 
-At the top of the page, the 'Download' tab was used to download the data. It is impossible to download the image for the whole world, because the image computation is too large to be processed by the Climate Engine app. Therefore, the global dataset was downloaded in subsets. The following eight rectangular regions were used to download eight separate images:
-```
-SPI_2019_1:
-NE corner: 50N, -90E
-SW corner: 0N, -180E
+Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/bio_004a_coral_reef_locations/bio_004a_coral_reef_locations_processing.py) for more details on this processing.
 
-SPI_2019_2:
-NE corner: 50N, 0E
-SW corner: 0N, -90E
+You can view the processed Coral Reef Locations dataset [on Resource Watch](https://resourcewatch.org/data/explore/1d23838e-40da-4cf3-b61c-56258d3a5c56).
 
-SPI_2019_3:
-NE corner: 50N, 90E
-SW corner: 0N, 0E
+You can also download the original dataset [directly through Resource Watch](https://wri-public-data.s3.amazonaws.com/resourcewatch/bio_004a_coral_reef_locations.zip), or [from the source website](http://data.unep-wcmc.org/datasets/1).
 
-SPI_2019_4:
-NE corner: 50N, 180E
-SW corner: 0N, 90E
-
-SPI_2019_5:
-NE corner: 0N, -90E
-SW corner: -50N, -180E
-
-SPI_2019_6:
-NE corner: 0N, 0E
-SW corner: -50N, -90E
-
-SPI_2019_7:
-NE corner: 0N, 90E
-SW corner: -50N, 0E
-
-SPI_2019_8:
-NE corner: 0N, 180E
-SW corner: -50N, 90E
-
-```
-Each of these eight images were uploaded to Google Earth Engine into a single image collection, and they were then mosaicked, using the following code:
-```
-//Load in image collection
-var ic = ee.ImageCollection('users/resourcewatch/cli_023_SPI_2019_mosaic');
-//Mosaic image
-var mosaic = ic.mosaic();
-print(mosaic)
-
-//Get projection
-var projection = ic.first().projection();
-var crs = projection.getInfo().crs;
-var transform = projection.getInfo().transform;
-//Save global bounds
-var rect = [-180, -50, 180, 50];
-var bounds = ee.Geometry.Rectangle(rect,null,false);
-//Export image
-Export.image.toAsset({
-  image: mosaic,
-  description: 'cli_023_CHIRPS_2019_annual_SPI',
-  assetId: 'users/resourcewatch/cli_023_CHIRPS_2019_annual_SPI',
-  crs: crs,
-  crsTransform: transform,
-  region: bounds,
-  maxPixels: 1e13
-});
-```
-
-You can view the processed, Standard Precipitation Index dataset [here](https://resourcewatch.org/data/explore/cli023-Standard-Precipitation-Index).
-
-You can also download original dataset [from the source website](https://app.climateengine.org/climateEngine).
-
-###### Note: This retrieval of this data was originally done by [Nathan Suberi](https://www.wri.org/profile/nathan-suberi). The retrieval process was documented by [Amelia Snyder](https://www.wri.org/profile/amelia-snyder), and updated by [Tina Huang](https://www.wri.org/profile/tina-huang).
+###### Note: This dataset processing was done by [Yujing Wu](https://www.wri.org/profile/yujing-wu), and QC'd by [Amelia Snyder](https://www.wri.org/profile/amelia-snyder).
