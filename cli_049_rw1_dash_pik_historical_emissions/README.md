@@ -29,6 +29,6 @@ Please see the [Python script](https://github.com/resource-watch/data-pre-proces
 
 You can view the processed PIK Historical Emissions dataset [on Resource Watch](https://resourcewatch.org/embed/widget/1d736449-18cb-4757-8c6a-d8a175d906f0).
 
-You can also download the original dataset [directly through Resource Watch](http://wri-public-data.s3.amazonaws.com/resourcewatch/cli_049_rw1_dash_pik_historical_emissions.zip), or [from the source website](https://dataservices.gfz-potsdam.de/pik/showshort.php?id=escidoc:4736895).
+You can also download the original dataset [directly through Resource Watch](https://wri-public-data.s3.amazonaws.com/resourcewatch/cli_049_rw1_dash_pik_historical_emissions.zip), or [from the source website](https://dataservices.gfz-potsdam.de/pik/showshort.php?id=escidoc:4736895).
 
 ###### Note: This dataset processing was done by [Yujing Wu](https://www.wri.org/profile/yujing-wu) and [Daniel Gonzalez](mailto:Daniel.Gonzalez@wri.org), and QC'd by [Taufiq Rashid](https://www.wri.org/profile/taufiq-rashid).
