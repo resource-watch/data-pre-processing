@@ -1,34 +1,20 @@
-## PIK Historical Emissions Dataset Pre-processing
-This file describes the data pre-processing that was done to [the PRIMAP-hist national historical emissions time series
-(1850-2017)](https://dataservices.gfz-potsdam.de/pik/showshort.php?id=escidoc:4736895) for [display on Resource Watch](https://resourcewatch.org/embed/widget/1d736449-18cb-4757-8c6a-d8a175d906f0).
+## Coral Reef Locations Dataset Pre-processing
+This file describes the data pre-processing that was done to [the Global Distribution of Coral Reefs (2018)](http://data.unep-wcmc.org/datasets/1) for [display on Resource Watch](https://resourcewatch.org/data/explore/1d23838e-40da-4cf3-b61c-56258d3a5c56).
 
-The source provides the data as a csv file.
+The source provided this dataset as two shapefiles - one of which contains polygon data, and the other contains point data.
 
-Below, we describe the steps used to reformat the table so that it is formatted correctly to upload to Carto.
+Below, we describe the steps used to reformat the shapefile:
+1. Read in the polygon shapefile as a geopandas data frame.
+2. Change the data type of column 'PROTECT', 'PROTECT_FE', and 'METADATA_I' to integers.
+3. Convert the geometries of the data from shapely objects to geojsons.
+4. Create a new column from the index of the dataframe to use as a unique id column (cartodb_id) in Carto.
 
-1. Read in the data as a pandas dataframe.
-2. Subset the dataframe to obtain the aggregated emissions for all countries.
-3. Subset the dataframe to obtain emissions of CH4, CO2, F Gases, and N2O.
-4. Subset the dataframe to obtain GHG emissions that are primarily reported by countries.
-5. Convert the dataframe from wide to long format so there will be one column indicating the year and another column indicating the emissions values.
-6. Rename the 'variable' and 'value' columns created by the previous step to be 'year' and 'yr_data'.
-7. Convert the emission values of CH4 and N2O to be in the unit of GgCO2eq using global warming potential in IPCC Fourth Assessment Report.
-8. Convert the emission values to be in MtCO2eq.
-9. Change the values of 'unit' column from 'GgCO2eq' to 'MtCO2eq'.
-10. Create a dictionary for all the major sectors and their corresponding codes in the dataframe based on the documentation at ftp://datapub.gfz-potsdam.de/download/10.5880.PIK.2019.018/PRIMAP-hist_v2.1_data-description.pdf.
-11. Subset the dataframe to obtain the GHG emissions of the major sectors.
-12. Convert the codes in the 'category' column to the sectors they represent.
-13. Create a 'datetime' column to store the years as datetime objects and drop the 'year' column.
-14. Sum the emissions of all types of GHG for each sector in each year.
-15. Create a column 'source' to indicate the data source is PIK.
-16. Create a 'gwp' column to indicate that the global warming potential used in the calculation is from the IPCC Fourth Assessment Report.
-17. Create a 'gas' column to indicate that the emissions values are the sum of all GHG emissions.
-18. Rename the 'category' column to 'sector'.
+Next, a mask layer was created so that it could be overlayed on top of other datasets to highlight where coral reefs were located. In order to create this, a 10km buffer was generated around each coral reef polygon. This was created and exported as a shapefile in Google Earth Engine, using the following code:
 
-Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/cli_049_rw1_dash_pik_historical_emissions/cli_049_rw1_dash_pik_historical_emissions_processing.py) for more details on this processing.
+Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/bio_004a_coral_reef_locations/bio_004a_coral_reef_locations_processing.py) for more details on this processing.
 
-You can view the processed PIK Historical Emissions dataset [on Resource Watch](https://resourcewatch.org/embed/widget/1d736449-18cb-4757-8c6a-d8a175d906f0).
+You can view the processed Coral Reef Locations dataset [on Resource Watch](https://resourcewatch.org/data/explore/1d23838e-40da-4cf3-b61c-56258d3a5c56).
 
-You can also download the original dataset [directly through Resource Watch](http://wri-public-data.s3.amazonaws.com/resourcewatch/cli_049_rw1_dash_pik_historical_emissions.zip), or [from the source website](https://dataservices.gfz-potsdam.de/pik/showshort.php?id=escidoc:4736895).
+You can also download the original dataset [directly through Resource Watch](https://wri-public-data.s3.amazonaws.com/resourcewatch/bio_004a_coral_reef_locations.zip), or [from the source website](http://data.unep-wcmc.org/datasets/1).
 
-###### Note: This dataset processing was done by [Yujing Wu](https://www.wri.org/profile/yujing-wu) and [Daniel Gonzalez](mailto:Daniel.Gonzalez@wri.org), and QC'd by [Taufiq Rashid](https://www.wri.org/profile/taufiq-rashid).
+###### Note: This dataset processing was done by [Yujing Wu](https://www.wri.org/profile/yujing-wu), and QC'd by [Amelia Snyder](https://www.wri.org/profile/amelia-snyder).
