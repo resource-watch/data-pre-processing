@@ -16,6 +16,6 @@ Please see the [Python script](https://github.com/resource-watch/data-pre-proces
 
 You can view the processed Water Stress Country Ranking dataset [on Resource Watch](https://resourcewatch.org/data/explore/47053e23-7808-40d9-b4ae-1af73c5c8bab).
 
-You can also download the original dataset [directly through Resource Watch](http://wri-public-data.s3.amazonaws.com/resourcewatch/wat_036_rw1_water_stress_country_ranking.zip), or [from the source website](https://www.wri.org/applications/aqueduct/country-rankings/).
+You can also download the original dataset [directly through Resource Watch](https://wri-public-data.s3.amazonaws.com/resourcewatch/wat_036_rw1_water_stress_country_ranking.zip), or [from the source website](https://www.wri.org/applications/aqueduct/country-rankings/).
 
 ###### Note: This dataset processing was done by [Yujing Wu](https://www.wri.org/profile/yujing-wu), and QC'd by [Taufiq Rashid](https://www.wri.org/profile/taufiq-rashid).
