@@ -9,6 +9,6 @@ Please see the [Python script](https://github.com/resource-watch/data-pre-proces
 
 You can view the processed Global Peace Index dataset [on Resource Watch](https://resourcewatch.org/data/explore/soc091-Global-Peace-Index).
 
-You can also download original dataset [directly through Resource Watch](http://wri-public-data.s3.amazonaws.com/resourcewatch/soc_091_global_peace_index.zip), or [from the source website](http://visionofhumanity.org/app/uploads/2020/02/GPI-2019-overall-scores-2008-2019.xlsx).
+You can also download original dataset [directly through Resource Watch](https://wri-public-data.s3.amazonaws.com/resourcewatch/soc_091_global_peace_index.zip), or [from the source website](http://visionofhumanity.org/app/uploads/2020/02/GPI-2019-overall-scores-2008-2019.xlsx).
 
 ###### Note: This dataset processing was done by [Taufiq Rashid](https://www.wri.org/profile/taufiq-rashid), and QC'd by [Amelia Snyder](https://www.wri.org/profile/amelia-snyder).
