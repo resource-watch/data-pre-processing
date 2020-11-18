@@ -14,6 +14,6 @@ Please see the [Python script](https://github.com/resource-watch/data-pre-proces
 
 You can view the processed Road Traffic Death Rates dataset [on Resource Watch](https://resourcewatch.org/data/explore/3b6f853a-622d-4fff-827c-901b5b4352b0).
 
-You can also download the original dataset [directly through Resource Watch](http://wri-public-data.s3.amazonaws.com/resourcewatch/cit_022_rw1_road_traffic_death_rates.zip), or [from the source website](http://apps.who.int/gho/data/node.main.A997?lang=en).
+You can also download the original dataset [directly through Resource Watch](https://wri-public-data.s3.amazonaws.com/resourcewatch/cit_022_rw1_road_traffic_death_rates.zip), or [from the source website](http://apps.who.int/gho/data/node.main.A997?lang=en).
 
 ###### Note: This dataset processing was done by [Taufiq Rashid](https://www.wri.org/profile/taufiq-rashid), and QC'd by [Amelia Snyder](https://www.wri.org/profile/amelia-snyder).

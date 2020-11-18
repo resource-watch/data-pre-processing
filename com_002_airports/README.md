@@ -15,6 +15,6 @@ Please see the [Python script](https://github.com/resource-watch/data-pre-proces
 
 You can view the processed Airports dataset [on Resource Watch](https://resourcewatch.org/data/explore/c111725c-e1c5-467b-a367-742db1c70893).
 
-You can also download the original dataset [directly through Resource Watch](http://wri-public-data.s3.amazonaws.com/resourcewatch/com_002_airports.zip), or [from the source website](https://raw.githubusercontent.com/jpatokal/openflights/master/data/airports.dat).
+You can also download the original dataset [directly through Resource Watch](https://wri-public-data.s3.amazonaws.com/resourcewatch/com_002_airports.zip), or [from the source website](https://raw.githubusercontent.com/jpatokal/openflights/master/data/airports.dat).
 
 ###### Note: This dataset processing was done by [Matthew Iceland](https://github.com/miceland2) and [Yujing Wu](https://www.wri.org/profile/yujing-wu), and QC'd by [Amelia Snyder](https://www.wri.org/profile/amelia-snyder).

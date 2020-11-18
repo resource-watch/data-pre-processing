@@ -15,6 +15,6 @@ Please see the [Python script](https://github.com/resource-watch/data-pre-proces
 
 You can view the processed Municipal Waste dataset [on Resource Watch](https://resourcewatch.org/data/explore/23f41bb2-2312-41ab-aaf2-ef584f80b31a).
 
-You can also download the original dataset [directly through Resource Watch](http://wri-public-data.s3.amazonaws.com/resourcewatch/cit_029_rw1_municipal_waste.zip), or [from the source website](https://stats.oecd.org/Index.aspx?DataSetCode=MUNW).
+You can also download the original dataset [directly through Resource Watch](https://wri-public-data.s3.amazonaws.com/resourcewatch/cit_029_rw1_municipal_waste.zip), or [from the source website](https://stats.oecd.org/Index.aspx?DataSetCode=MUNW).
 
 ###### Note: This dataset processing was done by [Yujing Wu](https://www.wri.org/profile/yujing-wu), and QC'd by [Amelia Snyder](https://www.wri.org/profile/amelia-snyder).

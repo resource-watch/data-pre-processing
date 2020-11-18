@@ -7,6 +7,6 @@ Please see the [Python script](https://github.com/resource-watch/data-pre-proces
 
 You can view the processed Ocean Health Index dataset [on Resource Watch](https://resourcewatch.org/data/explore/7b52fb1a-a52d-44b9-bfef-45c3f2610c58).
 
-You can also download the original dataset [directly through Resource Watch](http://wri-public-data.s3.amazonaws.com/resourcewatch/bio_041_rw1_ocean_health_index.zip), or [from the source website](http://ohi-science.org/ohi-global/download).
+You can also download the original dataset [directly through Resource Watch](https://wri-public-data.s3.amazonaws.com/resourcewatch/bio_041_rw1_ocean_health_index.zip), or [from the source website](http://ohi-science.org/ohi-global/download).
 
 ###### Note: This dataset processing was done by [Yujing Wu](https://www.wri.org/profile/yujing-wu), and QC'd by [Amelia Snyder](https://www.wri.org/profile/amelia-snyder).

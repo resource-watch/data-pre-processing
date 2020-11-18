@@ -18,6 +18,6 @@ Please see the [Python script](https://github.com/resource-watch/data-pre-proces
 
 You can view the processed FDI Regulatory Restrictiveness Index dataset [on Resource Watch](https://resourcewatch.org/data/explore/10b47089-6457-48b4-a955-60f4f964e0f2).
 
-You can also download the original dataset [directly through Resource Watch](http://wri-public-data.s3.amazonaws.com/resourcewatch/com_007_rw1_fdi_regulatory_restrictiveness_index.zip), or [from the source website](http://stats.oecd.org/Index.aspx?datasetcode=FDIINDEX#).
+You can also download the original dataset [directly through Resource Watch](https://wri-public-data.s3.amazonaws.com/resourcewatch/com_007_rw1_fdi_regulatory_restrictiveness_index.zip), or [from the source website](http://stats.oecd.org/Index.aspx?datasetcode=FDIINDEX#).
 
 ###### Note: This dataset processing was done by [Yujing Wu](https://www.wri.org/profile/yujing-wu), and QC'd by [Amelia Snyder](https://www.wri.org/profile/amelia-snyder).

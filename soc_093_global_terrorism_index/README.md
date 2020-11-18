@@ -9,6 +9,6 @@ Please see the [Python script](https://github.com/resource-watch/data-pre-proces
 
 You can view the processed Global Terrorism Index dataset [on Resource Watch](https://resourcewatch.org/data/explore/soc093-Global-Terrorism-Index).
 
-You can also download original dataset [directly through Resource Watch](http://wri-public-data.s3.amazonaws.com/resourcewatch/soc_093_global_terrorism_index.zip), or [from the source website](http://visionofhumanity.org/app/uploads/2020/02/GTI-2019-overall-scores-2002-2018.xlsx).
+You can also download original dataset [directly through Resource Watch](https://wri-public-data.s3.amazonaws.com/resourcewatch/soc_093_global_terrorism_index.zip), or [from the source website](http://visionofhumanity.org/app/uploads/2020/02/GTI-2019-overall-scores-2002-2018.xlsx).
 
 ###### Note: This dataset processing was done by [Taufiq Rashid](https://www.wri.org/profile/taufiq-rashid), and QC'd by [Amelia Snyder](https://www.wri.org/profile/amelia-snyder).
