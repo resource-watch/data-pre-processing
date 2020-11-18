@@ -1,16 +1,20 @@
-## Global Hunger Index Dataset Pre-processing
-This file describes the data pre-processing that was done to [2019 Global Hunger Index dataset](https://www.globalhungerindex.org/download/all.html) for [display on Resource Watch](https://resourcewatch.org/data/explore/foo015a-Global-Hunger-Index).
+## Coral Reef Locations Dataset Pre-processing
+This file describes the data pre-processing that was done to [the Global Distribution of Coral Reefs (2018)](http://data.unep-wcmc.org/datasets/1) for [display on Resource Watch](https://resourcewatch.org/data/explore/1d23838e-40da-4cf3-b61c-56258d3a5c56).
 
-This dataset was provided by the source as a pdf report. The data shown on Resource Watch can be found in Table 2.1 Global Hunger Index Scores By 2019 GHI Rank, which is on page 17 of the report.
+The source provided this dataset as two shapefiles - one of which contains polygon data, and the other contains point data.
 
-This table was read into Python as a dataframe. The data was cleaned, values listed as '<5' were replaced with 5, and the the table was converted from wide to a long form.
+Below, we describe the steps used to reformat the shapefile:
+1. Read in the polygon shapefile as a geopandas data frame.
+2. Change the data type of column 'PROTECT', 'PROTECT_FE', and 'METADATA_I' to integers.
+3. Convert the geometries of the data from shapely objects to geojsons.
+4. Create a new column from the index of the dataframe to use as a unique id column (cartodb_id) in Carto.
 
-Countries with insufficient data but significant cause for concern were not included in the source's data table, but they were noted [by the source](https://www.globalhungerindex.org/results.html#box-2-1). A new column was added to the table to store a flag for "Insufficient data, significant concern," and rows were added to the table for each of these countries noted by the source. 
+Next, a mask layer was created so that it could be overlayed on top of other datasets to highlight where coral reefs were located. In order to create this, a 10km buffer was generated around each coral reef polygon. This was created and exported as a shapefile in Google Earth Engine, using the following code:
 
-Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/foo_015a_global_hunger_index/foo_015a_global_hunger_index_processing.py) for more details on this processing.
+Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/bio_004a_coral_reef_locations/bio_004a_coral_reef_locations_processing.py) for more details on this processing.
 
-You can view the processed Global Hunger Index dataset [on Resource Watch](https://resourcewatch.org/data/explore/foo015a-Global-Hunger-Index).
+You can view the processed Coral Reef Locations dataset [on Resource Watch](https://resourcewatch.org/data/explore/1d23838e-40da-4cf3-b61c-56258d3a5c56).
 
-You can also download original dataset [directly through Resource Watch](http://wri-projects.s3.amazonaws.com/resourcewatch/foo_015a_global_hunger_index.zip), or [from the source website](https://www.globalhungerindex.org/download/all.html).
+You can also download the original dataset [directly through Resource Watch](https://wri-public-data.s3.amazonaws.com/resourcewatch/bio_004a_coral_reef_locations.zip), or [from the source website](http://data.unep-wcmc.org/datasets/1).
 
-###### Note: This dataset processing was done by [Tina Huang](https://www.wri.org/profile/tina-huang), and QC'd by [Amelia Snyder](https://www.wri.org/profile/amelia-snyder).
+###### Note: This dataset processing was done by [Yujing Wu](https://www.wri.org/profile/yujing-wu), and QC'd by [Amelia Snyder](https://www.wri.org/profile/amelia-snyder).
