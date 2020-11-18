@@ -1,20 +1,20 @@
-## Coral Bleaching Monitoring Dataset Pre-processing
-This file describes the data pre-processing that was done to the [Daily Global 5km Satellite Coral Bleaching Heat Stress Monitoring](https://coralreefwatch.noaa.gov/product/5km/index.php) for [display on Resource Watch](https://resourcewatch.org/data/explore/).
+## Coral Reef Locations Dataset Pre-processing
+This file describes the data pre-processing that was done to [the Global Distribution of Coral Reefs (2018)](http://data.unep-wcmc.org/datasets/1) for [display on Resource Watch](https://resourcewatch.org/data/explore/1d23838e-40da-4cf3-b61c-56258d3a5c56).
 
-This dataset is provided by the source in a number of separate NetCDF files. The following variables are shown on Resource Watch:
-- Bleaching Alert Area (bleaching_alert_area_7d): Areas where bleaching thermal stress satisfies specific criteria based on HotSpot and Degree Heating Week (DHW) values
-- HotSpot (hotspots): Measures the magnitude of daily thermal stress that can lead to coral bleaching
-- Degree Heating Week (degree_heating_week): Indicates duration and magnitude of thermal stress (one DHW is equal to one week of SST 1°C warmer than the historical average for the warmest month of the year)
-- Sea Surface Temperature Anomaly (sea_surface_temperature_anomaly): Difference between the daily SST and the corresponding daily SST climatology
-- Sea Surface Temperature (sea_surface_temperature): Night-time temperature of ocean at surface
-- Sea Surface Tempature Trend (sea_surface_temperature_trend_7d): Pace and direction of the SST variation and thus coral bleaching heat stress
+The source provided this dataset as two shapefiles - one of which contains polygon data, and the other contains point data.
 
-To process this data for display on Resource Watch, each NetCDF file was downloaded, and the relevant subdatasets were extracted to individual, single-band GeoTIFFs. These GeoTIFF files were then merged into a single multi-band GeoTIFF, where each band corresponds to one variable.
+Below, we describe the steps used to reformat the shapefile:
+1. Read in the polygon shapefile as a geopandas data frame.
+2. Change the data type of column 'PROTECT', 'PROTECT_FE', and 'METADATA_I' to integers.
+3. Convert the geometries of the data from shapely objects to geojsons.
+4. Create a new column from the index of the dataframe to use as a unique id column (cartodb_id) in Carto.
 
-Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/ocn_007_coral_bleaching_monitoring/ocn_007_coral_bleaching_monitoring_processing.py) for more details on this processing.
+Next, a mask layer was created so that it could be overlayed on top of other datasets to highlight where coral reefs were located. In order to create this, a 10km buffer was generated around each coral reef polygon. This was created and exported as a shapefile in Google Earth Engine, using the following code:
 
-You can view the processed dataset for [display on Resource Watch](https://resourcewatch.org/data/explore/).
+Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/bio_004a_coral_reef_locations/bio_004a_coral_reef_locations_processing.py) for more details on this processing.
 
-You can also download the original data [from the source website](https://coralreefwatch.noaa.gov/product/5km/index.php).
+You can view the processed Coral Reef Locations dataset [on Resource Watch](https://resourcewatch.org/data/explore/1d23838e-40da-4cf3-b61c-56258d3a5c56).
 
-###### Note: This dataset processing was done by [Taufiq Rashid](https://www.wri.org/profile/taufiq-rashid) and [Peter Kerins](https://www.wri.org/profile/peter-kerins).
+You can also download the original dataset [directly through Resource Watch](https://wri-public-data.s3.amazonaws.com/resourcewatch/bio_004a_coral_reef_locations.zip), or [from the source website](http://data.unep-wcmc.org/datasets/1).
+
+###### Note: This dataset processing was done by [Yujing Wu](https://www.wri.org/profile/yujing-wu), and QC'd by [Amelia Snyder](https://www.wri.org/profile/amelia-snyder).
