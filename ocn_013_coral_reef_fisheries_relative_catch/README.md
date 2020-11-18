@@ -1,15 +1,20 @@
-## Coral Reef Fisheries Relative Catch Pre-processing
-This file describes the data pre-processing that was done to the [estimated relative coral reef-associated fisheries catch](http://maps.oceanwealth.org/) for [display on Resource Watch](https://resourcewatch.org/data/explore/).
+## Coral Reef Locations Dataset Pre-processing
+This file describes the data pre-processing that was done to [the Global Distribution of Coral Reefs (2018)](http://data.unep-wcmc.org/datasets/1) for [display on Resource Watch](https://resourcewatch.org/data/explore/1d23838e-40da-4cf3-b61c-56258d3a5c56).
 
-The dataset is contained within a GeoDataBase, containing many vector layers, many of which are available for viewing on the Mapping Ocean Wealth platform. The following variable is shown on Resource Watch:
-- Coral Reef Fisheries Catch: Estimate of the relative size of coral reef fisheries catch (by weight) grouped by decile, based on estimated reef productivity and fishing effort, as well as the presence of protected "no-take" fishing areas.
+The source provided this dataset as two shapefiles - one of which contains polygon data, and the other contains point data.
 
-To process this data for display on Resource Watch, the GeoDataBase was downloaded, and the layer of interest was extracted into a shapefile. The appropriate decile attribute was then rasterized into a single-band GeoTIFF, which geospatial properties identical to the originating vector file.
+Below, we describe the steps used to reformat the shapefile:
+1. Read in the polygon shapefile as a geopandas data frame.
+2. Change the data type of column 'PROTECT', 'PROTECT_FE', and 'METADATA_I' to integers.
+3. Convert the geometries of the data from shapely objects to geojsons.
+4. Create a new column from the index of the dataframe to use as a unique id column (cartodb_id) in Carto.
 
-Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/ocn_013_coral_reef_fisheries_relative_catch/ocn_013_coral_reef_fisheries_relative_catch.py) for more details on this processing.
+Next, a mask layer was created so that it could be overlayed on top of other datasets to highlight where coral reefs were located. In order to create this, a 10km buffer was generated around each coral reef polygon. This was created and exported as a shapefile in Google Earth Engine, using the following code:
 
-You can view the processed dataset for [display on Resource Watch](https://resourcewatch.org/data/explore/).
+Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/bio_004a_coral_reef_locations/bio_004a_coral_reef_locations_processing.py) for more details on this processing.
 
-The original data can be viewed on the [Mapping Ocean Wealth platform](http://maps.oceanwealth.org/), and are available for download upon request.
+You can view the processed Coral Reef Locations dataset [on Resource Watch](https://resourcewatch.org/data/explore/1d23838e-40da-4cf3-b61c-56258d3a5c56).
 
-###### Note: This dataset processing was done by [Peter Kerins](https://www.wri.org/profile/peter-kerins).
+You can also download the original dataset [directly through Resource Watch](https://wri-public-data.s3.amazonaws.com/resourcewatch/bio_004a_coral_reef_locations.zip), or [from the source website](http://data.unep-wcmc.org/datasets/1).
+
+###### Note: This dataset processing was done by [Yujing Wu](https://www.wri.org/profile/yujing-wu), and QC'd by [Amelia Snyder](https://www.wri.org/profile/amelia-snyder).
