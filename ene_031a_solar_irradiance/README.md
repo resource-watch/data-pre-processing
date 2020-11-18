@@ -1,94 +1,20 @@
-## Solar Irradiance Retrieval and Pre-processing
-This file describes the process used to retrieve and pre-process the [Global Solar Atlas Version 2](https://globalsolaratlas.info/download/world) for [display on Resource Watch](https://resourcewatch.org/data/explore/Solar-Irradiance).
+## Coral Reef Locations Dataset Pre-processing
+This file describes the data pre-processing that was done to [the Global Distribution of Coral Reefs (2018)](http://data.unep-wcmc.org/datasets/1) for [display on Resource Watch](https://resourcewatch.org/data/explore/1d23838e-40da-4cf3-b61c-56258d3a5c56).
 
-Two datasets from this atlas were downloaded and pre-processed:
-1) Average daily global horizontal irradiance (9 arcsec resolution)
-2) Average daily photovoltaic power potential (30 arcsec resolution)
+The source provided this dataset as two shapefiles - one of which contains polygon data, and the other contains point data.
 
-Below, we describe the steps used to process each of these files.
+Below, we describe the steps used to reformat the shapefile:
+1. Read in the polygon shapefile as a geopandas data frame.
+2. Change the data type of column 'PROTECT', 'PROTECT_FE', and 'METADATA_I' to integers.
+3. Convert the geometries of the data from shapely objects to geojsons.
+4. Create a new column from the index of the dataframe to use as a unique id column (cartodb_id) in Carto.
 
-##### Average daily global horizontal irradiance (9 arcsec resolution)
-1) Download the data from the [source website](https://globalsolaratlas.info/download/world). The files can be found near the bottom of the page. For global horizontal irradiation, the following High Resolution GIS Data files were downloaded:
-    - EEN segment - *GHI, DIF, GTI, DNI - LTAy_DailySum (GeoTIFF)*
-    - EES segment - *GHI, DIF, GTI, DNI - LTAy_DailySum (GeoTIFF)*
-    - EN segment - *GHI, DIF, GTI, DNI - LTAy_DailySum (GeoTIFF)*
-    - ES segment - *GHI, DIF, GTI, DNI - LTAy_DailySum (GeoTIFF)*
-    - WN segment - *GHI, DIF, GTI, DNI - LTAy_DailySum (GeoTIFF)*
-    - WS segment - *GHI, DIF, GTI, DNI - LTAy_DailySum (GeoTIFF)*
-    - WWN segment - *GHI, DIF, GTI, DNI - LTAy_DailySum (GeoTIFF)*
-    - WWS segment - *GHI, DIF, GTI, DNI - LTAy_DailySum (GeoTIFF)*
-2) Unzip each of the downloaded files.
-3) Upload only the *GHI.tif* file in each of these folders to an image collection in Google Earth Engine (GEE).
-4) Mosaic all of the images together into a single, global image using the following GEE code:
+Next, a mask layer was created so that it could be overlayed on top of other datasets to highlight where coral reefs were located. In order to create this, a 10km buffer was generated around each coral reef polygon. This was created and exported as a shapefile in Google Earth Engine, using the following code:
 
-```
-//Load in image collection
-var ic = ee.ImageCollection('users/resourcewatch/ene_031a_solar_irradiance_GHI);
-//Mosaic image
-var mosaic = ic.mosaic();
-//Get projection
-var projection = ic.first().projection();
-var crs = projection.getInfo().crs;
-var transform = projection.getInfo().transform;
-//Save global bounds!
-var rect = [-180, -89.9, 180, 89.9];
-var bounds = ee.Geometry.Rectangle(rect,null,false);
-//Export image
-Export.image.toAsset({
-  image: mosaic,
-  description: 'GHI_250_mosaic',
-  assetId: 'users/resourcewatch/ene_031a_solar_irradiance_GHI/GHI_250_mosaic',
-  crs: crs,
-  crsTransform: transform,
-  region: bounds,
-  maxPixels: 1e13
-});
-//Print one image from collection
-print(ic.first());
-//Print scale in meters at the equator
-print(ic.first().projection().nominalScale());
-Map.addLayer(mosaic);
+Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/bio_004a_coral_reef_locations/bio_004a_coral_reef_locations_processing.py) for more details on this processing.
 
+You can view the processed Coral Reef Locations dataset [on Resource Watch](https://resourcewatch.org/data/explore/1d23838e-40da-4cf3-b61c-56258d3a5c56).
 
-```
-##### Average daily photovoltaic power potential (30 arcsec resolution)
-1) Download the data from the [source website](https://globalsolaratlas.info/download/world). The files can be found near the bottom of the page. For daily photovoltaic power potential, the following GIS Data files were downloaded:
-    - PVOUT - Photovoltaic power potential - *PVOUT-LTAm_AvgDailyTotals(GeoTIFF)*
-2) Unzip the downloaded file.
-3) Upload each of the 12 tiff files in the folder to an image collection in GEE.
-4) Mosaic all of the images together into a single, global image using the following GEE code:
-```
-//Load in image collection
-var ic = ee.ImageCollection('users/resourcewatch/ene_031a_global_solar_atlas_PVOUT);
-//Mosaic image
-var mosaic = ic.mosaic();
-//Get projection
-var projection = ic.first().projection();
-var crs = projection.getInfo().crs;
-var transform = projection.getInfo().transform;
-//Save global bounds!
-var rect = [-180, -89.9, 180, 89.9];
-var bounds = ee.Geometry.Rectangle(rect,null,false);
-//Export image
-Export.image.toAsset({
-  image: mosaic,
-  description: 'solar_PVOUT_mosaic',
-  assetId: 'users/resourcewatch/ene_031a_global_solar_atlas_PVOUT/solar_PVOUT_mosaic',
-  crs: crs,
-  crsTransform: transform,
-  region: bounds,
-  maxPixels: 1e13
-});
-//Print one image from collection
-print(ic.first());
-//Print scale in meters at the equator
-print(ic.first().projection().nominalScale());
-Map.addLayer(mosaic);
-```
+You can also download the original dataset [directly through Resource Watch](https://wri-public-data.s3.amazonaws.com/resourcewatch/bio_004a_coral_reef_locations.zip), or [from the source website](http://data.unep-wcmc.org/datasets/1).
 
-
-You can view the processed, Solar Irradiance dataset [here](https://resourcewatch.org/data/explore/Solar-Irradiance).
-
-You can also download original dataset [from the source website](https://globalsolaratlas.info/download/world).
-
-###### Note: This dataset processing was done by [Tina Huang](https://www.wri.org/profile/tina-huang), and QC'd by [Amelia Snyder](https://www.wri.org/profile/amelia-snyder).
+###### Note: This dataset processing was done by [Yujing Wu](https://www.wri.org/profile/yujing-wu), and QC'd by [Amelia Snyder](https://www.wri.org/profile/amelia-snyder).
