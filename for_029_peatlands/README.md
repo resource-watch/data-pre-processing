@@ -1,32 +1,20 @@
-## Peatlands Dataset Pre-processing
-This file describes the data pre-processing that was done to [the PEATMAP dataset](http://archive.researchdata.leeds.ac.uk/251/) for [display on Resource Watch](https://resourcewatch.org/data/explore/for019-Peatland-SEA).
+## Coral Reef Locations Dataset Pre-processing
+This file describes the data pre-processing that was done to [the Global Distribution of Coral Reefs (2018)](http://data.unep-wcmc.org/datasets/1) for [display on Resource Watch](https://resourcewatch.org/data/explore/1d23838e-40da-4cf3-b61c-56258d3a5c56).
 
-The Peatlands dataset comes in zipped files for each of the following continents: Africa, Asia, Europe, North America, Oceania, and South America. For some continents, a single shapefile was provided for the entire continent. For others, several shapefiles at a finer level, such as at the national level, were provided. For example, the zipped file for North America includes shapefiles for Canada, the United States, and other North American peatlands.
+The source provided this dataset as two shapefiles - one of which contains polygon data, and the other contains point data.
 
-Below, we describe the steps used to process and combine these regional datasets into a global peatlands dataset.
+Below, we describe the steps used to reformat the shapefile:
+1. Read in the polygon shapefile as a geopandas data frame.
+2. Change the data type of column 'PROTECT', 'PROTECT_FE', and 'METADATA_I' to integers.
+3. Convert the geometries of the data from shapely objects to geojsons.
+4. Create a new column from the index of the dataframe to use as a unique id column (cartodb_id) in Carto.
 
-1. Upload individual regional shapefile datasets to Carto.
-2. For each regional dataset in Carto, add a column called "region", and fill it with the name of the shapefile region. For example, the following SQL statements were used for Southeast Asia peatlands shapefile, which was stored in a table named for_029_peatland_sea:
+Next, a mask layer was created so that it could be overlayed on top of other datasets to highlight where coral reefs were located. In order to create this, a 10km buffer was generated around each coral reef polygon. This was created and exported as a shapefile in Google Earth Engine, using the following code:
 
-```
-ALTER TABLE for_029_peatland_sea ADD COLUMN region VARCHAR
+Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/bio_004a_coral_reef_locations/bio_004a_coral_reef_locations_processing.py) for more details on this processing.
 
-UPDATE for_029_peatland_sea
+You can view the processed Coral Reef Locations dataset [on Resource Watch](https://resourcewatch.org/data/explore/1d23838e-40da-4cf3-b61c-56258d3a5c56).
 
-SET region = 'Southeast Asia';
-```
-3. Examine attribute columns and standardize area column names. Some shapefiles have an area column named “peat_area” and some have columns named “area”. The following SQL statement was used to standardize the area column name:
-```
-ALTER TABLE for_029_peatland_africa
-RENAME peat_area TO area;
-```
-4. Combine regional shapefiles into a global peatlands dataset, called for_029_peatlands. For example, the following SQL statement was used to insert the Southeast Asia peatlands shapefile into the new, global table: 
-```
-INSERT INTO for_029_peatlands(the_geom,  area, region) SELECT the_geom,  area, region
-FROM for_029_peatland_sea
-```
-You can view the processed, global peatland dataset [here](https://resourcewatch.carto.com/u/wri-rw/dataset/for_029_peatlands).
+You can also download the original dataset [directly through Resource Watch](https://wri-public-data.s3.amazonaws.com/resourcewatch/bio_004a_coral_reef_locations.zip), or [from the source website](http://data.unep-wcmc.org/datasets/1).
 
-You can also download original dataset, by region, [directly through Resource Watch](http://wri-public-data.s3.amazonaws.com/resourcewatch/for_029_peatlands.zip), or [from the source website](http://archive.researchdata.leeds.ac.uk/251/).
-
-###### Note: This dataset processing was done by [Tina Huang](https://www.wri.org/profile/tina-huang), and QC'd by [Amelia Snyder](https://www.wri.org/profile/amelia-snyder).
+###### Note: This dataset processing was done by [Yujing Wu](https://www.wri.org/profile/yujing-wu), and QC'd by [Amelia Snyder](https://www.wri.org/profile/amelia-snyder).
