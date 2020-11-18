@@ -1,15 +1,20 @@
-## Projected Ocean Acidification Dataset Pre-processing
-This file describes the data pre-processing that was done to the [Projections of Coral Bleaching and Ocean Acidification for Coral Reef Areas](https://coralreefwatch.noaa.gov/climate/projections/piccc_oa_and_bleaching/index.php) for [display on Resource Watch](https://resourcewatch.org/data/explore/).
+## Coral Reef Locations Dataset Pre-processing
+This file describes the data pre-processing that was done to [the Global Distribution of Coral Reefs (2018)](http://data.unep-wcmc.org/datasets/1) for [display on Resource Watch](https://resourcewatch.org/data/explore/1d23838e-40da-4cf3-b61c-56258d3a5c56).
 
-This dataset is contained within a NetCDF file. The following variable is shown on Resource Watch, with a separate layer for the projected value at the start of each decade between 2010 and 2100:
-- 2XXX Aragonite Saturation State: Common measure of carbonate ion concentration, which indicates the availability of the calcium carbonate that is widely used by marine calcifiers, from lobsters to clams to starfish.
+The source provided this dataset as two shapefiles - one of which contains polygon data, and the other contains point data.
 
-To process this data for display on Resource Watch, the NetCDF file was acquired directly from the source organization. The time series data were extracted to a multiband GeoTIFF, with one band for each year 2006-2100. This GeoTIFF was then masked (all bands) by using [a Natural Earth set of polygons](https://www.naturalearthdata.com/downloads/10m-physical-vectors/10m-land/) to exclude land masses and freshwater bodies, since the data are only intended and valid for the ocean. 
+Below, we describe the steps used to reformat the shapefile:
+1. Read in the polygon shapefile as a geopandas data frame.
+2. Change the data type of column 'PROTECT', 'PROTECT_FE', and 'METADATA_I' to integers.
+3. Convert the geometries of the data from shapely objects to geojsons.
+4. Create a new column from the index of the dataframe to use as a unique id column (cartodb_id) in Carto.
 
-Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/ocn_006_projected_ocean_acidification/ocn_006_projected_ocean_acidification.py) for more details on this processing.
+Next, a mask layer was created so that it could be overlayed on top of other datasets to highlight where coral reefs were located. In order to create this, a 10km buffer was generated around each coral reef polygon. This was created and exported as a shapefile in Google Earth Engine, using the following code:
 
-You can view the processed dataset for [display on Resource Watch](https://resourcewatch.org/data/explore/).
+Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/bio_004a_coral_reef_locations/bio_004a_coral_reef_locations_processing.py) for more details on this processing.
 
-You can also download a representation of the data [from the source website](https://coralreefwatch.noaa.gov/climate/projections/piccc_oa_and_bleaching/index.php).
+You can view the processed Coral Reef Locations dataset [on Resource Watch](https://resourcewatch.org/data/explore/1d23838e-40da-4cf3-b61c-56258d3a5c56).
 
-###### Note: This dataset processing was done by [Peter Kerins](https://www.wri.org/profile/peter-kerins).
+You can also download the original dataset [directly through Resource Watch](https://wri-public-data.s3.amazonaws.com/resourcewatch/bio_004a_coral_reef_locations.zip), or [from the source website](http://data.unep-wcmc.org/datasets/1).
+
+###### Note: This dataset processing was done by [Yujing Wu](https://www.wri.org/profile/yujing-wu), and QC'd by [Amelia Snyder](https://www.wri.org/profile/amelia-snyder).
