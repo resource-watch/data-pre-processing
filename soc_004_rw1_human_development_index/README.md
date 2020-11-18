@@ -22,6 +22,6 @@ Please see the [Python script](https://github.com/resource-watch/data-pre-proces
 
 You can view the processed Human Development Index dataset [on Resource Watch](https://resourcewatch.org/data/explore/fc6dea95-37a6-41a0-8c99-38b7a2ea7301).
 
-You can also download the original dataset [directly through Resource Watch](http://wri-public-data.s3.amazonaws.com/resourcewatch/soc_004_rw1_human_development_index.zip), or [from the source website](http://hdr.undp.org/en/indicators/137506#).
+You can also download the original dataset [directly through Resource Watch](https://wri-public-data.s3.amazonaws.com/resourcewatch/soc_004_rw1_human_development_index.zip), or [from the source website](http://hdr.undp.org/en/indicators/137506#).
 
 ###### Note: This dataset processing was done by [Matthew Iceland](https://github.com/miceland2) and [Yujing Wu](https://www.wri.org/profile/yujing-wu), and QC'd by [Amelia Snyder](https://www.wri.org/profile/amelia-snyder).
