@@ -27,6 +27,6 @@ FROM for_029_peatland_sea
 ```
 You can view the processed, global peatland dataset [here](https://resourcewatch.carto.com/u/wri-rw/dataset/for_029_peatlands).
 
-You can also download original dataset, by region, [directly through Resource Watch](http://wri-public-data.s3.amazonaws.com/resourcewatch/for_029_peatlands.zip), or [from the source website](http://archive.researchdata.leeds.ac.uk/251/).
+You can also download original dataset, by region, [directly through Resource Watch](https://wri-public-data.s3.amazonaws.com/resourcewatch/for_029_peatlands.zip), or [from the source website](http://archive.researchdata.leeds.ac.uk/251/).
 
 ###### Note: This dataset processing was done by [Tina Huang](https://www.wri.org/profile/tina-huang), and QC'd by [Amelia Snyder](https://www.wri.org/profile/amelia-snyder).
