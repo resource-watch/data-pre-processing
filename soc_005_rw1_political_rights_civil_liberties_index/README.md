@@ -15,6 +15,6 @@ Please see the [Python script](https://github.com/resource-watch/data-pre-proces
 
 You can view the processed Political Rights and Civil Liberties Index dataset [on Resource Watch](https://resourcewatch.org/data/explore/8eafc054-a350-43b5-af61-a64a9a7f8ffe).
 
-You can also download the original dataset [directly through Resource Watch](http://wri-public-data.s3.amazonaws.com/resourcewatch/soc_005_rw1_political_rights_civil_liberties_index.zip), or [from the source website](https://freedomhouse.org/report/freedom-world/2020/leaderless-struggle-democracy).
+You can also download the original dataset [directly through Resource Watch](https://wri-public-data.s3.amazonaws.com/resourcewatch/soc_005_rw1_political_rights_civil_liberties_index.zip), or [from the source website](https://freedomhouse.org/report/freedom-world/2020/leaderless-struggle-democracy).
 
 ###### Note: This dataset processing was done by [Matthew Iceland](https://github.com/miceland2) and [Yujing Wu](https://www.wri.org/profile/yujing-wu), and QC'd by [Taufiq Rashid](https://www.wri.org/profile/taufiq-rashid).
