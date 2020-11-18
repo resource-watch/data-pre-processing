@@ -1,13 +1,20 @@
-## Electricity Consumption Dataset Pre-processing
-This file describes the data pre-processing that was done to the [U.S. Energy Information Administration (EIA) International Energy Statistics Electricity Net Consumption dataset](https://www.eia.gov/beta/international/data/browser/#/?pa=0000002&c=ruvvvvvfvtvnvv1vrvvvvfvvvvvvfvvvou20evvvvvvvvvvvvuvs&ct=0&tl_id=2-A&vs=INTL.2-2-AFG-BKWH.A&vo=0&v=H&start=1980&end=2016) for [display on Resource Watch](https://resourcewatch.org/data/explore/eef10736-8d8b-4ac9-a715-ef0653a83196).
+## Coral Reef Locations Dataset Pre-processing
+This file describes the data pre-processing that was done to [the Global Distribution of Coral Reefs (2018)](http://data.unep-wcmc.org/datasets/1) for [display on Resource Watch](https://resourcewatch.org/data/explore/1d23838e-40da-4cf3-b61c-56258d3a5c56).
 
-This dataset was provided by the source as a csv, which you can download using the link above. The csv table was converted from wide to long form, using Python. A new column 'electricity_consumption_ktoe' has also been created in Python to show the electricity consumption in kilotonnes of oil equivalent (ktoe).
+The source provided this dataset as two shapefiles - one of which contains polygon data, and the other contains point data.
 
-Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/ene_034_electricity_consumption/ene_034_electricity_consumption_processing.py) for more details on this processing.
+Below, we describe the steps used to reformat the shapefile:
+1. Read in the polygon shapefile as a geopandas data frame.
+2. Change the data type of column 'PROTECT', 'PROTECT_FE', and 'METADATA_I' to integers.
+3. Convert the geometries of the data from shapely objects to geojsons.
+4. Create a new column from the index of the dataframe to use as a unique id column (cartodb_id) in Carto.
 
-You can view the processed dataset for [display on Resource Watch](https://resourcewatch.org/data/explore/eef10736-8d8b-4ac9-a715-ef0653a83196).
+Next, a mask layer was created so that it could be overlayed on top of other datasets to highlight where coral reefs were located. In order to create this, a 10km buffer was generated around each coral reef polygon. This was created and exported as a shapefile in Google Earth Engine, using the following code:
 
-You can also download original dataset [directly through Resource Watch](http://wri-public-data.s3.amazonaws.com/resourcewatch/ene_034_electricity_consumption.zip), or [from the source website](https://www.eia.gov/international/data/world/electricity/electricity-consumption?pd=2&p=0000002&u=0&f=A&v=mapbubble&a=-&i=none&vo=value&&t=C&g=00000000000000000000000000000000000000000000000001&l=249-ruvvvvvfvtvnvv1vrvvvvfvvvvvvfvvvou20evvvvvvvvvvvvvvs&s=315532800000&e=1514764800000
-).
+Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/bio_004a_coral_reef_locations/bio_004a_coral_reef_locations_processing.py) for more details on this processing.
 
-###### Note: This dataset processing was done by [Amelia Snyder](https://www.wri.org/profile/amelia-snyder).
+You can view the processed Coral Reef Locations dataset [on Resource Watch](https://resourcewatch.org/data/explore/1d23838e-40da-4cf3-b61c-56258d3a5c56).
+
+You can also download the original dataset [directly through Resource Watch](https://wri-public-data.s3.amazonaws.com/resourcewatch/bio_004a_coral_reef_locations.zip), or [from the source website](http://data.unep-wcmc.org/datasets/1).
+
+###### Note: This dataset processing was done by [Yujing Wu](https://www.wri.org/profile/yujing-wu), and QC'd by [Amelia Snyder](https://www.wri.org/profile/amelia-snyder).
