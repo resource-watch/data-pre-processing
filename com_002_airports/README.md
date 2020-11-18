@@ -1,20 +1,20 @@
-## Airports Dataset Pre-processing
-This file describes the data pre-processing that was done to [the Airports dataset](https://openflights.org/data.html) for [display on Resource Watch](https://resourcewatch.org/data/explore/c111725c-e1c5-467b-a367-742db1c70893).
+## Coral Reef Locations Dataset Pre-processing
+This file describes the data pre-processing that was done to [the Global Distribution of Coral Reefs (2018)](http://data.unep-wcmc.org/datasets/1) for [display on Resource Watch](https://resourcewatch.org/data/explore/1d23838e-40da-4cf3-b61c-56258d3a5c56).
 
-The source provided the data in a dat format.
+The source provided this dataset as two shapefiles - one of which contains polygon data, and the other contains point data.
 
-Below, we describe the steps used to reformat the table before we uploaded it to Carto.
+Below, we describe the steps used to reformat the shapefile:
+1. Read in the polygon shapefile as a geopandas data frame.
+2. Change the data type of column 'PROTECT', 'PROTECT_FE', and 'METADATA_I' to integers.
+3. Convert the geometries of the data from shapely objects to geojsons.
+4. Create a new column from the index of the dataframe to use as a unique id column (cartodb_id) in Carto.
 
-1. Read in the data as a pandas data frame and remove the extra column containing indexes.
-2. Reorder the index and give the columns the correct header.
-3. Replace '\N' and 'NaN' in the data frame with None.
-4. Change the data types of the 'latitude', 'longitude', and 'daylight_savings_time' columns to float.
-5. Change the data types of the 'altitude' column to integer.
+Next, a mask layer was created so that it could be overlayed on top of other datasets to highlight where coral reefs were located. In order to create this, a 10km buffer was generated around each coral reef polygon. This was created and exported as a shapefile in Google Earth Engine, using the following code:
 
-Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/com_002_airports/com_002_airports_processing.py) for more details on this processing.
+Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/bio_004a_coral_reef_locations/bio_004a_coral_reef_locations_processing.py) for more details on this processing.
 
-You can view the processed Airports dataset [on Resource Watch](https://resourcewatch.org/data/explore/c111725c-e1c5-467b-a367-742db1c70893).
+You can view the processed Coral Reef Locations dataset [on Resource Watch](https://resourcewatch.org/data/explore/1d23838e-40da-4cf3-b61c-56258d3a5c56).
 
-You can also download the original dataset [directly through Resource Watch](http://wri-public-data.s3.amazonaws.com/resourcewatch/com_002_airports.zip), or [from the source website](https://raw.githubusercontent.com/jpatokal/openflights/master/data/airports.dat).
+You can also download the original dataset [directly through Resource Watch](https://wri-public-data.s3.amazonaws.com/resourcewatch/bio_004a_coral_reef_locations.zip), or [from the source website](http://data.unep-wcmc.org/datasets/1).
 
-###### Note: This dataset processing was done by [Matthew Iceland](https://github.com/miceland2) and [Yujing Wu](https://www.wri.org/profile/yujing-wu), and QC'd by [Amelia Snyder](https://www.wri.org/profile/amelia-snyder).
+###### Note: This dataset processing was done by [Yujing Wu](https://www.wri.org/profile/yujing-wu), and QC'd by [Amelia Snyder](https://www.wri.org/profile/amelia-snyder).
