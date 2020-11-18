@@ -9,6 +9,6 @@ Please see the [Python script](https://github.com/resource-watch/data-pre-proces
 
 You can view the processed Cost of Sustainable Water Management dataset [on Resource Watch](https://resourcewatch.org/data/explore/wat064-Cost-of-Sustainable-Water-Management).
 
-You can also download original dataset [directly through Resource Watch](http://wri-public-data.s3.amazonaws.com/resourcewatch/wat_064_cost_of_sustainable_water_management.zip), or [from the source website](https://www.wri.org/resources/data-sets/achieving-abundance).
+You can also download original dataset [directly through Resource Watch](https://wri-public-data.s3.amazonaws.com/resourcewatch/wat_064_cost_of_sustainable_water_management.zip), or [from the source website](https://www.wri.org/resources/data-sets/achieving-abundance).
 
 ###### Note: This dataset processing was done by [Taufiq Rashid](https://www.wri.org/profile/taufiq-rashid), and QC'd by [Amelia Snyder](https://www.wri.org/profile/amelia-snyder).
