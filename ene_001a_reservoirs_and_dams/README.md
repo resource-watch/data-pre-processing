@@ -42,6 +42,6 @@ FROM grand_reservoirs_v1_3
 ```
 You can view the processed reservoirs and dams dataset [on Resource Watch](https://resourcewatch.org/data/explore/ene001a-Global-Reservoir-and-Dam-GRanD-v13).
 
-You can also download original dataset [directly through Resource Watch](http://wri-public-data.s3.amazonaws.com/resourcewatch/ene_001a_reservoirs_and_dams.zip), or [from the source website](https://ln.sync.com/dl/bd47eb6b0/anhxaikr-62pmrgtq-k44xf84f-pyz4atkm/view/default/447819520013).
+You can also download original dataset [directly through Resource Watch](https://wri-public-data.s3.amazonaws.com/resourcewatch/ene_001a_reservoirs_and_dams.zip), or [from the source website](https://ln.sync.com/dl/bd47eb6b0/anhxaikr-62pmrgtq-k44xf84f-pyz4atkm/view/default/447819520013).
 
 ###### Note: This dataset processing was done by [Amelia Snyder](https://www.wri.org/profile/amelia-snyder).
