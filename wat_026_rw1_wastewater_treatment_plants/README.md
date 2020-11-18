@@ -16,6 +16,6 @@ Please see the [Python script](https://github.com/resource-watch/data-pre-proces
 
 You can view the processed Wastewater Treatment Plants (U.S.) dataset [on Resource Watch](https://resourcewatch.org/data/explore/a8581e62-63dd-4973-bb2a-b29552ad9e37).
 
-You can also download the original dataset [directly through Resource Watch](http://wri-public-data.s3.amazonaws.com/resourcewatch/wat_026_rw1_wastewater_treatment_plants.zip), or [from the source website](https://hifld-geoplatform.opendata.arcgis.com/datasets/environmental-protection-agency-epa-facility-registry-service-frs-wastewater-treatment-plants/data).
+You can also download the original dataset [directly through Resource Watch](https://wri-public-data.s3.amazonaws.com/resourcewatch/wat_026_rw1_wastewater_treatment_plants.zip), or [from the source website](https://hifld-geoplatform.opendata.arcgis.com/datasets/environmental-protection-agency-epa-facility-registry-service-frs-wastewater-treatment-plants/data).
 
 ###### Note: This dataset processing was done by [Yujing Wu](https://www.wri.org/profile/yujing-wu), and QC'd by [Amelia Snyder](https://www.wri.org/profile/amelia-snyder).
