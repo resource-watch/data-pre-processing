@@ -1,31 +1,20 @@
-## Female & Male Population Densities Dataset Pre-processing
-This file describes the data pre-processing that was done to [the Gridded Population of the World (GPW), v4: Basic Demographic Characteristics, v4.10 (2010)](https://sedac.ciesin.columbia.edu/data/set/gpw-v4-basic-demographic-characteristics-rev11) for [display on Resource Watch](https://resourcewatch.org/data/explore/soc075-Broad-Age-Groups).
+## Coral Reef Locations Dataset Pre-processing
+This file describes the data pre-processing that was done to [the Global Distribution of Coral Reefs (2018)](http://data.unep-wcmc.org/datasets/1) for [display on Resource Watch](https://resourcewatch.org/data/explore/1d23838e-40da-4cf3-b61c-56258d3a5c56).
 
-The original data contains two layers, male population density and female population density in people per square kilometer.
+The source provided this dataset as two shapefiles - one of which contains polygon data, and the other contains point data.
 
-To create the layer "Number of females per 100 males", we divide the female population density by the male population density and then multiply by 100.
+Below, we describe the steps used to reformat the shapefile:
+1. Read in the polygon shapefile as a geopandas data frame.
+2. Change the data type of column 'PROTECT', 'PROTECT_FE', and 'METADATA_I' to integers.
+3. Convert the geometries of the data from shapely objects to geojsons.
+4. Create a new column from the index of the dataframe to use as a unique id column (cartodb_id) in Carto.
 
-This calculation was done using Google Earth Engine, a free geospatial analysis system by Google. While the sytem is free you need to sign up with a Google account, which can be done [here](https://earthengine.google.com/). 
+Next, a mask layer was created so that it could be overlayed on top of other datasets to highlight where coral reefs were located. In order to create this, a 10km buffer was generated around each coral reef polygon. This was created and exported as a shapefile in Google Earth Engine, using the following code:
 
-The code used to preprocess this layer in Google Earth Engine can be found [here](https://code.earthengine.google.com/69705398b91fdcbdad2298f08ada5da4) and is copied below.
-```
-var female = ee.Image('projects/resource-watch-gee/soc_075_female_male_populations/female_density')
-var male = ee.Image('projects/resource-watch-gee/soc_075_female_male_populations/male_density')
+Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/bio_004a_coral_reef_locations/bio_004a_coral_reef_locations_processing.py) for more details on this processing.
 
-var scale = female.projection().nominalScale().getInfo()
+You can view the processed Coral Reef Locations dataset [on Resource Watch](https://resourcewatch.org/data/explore/1d23838e-40da-4cf3-b61c-56258d3a5c56).
 
-var m_f_ratio = male.divide(female).multiply(100)
+You can also download the original dataset [directly through Resource Watch](https://wri-public-data.s3.amazonaws.com/resourcewatch/bio_004a_coral_reef_locations.zip), or [from the source website](http://data.unep-wcmc.org/datasets/1).
 
-Export.image.toAsset({
-  image: m_f_ratio,  
-  description: 'Male_Female_Ratio',  
-  assetId: 'projects/resource-watch-gee/soc_075_female_male_populations/male_female_ratio_density', 
-  scale: scale, 
-  maxPixels:1e13})
-```
-
-You can view the processed Female & Male Population Densities dataset [on Resource Watch](https://resourcewatch.org/data/explore/soc075-Broad-Age-Groups).
-
-You can also download original dataset [from the source website](https://sedac.ciesin.columbia.edu/data/set/gpw-v4-basic-demographic-characteristics-rev11/data-download).
-
-###### Note: This dataset processing was done by [Kristine Lister](https://www.wri.org/profile/kristine-lister), and QC'd by [Amelia Snyder](https://www.wri.org/profile/amelia-snyder).
+###### Note: This dataset processing was done by [Yujing Wu](https://www.wri.org/profile/yujing-wu), and QC'd by [Amelia Snyder](https://www.wri.org/profile/amelia-snyder).
