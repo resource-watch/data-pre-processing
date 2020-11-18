@@ -146,4 +146,5 @@ with ZipFile(processed_data_dir,'w') as zip:
     for file in processed_data_files:
         zip.write(file, os.path.basename(file))
 # Upload processed data file to S3
+# adding a comment to see if my code works
 uploaded = util_cloud.aws_upload(processed_data_dir, aws_bucket, s3_prefix+os.path.basename(processed_data_dir))
