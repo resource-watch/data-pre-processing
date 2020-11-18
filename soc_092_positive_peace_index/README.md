@@ -1,14 +1,20 @@
-## Positive Peace Index Dataset Pre-processing
-This file describes the data pre-processing that was done to [Positive Peace Report 2019 dataset](http://visionofhumanity.org/app/uploads/2020/02/PPI-2019-overall-scores-2009-2018.xlsx) for [display on Resource Watch](https://resourcewatch.org/data/explore/soc092-Positive-Peace-Index).
+## Coral Reef Locations Dataset Pre-processing
+This file describes the data pre-processing that was done to [the Global Distribution of Coral Reefs (2018)](http://data.unep-wcmc.org/datasets/1) for [display on Resource Watch](https://resourcewatch.org/data/explore/1d23838e-40da-4cf3-b61c-56258d3a5c56).
 
-This dataset was provided by the source as an excel file. The file includes the overall Positive Peace Index score for 163 countries or independent territories from 2009 to 2018.
+The source provided this dataset as two shapefiles - one of which contains polygon data, and the other contains point data.
 
-The spreadsheet was read into Python as a dataframe. The data was cleaned, and the the table was converted from wide to a long form.
+Below, we describe the steps used to reformat the shapefile:
+1. Read in the polygon shapefile as a geopandas data frame.
+2. Change the data type of column 'PROTECT', 'PROTECT_FE', and 'METADATA_I' to integers.
+3. Convert the geometries of the data from shapely objects to geojsons.
+4. Create a new column from the index of the dataframe to use as a unique id column (cartodb_id) in Carto.
 
-Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/soc_092_positive_peace_index/soc_092_positive_peace_index_processing.py) for more details on this processing.
+Next, a mask layer was created so that it could be overlayed on top of other datasets to highlight where coral reefs were located. In order to create this, a 10km buffer was generated around each coral reef polygon. This was created and exported as a shapefile in Google Earth Engine, using the following code:
 
-You can view the processed Positive Peace Index dataset [on Resource Watch](https://resourcewatch.org/data/explore/soc092-Positive-Peace-Index).
+Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/bio_004a_coral_reef_locations/bio_004a_coral_reef_locations_processing.py) for more details on this processing.
 
-You can also download original dataset [directly through Resource Watch](http://wri-public-data.s3.amazonaws.com/resourcewatch/soc_092_positive_peace_index.zip), or [from the source website](http://visionofhumanity.org/app/uploads/2020/02/PPI-2019-overall-scores-2009-2018.xlsx).
+You can view the processed Coral Reef Locations dataset [on Resource Watch](https://resourcewatch.org/data/explore/1d23838e-40da-4cf3-b61c-56258d3a5c56).
 
-###### Note: This dataset processing was done by [Taufiq Rashid](https://www.wri.org/profile/taufiq-rashid), and QC'd by [Amelia Snyder](https://www.wri.org/profile/amelia-snyder).
+You can also download the original dataset [directly through Resource Watch](https://wri-public-data.s3.amazonaws.com/resourcewatch/bio_004a_coral_reef_locations.zip), or [from the source website](http://data.unep-wcmc.org/datasets/1).
+
+###### Note: This dataset processing was done by [Yujing Wu](https://www.wri.org/profile/yujing-wu), and QC'd by [Amelia Snyder](https://www.wri.org/profile/amelia-snyder).
