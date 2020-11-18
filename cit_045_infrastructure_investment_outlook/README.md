@@ -1,25 +1,20 @@
-## Infrastructure Investment Outlook Dataset Pre-processing
-This file describes the data pre-processing that was done to [the Global Infrastructure Investment Outlook dataset](https://outlook.gihub.org/) for [display on Resource Watch](https://resourcewatch.org/data/explore/Infrastructure-Investment-Outlook).
+## Coral Reef Locations Dataset Pre-processing
+This file describes the data pre-processing that was done to [the Global Distribution of Coral Reefs (2018)](http://data.unep-wcmc.org/datasets/1) for [display on Resource Watch](https://resourcewatch.org/data/explore/1d23838e-40da-4cf3-b61c-56258d3a5c56).
 
-The Global Infrastructure Investment Outlook data can be downloaded by country on the source website. The downloaded data includes the expected investment in infrastructure for that country (current trends), as well as the investment in infrastructure that would be needed to match the performance of other countries within the same income group (investment needs). Each of these values are provided for each year between 2007 and 2040.
+The source provided this dataset as two shapefiles - one of which contains polygon data, and the other contains point data.
 
-Because we wanted to display the data on Resource Watch for all countries, a complete dataset that included all countries was requested from the data provider, rather than processing the data individually for each country.
+Below, we describe the steps used to reformat the shapefile:
+1. Read in the polygon shapefile as a geopandas data frame.
+2. Change the data type of column 'PROTECT', 'PROTECT_FE', and 'METADATA_I' to integers.
+3. Convert the geometries of the data from shapely objects to geojsons.
+4. Create a new column from the index of the dataframe to use as a unique id column (cartodb_id) in Carto.
 
-Below, we describe the calculations that were done to the global dataset in Microsoft Excel to produce the data shown on Resource Watch.
+Next, a mask layer was created so that it could be overlayed on top of other datasets to highlight where coral reefs were located. In order to create this, a 10km buffer was generated around each coral reef polygon. This was created and exported as a shapefile in Google Earth Engine, using the following code:
 
-The global dataset that was provided included two spreadsheets: one for investment needs and one for current trends.  Within each sheet, each row represents a particular country, and each column represents a single year. 
+Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/bio_004a_coral_reef_locations/bio_004a_coral_reef_locations_processing.py) for more details on this processing.
 
-The Pivot Tables feature in Excel was used to combine the two sheets into one by creating a new column called “investment_path” that indicated whether the data was a "current trend" or an "investment need."
- 
-The infrastructure investment gap for each year was calculated from this data by finding the the difference between the "current trend" value and the "investment need" value for each country and each year.
+You can view the processed Coral Reef Locations dataset [on Resource Watch](https://resourcewatch.org/data/explore/1d23838e-40da-4cf3-b61c-56258d3a5c56).
 
-The Pivot Tables feature was used again to create a new column called “year” so that all years of data could be stored stored in a single column called "value," rather than storing each year's data in a unique column. The “value” column was also divided by 1,000,000 to show the value in millions of USD, which was stored in a new “value_millions_” column.  
+You can also download the original dataset [directly through Resource Watch](https://wri-public-data.s3.amazonaws.com/resourcewatch/bio_004a_coral_reef_locations.zip), or [from the source website](http://data.unep-wcmc.org/datasets/1).
 
-The total infrastructure investment gap for a country, which is shown on Resource Watch, is the sum of the infrastructure investment gap for all years between 2016 and 2040. This selection of years was used to be consistent with how the source calculated the total infrastructure investment gap displayed on their website.
-
-
-You can view the processed infrastructure investment outlook dataset [on Resource Watch](https://resourcewatch.org/data/explore/Infrastructure-Investment-Outlook).
-
-You can also download original dataset [from the source website](https://outlook.gihub.org/).
-
-###### Note: This dataset processing was done by [Ken Wakabayashi](https://www.wri.org/profile/ken-wakabayashi), and QC'd by [Amelia Snyder](https://www.wri.org/profile/amelia-snyder).
+###### Note: This dataset processing was done by [Yujing Wu](https://www.wri.org/profile/yujing-wu), and QC'd by [Amelia Snyder](https://www.wri.org/profile/amelia-snyder).
