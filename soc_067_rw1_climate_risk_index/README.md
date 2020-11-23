@@ -7,6 +7,7 @@ Below, we describe the steps used to reformat the table so that it is formatted 
 
 1. Read in the data as a pandas dataframe.
 2. Rename column headers to be more descriptive and to remove special characters so that it can be uploaded to Carto without losing information.
+3. Create a new column 'datetime' to store the time period of the data as the first date of the year. 
 
 Please see the [Python script](https://github.com/resource-watch/data-pre-processing/tree/master/soc_067_rw1_climate_risk_index) for more details on this processing.
 
