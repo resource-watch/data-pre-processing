@@ -155,16 +155,16 @@ logger.info('Uploading original data to S3.')
 # Upload raw data file to S3
 
 # Copy the raw data into a zipped file to upload to S3
-shutil.make_archive('raw_data', 'zip', 'data')
-raw_data = os.path.join(sourcepath, 'raw_data'+'.zip')
+shutil.make_archive('raw_data_file', 'zip', 'data')
+raw_data_file = os.path.join(sourcepath, 'raw_data_file'+'.zip')
 # Upload raw data file to S3
-uploaded = util_cloud.aws_upload(raw_data, aws_bucket, s3_prefix+os.path.basename(raw_data))
+uploaded = util_cloud.aws_upload(raw_data_file, aws_bucket, s3_prefix+os.path.basename(raw_data_file))
 
 logger.info('Uploading processed data to S3.')
 # Copy the processed data into a zipped file to upload to S3
-shutil.make_archive('processed_data', 'zip', 'processed_data_dir')
-processed_data = os.path.join(sourcepath, 'processed_data'+'.zip')
+shutil.make_archive('processed_data_file', 'zip', 'processed_data_dir')
+processed_data_file = os.path.join(sourcepath, 'processed_data_file'+'.zip')
 # Upload processed data file to S3
-uploaded = util_cloud.aws_upload(processed_data, aws_bucket, s3_prefix+os.path.basename(processed_data))
+uploaded = util_cloud.aws_upload(processed_data_file, aws_bucket, s3_prefix+os.path.basename(processed_file_data))
 
 
