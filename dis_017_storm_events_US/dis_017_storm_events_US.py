@@ -1,6 +1,3 @@
-import dotenv
-#insert the location of your .env file here:
-dotenv.load_dotenv('/home/eduardo/Documents/RW_github/cred/.env')
 import shutil
 import glob
 import os
@@ -16,6 +13,8 @@ from ftplib import FTP
 import urllib
 import numpy as np
 import pandas as pd
+from shapely.geometry import Point 
+import geopandas as gpd 
 from zipfile import ZipFile
 
 # Set up logging
@@ -30,7 +29,7 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 
 # name of table on Carto where you want to upload data
 # this should be a table name that is not currently in use
-dataset_name = 'dis_017_tornado_hail_US' #check
+dataset_name = 'dis_017_storm_events_US' #check
 
 logger.info('Executing script for dataset: ' + dataset_name)
 # create a new sub-directory within your specified dir called 'data'
@@ -52,7 +51,7 @@ filenames = ftp.nlst()
 
 # retrieve a sorted list of the details files for events since year_min
 details_files = []
-year_min = 1996
+year_min = 1950
 for filename in filenames:
     if not filename.startswith('StormEvents_details-ftp_v1.0_d'):
         continue
@@ -62,7 +61,7 @@ details_files.sort()
 
 # retrieve a sorted list of the locations files since year_min
 locations_files = []
-year_min = 1996
+year_min = 1950
 for filename in filenames:
     if not filename.startswith('StormEvents_locations-ftp_v1.0_d'):
         continue
@@ -98,7 +97,7 @@ def dir_mkr(directory_name):
      print ("Successfully created the directory %s " % path) 
 
 #Creating directory for processed data)
-dir_mkr('processed_data')
+dir_mkr('processed_data_dir')
 '''
 Process data
 '''
@@ -123,41 +122,49 @@ for file in all_files:
 details_concatenated = pd.concat(details_list, ignore_index=True)
 locations_concatenated = pd.concat(locations_list, ignore_index=True)
 
-#Selecting columns of interest from dataset and Cleaning locations dataset
-event_details = details_concatenated[['EVENT_ID', "YEAR", "EVENT_TYPE"]]
+##Selecting columns of interest from dataset and Cleaning locations dataset
+event_details = details_concatenated[['EVENT_ID', "YEAR", "EVENT_TYPE", "BEGIN_LAT","BEGIN_LON","END_LAT","END_LON"]]
 event_locations = locations_concatenated[['EVENT_ID', "LOCATION", "LATITUDE", "LONGITUDE"]]
 event_locations = event_locations.replace(to_replace="\s\s*",value = '',regex=True)
 #Merging details and details files 'EVENT_ID' and changing column names to lowercase
 events = pd.merge(event_details, event_locations, on='EVENT_ID')
 events.columns= events.columns.str.strip().str.lower()
-#Filtering tornado and hail events in dataset and exporting to csv
-storm_events = events[(events['event_type'] == 'Tornado')| (events['event_type'] == 'Hail')]
-storm_events.to_csv('processed_data/storm_events.csv', index=False)
+# creating a geometry column 
+geometry = [Point(xy) for xy in zip(events['latitude'], events['longitude'])]
+# Coordinate reference system : WGS84
+crs = {'init': 'epsg:4326'}
+# Creating a Geographic data frame 
+gdf = gpd.GeoDataFrame(events, crs=crs, geometry=geometry)
+#Exporting to csv
+gdf.to_csv('processed_data_dir/dis_017_storm_events_US.csv', index=False)
 
 '''
 Upload processed data to Carto
 '''
 logger.info('Uploading processed data to Carto.')
-#util_carto.upload_to_carto(storm_events, 'LINK')
+util_carto.upload_to_carto('processed_data_dir/dis_017_storm_events_US.csv', 'LINK')
 
 '''
 Upload original data and processed data to Amazon S3 storage
 '''
 # initialize AWS variables
-#aws_bucket = 'wri-public-data'
-#s3_prefix = 'resourcewatch/'
+aws_bucket = 'wri-public-data'
+s3_prefix = 'resourcewatch/'
 
 logger.info('Uploading original data to S3.')
 # Upload raw data file to S3
 
 # Copy the raw data into a zipped file to upload to S3
-shutil.make_archive('raw_data_dir', 'zip', 'data')
+shutil.make_archive('raw_data', 'zip', 'data')
+raw_data = os.path.join(sourcepath, 'raw_data'+'.zip')
 # Upload raw data file to S3
-#uploaded = util_cloud.aws_upload(raw_data_dir, aws_bucket, s3_prefix+os.path.basename(raw_data_dir))
+uploaded = util_cloud.aws_upload(raw_data, aws_bucket, s3_prefix+os.path.basename(raw_data))
 
 logger.info('Uploading processed data to S3.')
 # Copy the processed data into a zipped file to upload to S3
-shutil.make_archive('processed_data', 'zip', 'processed_data')
+shutil.make_archive('processed_data', 'zip', 'processed_data_dir')
+processed_data = os.path.join(sourcepath, 'processed_data'+'.zip')
 # Upload processed data file to S3
-#uploaded = util_cloud.aws_upload(processed_data, aws_bucket, s3_prefix+os.path.basename(processed_data))
+uploaded = util_cloud.aws_upload(processed_data, aws_bucket, s3_prefix+os.path.basename(processed_data))
+
 
