@@ -169,7 +169,6 @@ s3_prefix = 'resourcewatch/raster/'
 logger.info('Uploading original data to S3.')
 # Upload raw data file to S3
 
-print('Uploading original data to S3.')
 # Copy the raw data into a zipped file to upload to S3
 raw_data_dir = os.path.join(data_dir, dataset_name+'.zip')
 with ZipFile(raw_data_dir,'w') as zipped:
