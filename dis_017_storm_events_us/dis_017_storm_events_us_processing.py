@@ -70,7 +70,7 @@ def ftp_download(file_dir):
     for filename in file_dir:
      with open(os.path.join(data_dir, filename), 'wb') as fo:
         ftp.retrbinary("RETR " + filename, fo.write)
-#We download data from the source FTP
+# download data from the source FTP
 ftp_download(details_files)
 ftp_download(locations_files)
 
