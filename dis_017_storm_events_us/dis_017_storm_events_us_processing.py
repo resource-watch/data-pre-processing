@@ -105,8 +105,8 @@ locations_concatenated = pd.concat(locations_list, ignore_index=True)
 # Select columns of interest from dataset and clean locations dataset
 event_locations = locations_concatenated[['EVENT_ID', "LOCATION", "LATITUDE", "LONGITUDE"]]
 event_locations = event_locations.replace(to_replace="\s\s*",value = '',regex=True)
-#Merging details and details files 'EVENT_ID' and changing column names to lowercase
-events = pd.merge(event_details, event_locations, on='EVENT_ID')
+# Merge details and details files 'EVENT_ID' and changing column names to lowercase
+events = pd.merge(details_concatenated, event_locations, on='EVENT_ID')
 events.columns= events.columns.str.strip().str.lower()
 # creating a geometry column 
 geometry = [Point(xy) for xy in zip(events['latitude'], events['longitude'])]
