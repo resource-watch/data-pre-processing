@@ -118,7 +118,7 @@ gdf = gpd.GeoDataFrame(events, crs=crs, geometry=geometry)
 
 #save processed dataset to csv
 
-processed_data_file = os.path.join(processed_data_dir, dataset_name+'_edit.csv')
+processed_data_file = os.path.join(data_dir, dataset_name+'_edit.csv')
 gdf.to_csv(processed_data_file, index=False)
 
 '''
