@@ -51,7 +51,6 @@ filenames = ftp.nlst()
 
 # retrieve a sorted list of the details files
 details_files = []
-year_min = 1950
 for filename in filenames:
     if not filename.startswith('StormEvents_details-ftp_v1.0_d'):
         continue
