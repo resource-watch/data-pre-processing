@@ -74,14 +74,6 @@ def ftp_download(file_dir):
 ftp_download(details_files)
 ftp_download(locations_files)
 
-#Moving all files inside data folder
-sourcepath= os.getcwd()
-sourcefiles = os.listdir(sourcepath)
-destinationpath = r'data'
-for file in sourcefiles:
-    if file.endswith(".gz"):
-        shutil.move(os.path.join(sourcepath,file), os.path.join(destinationpath,file))
-
 #Creating function to create directory for processed data 
 def dir_mkr(directory_name):
     path = sourcepath + '/' + directory_name
