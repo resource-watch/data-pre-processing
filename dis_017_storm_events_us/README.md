@@ -6,4 +6,3 @@ Below, we describe the steps used to append and merge the csv files:
 1. The "locations" and "details csv files for each year available were downloaded using the FTP library.
 2. The annual files were appended so that there were two tables containing all of the years of data available: one table for the "details" and one for the "locations". Whitespaces in the appended locations table were deleted.
 3. The "details" and the "locations" tables were merged based on the column "event_id". 
-3. A geometry column was added based on the point coordinates provided by the location file using geopandas.
