@@ -103,7 +103,6 @@ details_concatenated = pd.concat(details_list, ignore_index=True)
 locations_concatenated = pd.concat(locations_list, ignore_index=True)
 
 # Select columns of interest from dataset and clean locations dataset
-event_details = details_concatenated[['EVENT_ID', "YEAR", "EVENT_TYPE", "BEGIN_LAT","BEGIN_LON","END_LAT","END_LON"]]
 event_locations = locations_concatenated[['EVENT_ID', "LOCATION", "LATITUDE", "LONGITUDE"]]
 event_locations = event_locations.replace(to_replace="\s\s*",value = '',regex=True)
 #Merging details and details files 'EVENT_ID' and changing column names to lowercase
