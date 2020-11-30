@@ -1,4 +1,3 @@
-import shutil
 import glob
 import os
 import sys
@@ -109,17 +108,11 @@ event_locations = event_locations.replace(to_replace="\s\s*",value = '',regex=Tr
 events = pd.merge(details_concatenated, event_locations, on='EVENT_ID')
 # make column names lowercase because Carto only uses lowercase column names
 events.columns= events.columns.str.strip().str.lower()
-# creating a geometry column 
-geometry = [Point(xy) for xy in zip(events['latitude'], events['longitude'])]
-# Coordinate reference system : WGS84
-crs = {'init': 'epsg:4326'}
-# Creating a Geographic data frame 
-gdf = gpd.GeoDataFrame(events, crs=crs, geometry=geometry)
 
 #save processed dataset to csv
 
 processed_data_file = os.path.join(data_dir, dataset_name+'_edit.csv')
-gdf.to_csv(processed_data_file, index=False)
+events.to_csv(processed_data_file, index=False)
 
 '''
 Upload processed data to Carto
@@ -139,14 +132,20 @@ logger.info('Uploading original data to S3.')
 # Upload raw data file to S3
 
 # Copy the raw data into a zipped file to upload to S3
-shutil.make_archive(dataset_name + '_raw_data_file', 'zip', 'data')
-raw_data_file = os.path.join(sourcepath, dataset_name + '_raw_data_file'+'.zip')
+raw_data_dir = os.path.join(data_dir, dataset_name+'.zip')
+with ZipFile(raw_data_dir,'w') as zipped:
+    for file in raw_data_file:
+        zipped.write(file, os.path.basename(file))
+        
 # Upload raw data file to S3
-uploaded = util_cloud.aws_upload(raw_data_file, aws_bucket, s3_prefix+os.path.basename(raw_data_file))
-
+uploaded = util_cloud.aws_upload(raw_data_dir, aws_bucket, s3_prefix + os.path.basename(raw_data_dir))
 logger.info('Uploading processed data to S3.')
+
 # Copy the processed data into a zipped file to upload to S3
-shutil.make_archive(dataset_name + '_processed_data_file', 'zip', 'processed_data_dir')
-processed_data_file = os.path.join(sourcepath, dataset_name + '_processed_data_file'+'.zip')
+processed_data_dir = os.path.join(data_dir, dataset_name+'_edit.zip')
+with ZipFile(processed_data_dir,'w') as zipped:
+    for file in processed_data_file:
+        zipped.write(file, os.path.basename(file))
+        
 # Upload processed data file to S3
-uploaded = util_cloud.aws_upload(processed_data_file, aws_bucket, s3_prefix+os.path.basename(processed_data_file))
+uploaded = util_cloud.aws_upload(processed_data_dir, aws_bucket, s3_prefix + os.path.basename(processed_data_dir))
