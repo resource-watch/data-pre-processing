@@ -65,8 +65,11 @@ for filename in filenames:
     locations_files.append(filename)
 locations_files.sort()
 
-#Downloading data function
 def ftp_download(file_dir):
+    '''
+    download data
+    INPUT   file_dir: ftp location of file to download (string)
+    '''
     for filename in file_dir:
      with open(os.path.join(data_dir, filename), 'wb') as fo:
         ftp.retrbinary("RETR " + filename, fo.write)
