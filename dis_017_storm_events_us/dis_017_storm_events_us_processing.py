@@ -49,7 +49,7 @@ ftp.login()
 ftp.cwd('/pub/data/swdi/stormevents/csvfiles/')
 filenames = ftp.nlst()
 
-# retrieve a sorted list of the details files for events since year_min
+# retrieve a sorted list of the details files
 details_files = []
 year_min = 1950
 for filename in filenames:
