@@ -79,7 +79,7 @@ Process data
 '''
 #Concatenating details and locations files
 
-all_files = glob.glob(os.path.join(destinationpath, "*.gz"))     # advisable to use os.path.join as this makes concatenation OS independent
+all_files = glob.glob(os.path.join(data_dir, "*.gz"))     # advisable to use os.path.join as this makes concatenation OS independent
 
 details_list = []
 locations_list = []
