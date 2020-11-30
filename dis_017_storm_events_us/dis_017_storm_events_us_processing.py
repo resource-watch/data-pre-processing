@@ -98,6 +98,7 @@ for file in all_files:
         locations_list.append(df_1)
     else: print('error')
     
+# concatenate tables for every year into one table for the details files and one table for the locations files
 details_concatenated = pd.concat(details_list, ignore_index=True)
 locations_concatenated = pd.concat(locations_list, ignore_index=True)
 
