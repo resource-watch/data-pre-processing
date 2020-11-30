@@ -107,6 +107,7 @@ event_locations = locations_concatenated[['EVENT_ID', "LOCATION", "LATITUDE", "L
 event_locations = event_locations.replace(to_replace="\s\s*",value = '',regex=True)
 # Merge details and details files 'EVENT_ID' and changing column names to lowercase
 events = pd.merge(details_concatenated, event_locations, on='EVENT_ID')
+# make column names lowercase because Carto only uses lowercase column names
 events.columns= events.columns.str.strip().str.lower()
 # creating a geometry column 
 geometry = [Point(xy) for xy in zip(events['latitude'], events['longitude'])]
