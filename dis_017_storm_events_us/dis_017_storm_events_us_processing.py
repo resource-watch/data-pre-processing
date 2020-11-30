@@ -74,19 +74,6 @@ def ftp_download(file_dir):
 ftp_download(details_files)
 ftp_download(locations_files)
 
-#Creating function to create directory for processed data 
-def dir_mkr(directory_name):
-    path = sourcepath + '/' + directory_name
-    try:
-        os.mkdir(path)
-    except OSError:
-     print ("Creation of the directory %s failed" % path)
-    else:
-     print ("Successfully created the directory %s " % path) 
-
-#Creating directory for processed data)
-dir_mkr('processed_data_dir')
-processed_data_dir = r'processed_data_dir'
 '''
 Process data
 '''
