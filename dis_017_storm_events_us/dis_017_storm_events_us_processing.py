@@ -87,14 +87,14 @@ all_files = glob.glob(os.path.join(data_dir, "*.gz"))     # advisable to use os.
 details_list = []
 locations_list = []
 
+# go through each file, turn it into a dataframe, and append that df to one of two lists, based on if it
+# is a details file or a locations file
 for file in all_files:
     if file.startswith('data/StormEvents_details-ftp_v1.0_d'):
         df = pd.read_csv(file)
         details_list.append(df)
-        #details_concatenated  = pd.concat(df, ignore_index=True)
     elif file.startswith('data/StormEvents_locations-ftp_v1.0_d'):
         df_1 = pd.read_csv(file)
-        #locations_concatenated  = pd.concat(df_1, ignore_index=True)
         locations_list.append(df_1)
     else: print('error')
     
