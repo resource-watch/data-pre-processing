@@ -57,14 +57,12 @@ for filename in filenames:
     details_files.append(filename)
 details_files.sort()
 
-# retrieve a sorted list of the locations files since year_min
+# retrieve a sorted list of the locations files
 locations_files = []
-year_min = 1950
 for filename in filenames:
     if not filename.startswith('StormEvents_locations-ftp_v1.0_d'):
         continue
-    if int(filename[32:36]) >= year_min:
-        locations_files.append(filename)
+    locations_files.append(filename)
 locations_files.sort()
 
 #Downloading data function
