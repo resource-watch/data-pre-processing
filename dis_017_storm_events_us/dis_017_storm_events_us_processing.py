@@ -68,7 +68,7 @@ locations_files.sort()
 #Downloading data function
 def ftp_download(file_dir):
     for filename in file_dir:
-     with open(filename, 'wb') as fo:
+     with open(os.path.join(data_dir, filename), 'wb') as fo:
         ftp.retrbinary("RETR " + filename, fo.write)
 #We download data from the source FTP
 ftp_download(details_files)
