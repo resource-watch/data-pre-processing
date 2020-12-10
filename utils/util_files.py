@@ -66,7 +66,7 @@ def mask_geotiff(target, mask, maskedtif, nodata=-128):
             nodata: value to be written over existing target pixels outside of mask (int/float)
     '''
     calc_path = os.path.abspath(os.path.join(os.getenv('GDAL_DIR'),'gdal_calc.py'))
-    cmd = '{} "{}" -A {} -B {} --outfile={} --calc="((B==0)*{})+((B!=0)*A)"'.format(sys.executable, calc_path, target, mask, maskedtif, nodata)
+    cmd = '{} "{}" -A {} -B {} --outfile={} --NoDataValue={} --allBands=A --calc="((B==0)*{})+((B!=0)*A)"'.format(sys.executable, calc_path, target, mask, maskedtif, nodata, nodata)
 #     cmd = '"{calc_path}" -A {target} -B {mask} --outfile={maskedtif} --calc="((B==0)*{nodata})+((B==1)*A)"'
 #     logger.debug('Mask GeoTiff command: '+cmd)
     completed_process = subprocess.run(cmd, shell=False)
