@@ -104,7 +104,10 @@ def shapefile_to_carto(table_name, schema, gdf, privacy):
     # convert the geometry of the geodataframe copy to geojsons
     gdf_converted['geometry'] = convert_geometry(gdf_converted.geometry)
     # insert the rows contained in the geodataframe copy to the empty new table on Carto
-    cartosql.insertRows(table_name, schema.keys(), schema.values(), gdf_converted.values.tolist(), user=os.getenv('CARTO_WRI_RW_USER'), key=os.getenv('CARTO_WRI_RW_KEY'))
+    for index, row in gdf_converted.iterrows():
+        # Carto does not accept Nans for numeric columns; convert them to None
+        row = row.where(pd.notnull(row), None)
+        cartosql.insertRows(table_name, schema.keys(), schema.values(), [row.values.tolist()], user=os.getenv('CARTO_WRI_RW_USER'), key=os.getenv('CARTO_WRI_RW_KEY'))
 
     # Change privacy of table on Carto
     #set up carto authentication using local variables for username (CARTO_WRI_RW_USER) and API key (CARTO_WRI_RW_KEY)
