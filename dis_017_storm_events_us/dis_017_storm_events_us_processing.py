@@ -107,7 +107,7 @@ events = pd.merge(details_concatenated, event_locations, on='EVENT_ID')
 # make column names lowercase because Carto only uses lowercase column names
 events.columns= events.columns.str.strip().str.lower()
 
-#save processed dataset to csv
+#save processed dataset to csv  
 processed_data_file = os.path.join(data_dir, dataset_name+'_edit.csv')
 events.to_csv(processed_data_file, index=False)
 

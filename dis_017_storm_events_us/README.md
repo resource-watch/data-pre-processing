@@ -18,4 +18,3 @@ You can view the processed datasets on Resource Watch:
 You can also download the original dataset [directly through Resource Watch](http://wri-public-data.s3.amazonaws.com/resourcewatch/dis_017_storm_events_us.zip), or [from the source website](https://www.ncdc.noaa.gov/stormevents/ftp.jsp).
 
 ###### Note: This dataset processing was done by [Eduardo Castillero Reyes](https://wrimexico.org/profile/eduardo-castillero-reyes), and QC'd by [Amelia Snyder](https://www.wri.org/profile/amelia-snyder).
-
