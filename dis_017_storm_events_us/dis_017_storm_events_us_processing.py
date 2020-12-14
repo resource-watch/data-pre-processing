@@ -11,9 +11,7 @@ import logging
 from ftplib import FTP
 import urllib
 import numpy as np
-import pandas as pd
-from shapely.geometry import Point 
-import geopandas as gpd 
+import pandas as pd 
 from zipfile import ZipFile
 
 # Set up logging
@@ -81,14 +79,14 @@ Process data
 '''
 #Concatenating details and locations files
 
-all_files = glob.glob(os.path.join(data_dir, "*.gz"))     # advisable to use os.path.join as this makes concatenation OS independent
+raw_data_file = glob.glob(os.path.join(data_dir, "*.gz"))     # advisable to use os.path.join as this makes concatenation OS independent
 
 details_list = []
 locations_list = []
 
 # go through each file, turn it into a dataframe, and append that df to one of two lists, based on if it
 # is a details file or a locations file
-for file in all_files:
+for file in raw_data_file:
     if file.startswith('data/StormEvents_details-ftp_v1.0_d'):
         df = pd.read_csv(file)
         details_list.append(df)
@@ -109,8 +107,7 @@ events = pd.merge(details_concatenated, event_locations, on='EVENT_ID')
 # make column names lowercase because Carto only uses lowercase column names
 events.columns= events.columns.str.strip().str.lower()
 
-#save processed dataset to csv
-
+#save processed dataset to csv  
 processed_data_file = os.path.join(data_dir, dataset_name+'_edit.csv')
 events.to_csv(processed_data_file, index=False)
 
@@ -143,9 +140,8 @@ logger.info('Uploading processed data to S3.')
 
 # Copy the processed data into a zipped file to upload to S3
 processed_data_dir = os.path.join(data_dir, dataset_name+'_edit.zip')
-with ZipFile(processed_data_dir,'w') as zipped:
-    for file in processed_data_file:
-        zipped.write(file, os.path.basename(file))
+with ZipFile(processed_data_dir,'w') as zip:
+    zip.write(processed_data_file, os.path.basename(processed_data_file)) 
         
 # Upload processed data file to S3
 uploaded = util_cloud.aws_upload(processed_data_dir, aws_bucket, s3_prefix + os.path.basename(processed_data_dir))
