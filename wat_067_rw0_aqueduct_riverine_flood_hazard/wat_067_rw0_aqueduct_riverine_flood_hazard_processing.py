@@ -65,7 +65,7 @@ Process data
 # generate names
 # the data contained in the 1980 geotiff is mislabeled by the source
 # the 1980 geotiff is actually data for 2010 
-# for questions about these geotiffs please contact Liz 
+# for questions about these geotiffs please contact Liz Saccoccia at elizabeth.saccoccia@wri.org.
 processed_data_files = [os.path.join(data_dir, dataset_name + file[-17:-12] + '.tif') if '1980' not in file else os.path.join(data_dir, dataset_name + '_2010' + '.tif') for file in raw_data_file ]
  
 
