@@ -1,4 +1,5 @@
 import os
+import pandas as pd
 from carto.datasets import DatasetManager
 from carto.auth import APIKeyAuthClient
 import cartosql
