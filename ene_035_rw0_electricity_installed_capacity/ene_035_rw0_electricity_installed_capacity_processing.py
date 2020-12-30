@@ -80,7 +80,9 @@ df = df[['country', 'geography', 'year', 'unit', 'yr_data']]
 df.drop_duplicates(inplace=True)
 
 # subset the dataframe to remove the data of larger regions that consist of multiple geographies 
-df=df[df.geography.apply(lambda x: ('+' not in x) & (x != 'WLD'))]
+df = df[df.geography.apply(lambda x: ('+' not in x) & (x != 'WLD'))]
+# remove OPEC - South America since it's a duplicate of Venezuela
+df = df[df.country != 'OPEC - South America']
 
 # convert the data type of 'year' column to int 
 df['year'] = df['year'].astype(int)
