@@ -7,7 +7,7 @@ Below, we describe the steps used to reformat the table so that it is formatted 
 
 Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/ene_035_rw0_electricity_installed_capacity/ene_035_rw0_electricity_installed_capacity_processing.py) for more details on this processing.
 
-You can view the processed {Resource Watch public title} dataset [on Resource Watch](http://resourcewatch.org/data/explore/683aa637-aa4f-46ab-8260-4441de896131).
+You can view the processed Electricity Installed Capacity dataset [on Resource Watch](http://resourcewatch.org/data/explore/683aa637-aa4f-46ab-8260-4441de896131).
 
 You can also download the original dataset [directly through Resource Watch](http://wri-public-data.s3.amazonaws.com/resourcewatch/ene_035_rw0_electricity_installed_capacity.zip), or [from the source website](https://www.eia.gov/international/data/world/electricity/electricity-capacity).
 
