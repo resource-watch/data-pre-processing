@@ -77,7 +77,9 @@ logger.info('Raw data file path: ' + raw_data_file)
 logger.info('Extracting relevant GeoTIFFs from source zip file')
 with ZipFile(raw_data_file, 'r') as zip_ref:
     zip_ref.extractall()
-
+'''
+Process data
+'''
 # get a list of all the raw files
 data_files = glob.glob('*.tif')
 
