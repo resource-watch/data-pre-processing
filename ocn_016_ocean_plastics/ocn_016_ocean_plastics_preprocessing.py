@@ -16,7 +16,6 @@ if utils_path not in sys.path:
     sys.path.append(utils_path)
 import util_files
 import util_cloud
-import urllib
 from zipfile import ZipFile
 import ee
 import subprocess
