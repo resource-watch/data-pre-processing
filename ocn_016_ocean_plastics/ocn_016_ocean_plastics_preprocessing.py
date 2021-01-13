@@ -60,7 +60,9 @@ logger.info('Executing script for dataset: ' + dataset_name)
 data_dir = util_files.prep_dirs(dataset_name)
 logger.info('Data directory relative path: '+data_dir)
 logger.info('Data directory absolute path: '+os.path.abspath(data_dir))
-
+'''
+Download data and save to your data directory
+'''
 # switch to data directory
 os.chdir(data_dir)
 
