@@ -17,7 +17,6 @@ if utils_path not in sys.path:
 import util_files
 import util_cloud
 import urllib
-import requests
 from zipfile import ZipFile
 import ee
 import subprocess
