@@ -41,7 +41,7 @@ dataset_name = 'ocn_016_rw0_ocean_plastics'
 url = 'https://drive.google.com/u/0/uc?id=0B4XxjklEZhMtOEVHLXc1WlM5Wm8&export=download'
 
 #Raw data file name
-raw_data_file = 'ocn_016_ocean_plastics.zip'
+raw_data_file = 'ocn_016_rw0_ocean_plastics.zip'
 
 
 # Get the top-level logger object
