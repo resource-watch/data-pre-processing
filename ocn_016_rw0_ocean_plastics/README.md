@@ -5,7 +5,8 @@ The data was provided as GeoTIFF files within a zipped folder in [Google Drive](
 
 To process the data, we used a Python script to download the data from Google Drive, shift the data for the longitude bounds to run from -180 to 180, and uploaded the data to Google Earth Engine.
 
-Please see the [Python script]({link to Python script on Github}) for more details on this processing.
+Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/ocn_016_rw0_ocean_plastics
+/ocn_016_rw0_ocean_plastics_preprocessing.py) for more details on this processing.
 
 You can view the processed Plastic Density in the Oceans dataset [on Resource Watch](https://resourcewatch.org/data/explore/d43690a2-75cc-473c-bf41-7af938ccf280).
 
