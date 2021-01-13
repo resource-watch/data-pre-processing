@@ -11,4 +11,4 @@ You can view the processed Plastic Density in the Oceans dataset [on Resource Wa
 
 You can also download the original dataset [from the source website](https://drive.google.com/file/d/0B4XxjklEZhMtOEVHLXc1WlM5Wm8/view).
 
-###### Note: This dataset processing was done by [Kristine Lister](https://www.wri.org/profile/kristine-lister), and QC'd by [{name}]({link to WRI bio page}).
+###### Note: This dataset processing was done by [Kristine Lister](https://www.wri.org/profile/kristine-lister), and QC'd by [Yujing Wu](https://www.wri.org/profile/yujing-wu).
