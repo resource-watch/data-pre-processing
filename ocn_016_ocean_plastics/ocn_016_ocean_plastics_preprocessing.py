@@ -36,7 +36,7 @@ from osgeo import gdal
 
 # name of asset on GEE where you want to upload data
 # this should be an asset name that is not currently in use
-dataset_name = 'ocn_016_ocean_plastics'
+dataset_name = 'ocn_016_rw0_ocean_plastics'
 
 #Download url
 url = 'https://drive.google.com/u/0/uc?id=0B4XxjklEZhMtOEVHLXc1WlM5Wm8&export=download'
@@ -164,4 +164,3 @@ with ZipFile(processed_data_dir,'w') as zip:
         zip.write(processed_data_file, os.path.basename(processed_data_file))
 # Upload processed data file to S3
 uploaded = util_cloud.aws_upload(processed_data_dir, aws_bucket, s3_prefix+os.path.basename(processed_data_dir))
-
