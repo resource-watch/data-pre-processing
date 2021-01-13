@@ -118,7 +118,14 @@ gcsBucket = gcsClient.bucket(os.environ.get("GEE_STAGING_BUCKET"))
 # initialize ee module for uploading to Google Earth Engine
 auth = ee.ServiceAccountCredentials(os.getenv('GEE_SERVICE_ACCOUNT'), os.getenv('GOOGLE_APPLICATION_CREDENTIALS'))
 ee.Initialize(auth)
+# Create an image collection where we will put the processed data files in GEE
+image_collection = f'projects/resource-watch-gee/{dataset_name}'
+ee.data.createAsset({'type': 'ImageCollection'}, image_collection)
 
+# set image collection's privacy to public
+acl = {"all_users_can_read": True}
+ee.data.setAssetAcl(image_collection, acl)
+logging.info('Privacy set to public.')
 # loop through data files in data_dict
 for data_file in data_dict.keys():
     # set image name as basename of the file
