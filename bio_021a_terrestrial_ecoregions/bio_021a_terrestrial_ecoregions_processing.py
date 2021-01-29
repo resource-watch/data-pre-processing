@@ -95,8 +95,6 @@ gdf.to_file(processed_data_file,driver='ESRI Shapefile', schema = {'properties':
               ('SHAPE_Area', 'float:30.5')]),
  'geometry': 'Polygon'})
 
-
-
 '''
 Upload original data and processed data to Amazon S3 storage
 '''
