@@ -122,3 +122,9 @@ with ZipFile(processed_data_dir,'w') as zip:
         zip.write(file, os.path.basename(file))
 # Upload processed data file to S3
 uploaded = util_cloud.aws_upload(processed_data_dir, aws_bucket, s3_prefix+os.path.basename(processed_data_dir))
+
+'''
+Upload processed data to Carto
+'''
+# upload the shapefile to Carto
+util_carto.upload_to_carto(processed_data_dir, 'LINK')
