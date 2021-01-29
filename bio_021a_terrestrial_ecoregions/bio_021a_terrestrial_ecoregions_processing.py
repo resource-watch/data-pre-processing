@@ -95,15 +95,7 @@ gdf.to_file(processed_data_file,driver='ESRI Shapefile', schema = {'properties':
               ('SHAPE_Area', 'float:30.5')]),
  'geometry': 'Polygon'})
 
-'''
-Upload processed data to Carto
-'''
-# create empty table for dataset on Carto
-CARTO_SCHEMA = util_carto.create_carto_schema(gdf)
-util_carto.checkCreateTable(os.path.basename(processed_data_file).split('.')[0], CARTO_SCHEMA)
 
-# upload the shapefile to the empty carto table
-util_carto.shapefile_to_carto(os.path.basename(processed_data_file).split('.')[0], CARTO_SCHEMA, gdf, 'LINK')
 
 '''
 Upload original data and processed data to Amazon S3 storage
