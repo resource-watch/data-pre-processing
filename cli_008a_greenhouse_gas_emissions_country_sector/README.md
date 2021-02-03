@@ -19,4 +19,4 @@ You can view the processed dataset for [display on Resource Watch](https://bit.l
 
 You can also download the original dataset [directly through Resource Watch](https://wri-public-data.s3.amazonaws.com/resourcewatch/cli_008a_greenhouse_gas_emissions_country_sector.zip), or [from the source website](https://www.climatewatchdata.org/data-explorer).
 
-###### Note: This dataset processing was done by [Eduardo Castillero Reyes](https://wrimexico.org/profile/eduardo-castillero-reyes), and QC'd by [Amelia Snyder](https://www.wri.org/profile/amelia-snyder).
+###### Note: This dataset processing was done by [Eduardo Castillero Reyes](https://wrimexico.org/profile/eduardo-castillero-reyes), and QC'd by [Yujing Wu](https://www.wri.org/profile/yujing-wu).
