@@ -72,7 +72,7 @@ df=pd.read_csv(filename)
 df_edit = pd.melt(df,id_vars=['Country', 'Sector', 'Data source', 'Gas', 'Unit'],var_name='year', value_name='value')
 df_edit = df_edit.pivot_table('value', ['Country','year','Data source', 'Gas', 'Unit'], 'Sector')
 df_edit = df_edit.reset_index()
-#Replacing whitespaces and unwanted characters from column headers
+#Replacing whitespaces and special characters from column headers
 df_edit.columns = df_edit.columns.str.replace(' ', '_')
 df_edit.columns = df_edit.columns.str.replace('/', '_')
 df_edit.columns = df_edit.columns.str.replace('-', '_')
