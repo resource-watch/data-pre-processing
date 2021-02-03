@@ -97,7 +97,7 @@ df_edit.to_csv(processed_data_file, index=False)
 Upload processed data to Carto
 '''
 logger.info('Uploading processed data to Carto.')
-util_carto.upload_to_carto(processed_data_file, 'LINK', collision_strategy='overwrite')
+util_carto.upload_to_carto(processed_data_file, 'LINK')
 
 '''
 Upload original data and processed data to Amazon S3 storage
