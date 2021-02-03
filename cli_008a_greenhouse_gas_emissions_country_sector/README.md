@@ -11,7 +11,7 @@ The source provided this dataset as a csv file accessed through its [data explor
 
 Below, we describe the main actions performed to process the csv file:
 1. Convert the dataframe from wide form to long form, in which one column indicates the year and the other columns indicate the emission values for the year.
-2. Sector column was pivoted across different columns
+2. Convert the table from long to wide form, in which the emission values of each sector are stored in individual columns. 
 3. Rename column headers to be more descriptive and to remove special characters so that it can be uploaded to Carto without losing information.
 
 Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/cli_008a_greenhouse_gas_emissions_country_sector/cli_008a_greenhouse_gas_emissions_country_sector_processing.py) for more details on this processing.
