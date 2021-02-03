@@ -88,7 +88,6 @@ df_edit['year'] = df_edit['year'].astype('int64')
 for col in df_edit[['agriculture', 'building', 'bunker_fuels', 'electricity_heat', 'energy','fugitive_emissions','industrial_processes','land_use_change_and_forestry', 'manufacturing_construction','other_fuel_combustion','total_excluding_lucf','total_including_lucf','transportation','waste']]:
     df_edit[col] = df_edit[col].astype('float64')
     
-for col in df_edit[['country', 'data_source', 'gas', 'unit']]:
     df_edit[col] = df_edit[col].astype('str')
 
 #save processed dataset to csv
