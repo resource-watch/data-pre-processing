@@ -4,7 +4,6 @@ dotenv.load_dotenv('/home/eduardo/Documents/RW_github/cred/.env')
 import logging
 from collections import OrderedDict
 import pandas as pd
-import numpy as np
 import re
 import glob
 import os
