@@ -8,6 +8,6 @@ One attribute within the shapefile was visualized on the Resource Watch platform
 
 You can view the processed dataset for [display on Resource Watch](https://resourcewatch.org/data/explore/2e7527a0-c601-4e5a-a205-492314501744).
 
-The original data are available [from the provider](https://espace.library.uq.edu.au/view/UQ:0928a6a), and are available for download upon request.
+You can also download the original dataset [from the provider](https://espace.library.uq.edu.au/view/UQ:0928a6a).
 
 ###### Note: This dataset processing was done by [Peter Kerins](https://www.wri.org/profile/peter-kerins).
