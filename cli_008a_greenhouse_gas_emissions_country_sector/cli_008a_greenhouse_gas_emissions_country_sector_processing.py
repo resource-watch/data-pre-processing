@@ -82,7 +82,7 @@ df_edit.columns = [x.lower() for x in df_edit.columns]
 
 #replace all NaN with None
 df_edit=df_edit.where((pd.notnull(df_edit)), None)
-#Changing data types 
+# convert the data type of the column 'year' to integer
 df_edit['year'] = df_edit['year'].astype('int64')
 
 for col in df_edit[['agriculture', 'building', 'bunker_fuels', 'electricity_heat', 'energy','fugitive_emissions','industrial_processes','land_use_change_and_forestry', 'manufacturing_construction','other_fuel_combustion','total_excluding_lucf','total_including_lucf','transportation','waste']]:
