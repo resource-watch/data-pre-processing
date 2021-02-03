@@ -17,7 +17,6 @@ Please see the [Python script](https://github.com/resource-watch/data-pre-proces
 
 You can view the processed dataset for [display on Resource Watch](https://bit.ly/39sQ4ds).
 
-- [Greenhouse Gas Emissions by Country and Economic Sector](https://bit.ly/39sQ4ds).
 
 You can also download the original dataset [directly through Resource Watch](https://wri-public-data.s3.amazonaws.com/resourcewatch/cli_008a_greenhouse_gas_emissions_country_sector.zip), or [from the source website](https://www.climatewatchdata.org/data-explorer).
 
