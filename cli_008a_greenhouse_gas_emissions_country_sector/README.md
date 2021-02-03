@@ -15,7 +15,7 @@ Below, we describe the main actions performed to process the csv file:
 
 Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/cli_008a_greenhouse_gas_emissions_country_sector/cli_008a_greenhouse_gas_emissions_country_sector_processing.py) for more details on this processing.
 
-You can view the processed datasets on Resource Watch:
+You can view the processed dataset for [display on Resource Watch](https://bit.ly/39sQ4ds).
 
 - [Greenhouse Gas Emissions by Country and Economic Sector](https://bit.ly/39sQ4ds).
 
