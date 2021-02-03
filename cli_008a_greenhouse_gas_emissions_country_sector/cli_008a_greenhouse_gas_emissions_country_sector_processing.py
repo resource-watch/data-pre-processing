@@ -1,6 +1,5 @@
 import logging
 import pandas as pd
-import re
 import glob
 import os
 import sys
