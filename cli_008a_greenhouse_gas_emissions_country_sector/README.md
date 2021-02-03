@@ -10,7 +10,7 @@ The source provided this dataset as a csv file accessed through its [data explor
 6. End year: 2017
 
 Below, we describe the main actions performed to process the csv file:
-1. Year columns were melted into a single column
+1. Convert the dataframe from wide form to long form, in which one column indicates the year and the other columns indicate the emission values for the year.
 2. Sector column was pivoted across different columns
 3. Rename column headers to be more descriptive and to remove special characters so that it can be uploaded to Carto without losing information.
 
