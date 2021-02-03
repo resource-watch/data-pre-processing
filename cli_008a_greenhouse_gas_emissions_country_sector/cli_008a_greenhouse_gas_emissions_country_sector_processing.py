@@ -46,7 +46,12 @@ after selecting the following options from menu:
 '''
 
 # download the data from the source
-raw_data_file = os.path.join(data_dir, 'historical_emissions.zip')
+logger.info('Downloading raw data')
+download = glob.glob(os.path.join(os.path.expanduser("~"), 'Downloads', 'historical_emissions.zip'))[0]
+
+# move this file into your data directory
+raw_data_file = os.path.join(data_dir, os.path.basename(download))
+shutil.move(download,raw_data_file)
 
 # unzip historical emissions data
 raw_data_file_unzipped = raw_data_file.split('.')[0]
