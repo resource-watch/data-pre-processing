@@ -95,6 +95,10 @@ def convert_geometry(geometries):
 def shapefile_to_carto(table_name, schema, gdf, privacy):
     '''
     Function to upload a shapefile to Carto
+    Note: Shapefiles can also be zipped and uploaded to Carto through the upload_to_carto function
+          Use this function when several shapefiles are processed in one single script and need
+          to be uploaded to separate Carto tables
+          The function should also be used when the table is too large to be exported as a shapefile
     INPUT table_name: the name of the newly created table on Carto (string)
           schema: a dictionary of column names and data types in order to upload data to Carto (dictionary)
           gdf: a geodataframe storing all the data to upload (geodataframe)
