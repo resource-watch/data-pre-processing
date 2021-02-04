@@ -63,24 +63,24 @@ zip_ref.close()
 Process data
 '''
 
-#read in historical emissions csv data to pandas dataframe
+# read in historical emissions csv data to pandas dataframe
 filename=os.path.join(raw_data_file_unzipped, 'historical_emissions.csv')
 df=pd.read_csv(filename)
 
-#convert tables from wide form (each year is a column) to long form
-#and pivoting sector from long to wide form (values are spread across new columns)
+# convert tables from wide form (each year is a column) to long form
+# and pivot sector from long to wide form (values are spread across new columns)
 df_edit = pd.melt(df,id_vars=['Country', 'Sector', 'Data source', 'Gas', 'Unit'],var_name='year', value_name='value')
 df_edit = df_edit.pivot_table('value', ['Country','year','Data source', 'Gas', 'Unit'], 'Sector')
 df_edit = df_edit.reset_index()
-#Replacing whitespaces and special characters from column headers
+# replace spaces and special characters in column headers with '_" 
 df_edit.columns = df_edit.columns.str.replace(' ', '_')
 df_edit.columns = df_edit.columns.str.replace('/', '_')
 df_edit.columns = df_edit.columns.str.replace('-', '_')
 
-#convert the column names to lowercase
+# convert the column names to lowercase
 df_edit.columns = [x.lower() for x in df_edit.columns]
 
-#replace all NaN with None
+# replace all NaN with None
 df_edit=df_edit.where((pd.notnull(df_edit)), None)
 # convert the data type of the column 'year' to integer
 df_edit['year'] = df_edit['year'].astype('int64')
@@ -89,7 +89,7 @@ for col in df_edit[['agriculture', 'building', 'bunker_fuels', 'electricity_heat
     df_edit[col] = df_edit[col].astype('float64')
     
 
-#save processed dataset to csv
+# save processed dataset to csv
 processed_data_file = os.path.join(data_dir, dataset_name+'.csv')
 df_edit.to_csv(processed_data_file, index=False)
 
