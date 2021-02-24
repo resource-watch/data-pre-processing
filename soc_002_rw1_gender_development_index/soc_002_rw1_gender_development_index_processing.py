@@ -70,10 +70,10 @@ df = df.replace(to_replace="^\s+",value = '',regex=True)
 # convert the column names to lowercase
 df.columns = [x.lower() for x in df.columns]
 # convert tables from wide form (each year is a column) to long form
-df = pd.melt(df,id_vars=['hdi_rank', 'country'],var_name='year', value_name='hdi_value')
+df = pd.melt(df,id_vars=['hdi_rank', 'country'],var_name='year', value_name='gdi_value')
 # change dtypes of columns
 df['hdi_rank'] = df['hdi_rank'].astype('int64')
-df['hdi_value'] = df['hdi_rank'].astype('float64')
+df['gdi_value'] = df['gdi_value'].astype('float64')
 df['year'] = df['year'].astype('int64')
 df['datetime'] = [datetime(x, 1, 1) for x in df.year]
 # replace all NaN with None
