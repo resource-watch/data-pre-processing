@@ -4,6 +4,8 @@ import pandas as pd
 import glob
 import os
 import sys
+#insert the location of your .env file here:
+dotenv.load_dotenv('/home/eduardo/Documents/RW_github/cred/.env')
 utils_path = os.path.join(os.path.abspath(os.getenv('PROCESSING_DIR')),'utils')
 if utils_path not in sys.path:
     sys.path.append(utils_path)
@@ -94,12 +96,13 @@ s3_prefix = 'resourcewatch/'
 
 logger.info('Uploading original data to S3.')
 # Copy the raw data into a zipped file to upload to S3
+# Copy the raw data into a zipped file to upload to S3
 raw_data_dir = os.path.join(data_dir, dataset_name+'.zip')
-with ZipFile(raw_data_dir,'w') as zipped:
-    for file in raw_data_file:
-        zipped.write(file, os.path.basename(file))
+with ZipFile(raw_data_dir,'w') as zip:
+    zip.write(raw_data_file, os.path.basename(raw_data_file))
 # Upload raw data file to S3
-uploaded = util_cloud.aws_upload(raw_data_dir, aws_bucket, s3_prefix + os.path.basename(raw_data_dir))
+uploaded = util_cloud.aws_upload(raw_data_dir, aws_bucket, s3_prefix+os.path.basename(raw_data_dir))
+
 logger.info('Uploading processed data to S3.')
 
 # Copy the processed data into a zipped file to upload to S3
