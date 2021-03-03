@@ -10,7 +10,7 @@ To process this data for display on Resource Watch, the GeoDataBase was download
 
 Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/ocn_012_coral_reef_tourism_value/ocn_012_coral_reef_tourism_value.py) for more details on this processing.
 
-You can view the processed dataset for [display on Resource Watch](https://resourcewatch.org/data/explore/).
+You can view the processed dataset for [display on Resource Watch](https://resourcewatch.org/data/explore/ocn013-Coral-Reef-Tourism-Value).
 
 The original data can be viewed on the [Mapping Ocean Wealth platform](http://maps.oceanwealth.org/), and are available for download upon request.
 
