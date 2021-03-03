@@ -4,6 +4,8 @@ The source provided this dataset as a csv file accessed through its [website](ht
 
 Below, we describe the main actions performed to process the csv file:
 1. Convert the dataframe from wide form to long form, in which one column indicates the year.
+2. Convert the years in the 'Year' column to datetime objects and store them in a new column 'datetime'.
+3. Rename column headers to remove special characters and spaces so that the table can be uploaded to Carto without losing information.
 
 Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/soc_002_rw1_gender_development_index/soc_002_rw1_gender_development_index_processing.py) for more details on this processing.
 

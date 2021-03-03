@@ -73,6 +73,7 @@ df = pd.melt(df,id_vars=['hdi_rank', 'country'],var_name='year', value_name='gdi
 df['hdi_rank'] = df['hdi_rank'].astype('int64')
 df['gdi_value'] = df['gdi_value'].astype('float64')
 df['year'] = df['year'].astype('int64')
+# create a new column 'datetime' to store years as datetime objects
 df['datetime'] = [datetime(x, 1, 1) for x in df.year]
 # replace all NaN with None
 df=df.where((pd.notnull(df)), None)
