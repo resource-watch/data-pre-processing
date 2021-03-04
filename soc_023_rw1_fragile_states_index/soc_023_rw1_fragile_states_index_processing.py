@@ -1,9 +1,7 @@
 import logging
 import pandas as pd
-import glob
 import os
 import sys
-import dotenv
 utils_path = os.path.join(os.path.abspath(os.getenv('PROCESSING_DIR')),'utils')
 if utils_path not in sys.path:
     sys.path.append(utils_path)
@@ -39,8 +37,6 @@ data_dir = util_files.prep_dirs(dataset_name)
 
 '''
 Download data and save to your data directory
-Excel files can be downloaded from:
-https://fragilestatesindex.org/excel/
 '''
 # Retrieve the html page from source
 req = urllib.request.Request("https://fragilestatesindex.org/excel/", headers={'User-Agent': 'Mozilla/5.0'})
@@ -57,7 +53,7 @@ url_list = []
 for link in links:
     if link.endswith(('.xlsx')):
         url_list.append(link)
-# Create path to files
+# Create file paths where the excel files will be stored
 raw_data_file = [os.path.join(data_dir,os.path.basename(url)) for url in url_list]
 # Download data from source
 for index,element in enumerate(url_list):
@@ -75,10 +71,6 @@ for file in raw_data_file:
     df_list.append(df)
 df = pd.concat(df_list, ignore_index=True)
 
-# Create datetime column
-df['datetime'] = df['Year']
-# Changing dtype of year column
-df['Year'] = df['Year'].dt.year.astype(int)
 # Delete prefixes in columns that have them
 df.columns = df.columns.str.replace(' ', '_')
 df.columns = df.columns.str.replace(':', '')

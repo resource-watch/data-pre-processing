@@ -1,8 +1,8 @@
 This file describes the data pre-processing that was done to [Fragile States Index](https://fragilestatesindex.org/) for [display on Resource Watch](https://bit.ly/2O6Qv4F).
 
-The source provided this dataset as a set of xlsx files accessed through its [website](https://fragilestatesindex.org/excel/). 
+The source provided this dataset as a set of excel files, each containing data for a different year.
 
-The xlsx files were concatenated into a sole dataframe to process them.
+The excel files were concatenated into a sole pandas dataframe. Column headers were renamed to remove special characters and spaces so that the table can be uploaded to Carto without losing information.
 
 Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/soc_023_rw1_fragile_states_index/soc_023_rw1_fragile_states_index_processing.py) for more details on this processing.
 
