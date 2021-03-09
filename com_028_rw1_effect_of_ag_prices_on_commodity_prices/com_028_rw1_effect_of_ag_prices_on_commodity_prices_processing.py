@@ -61,6 +61,8 @@ df.columns = [x.lower() for x in df.columns]
 # convert the years in the 'year' column to datetime objects and store them in a new column 'datetime'
 df['datetime'] = [datetime.datetime(x, 1, 1) for x in df.year]
 
+# remove column 'notes' because it's only code and no description
+df = df.drop(columns = 'notes')
 
 # save dataset to csv
 processed_data_file = os.path.join(data_dir, dataset_name+'_edit.csv')
