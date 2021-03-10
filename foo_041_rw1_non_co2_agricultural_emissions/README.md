@@ -14,6 +14,6 @@ Please see the [Python script](https://github.com/resource-watch/data-pre-proces
 
 You can view the processed dataset for [display on Resource Watch](https://bit.ly/3aUxqvK).
 
-You can also download the original dataset [directly through Resource Watch](https://wri-public-data.s3.amazonaws.com/resourcewatch/foo_041_rw1_non_co2_agricultural_emissions.zip), or [from the source website](https://wri-public-data.s3.amazonaws.com/resourcewatch/foo_041_rw1_non_co2_agricultural_emissions_edit.zip).
+You can also download the original dataset [directly through Resource Watch](https://wri-public-data.s3.amazonaws.com/resourcewatch/foo_041_rw1_non_co2_agricultural_emissions.zip), or [from the source website](http://www.fao.org/faostat/en/#data/GT).
 
 ###### Note: This dataset processing was done by [Eduardo Castillero Reyes](https://wrimexico.org/profile/eduardo-castillero-reyes), and QC'd by [Yujing Wu](https://www.wri.org/profile/yujing-wu).
