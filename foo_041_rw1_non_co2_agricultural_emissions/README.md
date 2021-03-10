@@ -1,13 +1,14 @@
 This file describes the data pre-processing that was done to [Non-CO₂ Agricultural Emissions](http://www.fao.org/faostat/en/#data/GT) for [display on Resource Watch](https://bit.ly/3aUxqvK).
 
-The source provided this dataset as a csv file [data explorer](http://fenixservices.fao.org/faostat/static/bulkdownloads/Emissions_Agriculture_Agriculture_total_E_All_Data_(Normalized).zip
-). 
+The source provided this dataset as a CSV file within a zip folder.
 
-Below we describe the main steps taken to process the file:
+Below we describe the main steps taken to process the data so that it is formatted correctly to be uploaded to Carto.
 
-1. The file was filtered to only show the "Agriculture total" item.
-2. The file was filtered to only show CO2eq emissions.
-3. A column showing the conversion from gigagrams to gigatonnes was created.
+1. Read in the data as a pandas dataframe and subset the dataframe to select the total emissions of the agriculture sector. 
+2. Subset the dataframe to obtain emission values in carbon dioxide equivalent.
+3. Convert the emission values from gigagrams to gigatonnes and store them in a new column 'value_gigatonnes'.
+4. Convert the years in the 'Year' column to datetime objects and store them in a new column 'datetime'.
+5. Convert column names to lowercase and replace spaces with underscores to match Carto column name requirements.
 
 Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/foo_041_rw1_non_co2_agricultural_emissions/foo_041_rw1_non_co2_agricultural_emissions_processing.py) for more details on this processing.
 

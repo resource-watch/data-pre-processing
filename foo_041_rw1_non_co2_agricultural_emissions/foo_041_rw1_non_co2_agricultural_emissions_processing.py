@@ -4,15 +4,12 @@ import pandas as pd
 import glob
 import os
 import sys
-#insert the location of your .env file here:
-dotenv.load_dotenv('/home/eduardo/Documents/RW_github/cred/.env')
 utils_path = os.path.join(os.path.abspath(os.getenv('PROCESSING_DIR')),'utils')
 if utils_path not in sys.path:
     sys.path.append(utils_path)
 import util_files
 import util_cloud
 import util_carto
-from bs4 import BeautifulSoup
 import urllib
 import requests
 from zipfile import ZipFile
@@ -38,8 +35,6 @@ data_dir = util_files.prep_dirs(dataset_name)
 
 '''
 Download data and save to your data directory
-Excel files can be downloaded from:
-http://fenixservices.fao.org/faostat/static/bulkdownloads/Emissions_Agriculture_Agriculture_total_E_All_Data_(Normalized).zip
 '''
 
 # insert the url used to download the data from the source website
