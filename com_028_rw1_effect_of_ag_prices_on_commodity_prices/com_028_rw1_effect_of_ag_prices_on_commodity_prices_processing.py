@@ -61,8 +61,13 @@ df.columns = [x.lower() for x in df.columns]
 # convert the years in the 'year' column to datetime objects and store them in a new column 'datetime'
 df['datetime'] = [datetime.datetime(x, 1, 1) for x in df.year]
 
-# remove column 'notes' because it only contains indexes instead of actual data
-df = df.drop(columns = 'notes')
+# extract subset to only retain 'COUNTRY_TOTAL' (aggregate of all products at country level) in the 'category' column
+df = df.loc[df['category'] == 'COUNTRY_TOTAL']
+
+# remove column 'notes' since it only contains indexes instead of actual data
+# remove column 'productcode' since it contains the same information as the column 'productname'
+# remove column 'source' since it contains the same information as the column 'sourceversion'
+df = df.drop(columns = ['notes','productcode','source'])
 
 # save dataset to csv
 processed_data_file = os.path.join(data_dir, dataset_name+'_edit.csv')
