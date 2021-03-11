@@ -11,7 +11,7 @@ Below, we describe the steps used to reformat the table so that it is formatted 
 4.  Remove the 'notes' column since it only contains indexes instead of actual data. 
 5. Remove the 'productcode' column since it contains the same information as the column 'productname'.
 6. Remove the 'source' column since it contains the same information as the column 'sourceversion'
-6. The column names were converted to lowercase before we uploaded the data to Carto. 
+7. The column names were converted to lowercase to match Carto column name requirements. 
 
 Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/com_028_rw1_effect_of_ag_prices_on_commodity_prices/com_028_rw1_effect_of_ag_prices_on_commodity_prices_processing.py) for more details on this processing.
 
