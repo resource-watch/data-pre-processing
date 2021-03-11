@@ -7,7 +7,7 @@ Below, we describe the steps used to reformat the table so that it is formatted 
 
 1. Import the data as a pandas dataframe.
 2. Convert years in the 'year' column to datetime objects and store them in a new column 'datetime'. 
-2. A subset was extracted to only retain 'COUNTRY_TOTAL' (aggregate of all products at country level) in the 'category' column.
+3. Subset the dataframe to retain data that are aggregates of all products at country level.
 3. The 'notes' column was removed since it only contains indexes instead of actual data. 
 4. The 'productcode' column was removed since it contains the same information as the column 'productname'.
 5. The 'source' column was removed since it contains the same information as the column 'sourceversion'
