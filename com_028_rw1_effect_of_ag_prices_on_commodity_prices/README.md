@@ -5,7 +5,8 @@ The data source provided the dataset as one csv file.
 
 Below, we describe the steps used to reformat the table so that it is formatted correctly to upload to Carto.
 
-1. Years in the 'year' column were converted to datetime objects and stored in a new column 'datetime'. 
+1. Import the data as a pandas dataframe.
+2. Convert years in the 'year' column to datetime objects and store them in a new column 'datetime'. 
 2. A subset was extracted to only retain 'COUNTRY_TOTAL' (aggregate of all products at country level) in the 'category' column.
 3. The 'notes' column was removed since it only contains indexes instead of actual data. 
 4. The 'productcode' column was removed since it contains the same information as the column 'productname'.
