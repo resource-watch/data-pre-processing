@@ -65,7 +65,8 @@ df = df.drop(columns = ['TIME','Flag Codes', 'Flags','Variable'])
 
 # reformat the dataframe so each variable becomes a new column
 pivoted = pd.pivot_table(df, index = ['REGION','Region','LOCATION', 'Country','INC','Income','Year'], columns = 'VAR', values = 'Value').reset_index()
-pivoted.rename(columns={'REGION': 'REG'}, inplace=True)
+# rename region code column so we do not have redundant column names
+pivoted.rename(columns={'REGION': 'region_code'}, inplace=True)
 # convert the years in the 'Year' column to datetime objects and store them in a new column 'datetime'
 pivoted['datetime'] = [datetime(x, 1, 1) for x in pivoted.Year]
 # Drop duplicates so that only one row per country remains
@@ -109,4 +110,3 @@ with ZipFile(processed_data_dir,'w') as zip:
     zip.write(processed_data_file, os.path.basename(processed_data_file))
 # Upload processed data file to S3
 uploaded = util_cloud.aws_upload(processed_data_dir, aws_bucket, s3_prefix+os.path.basename(processed_data_dir))
-
