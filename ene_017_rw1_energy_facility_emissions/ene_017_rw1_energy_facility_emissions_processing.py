@@ -60,7 +60,7 @@ df = df.reset_index(drop=True)
 
 # renaming columns
 df = df.rename(columns={'GHG QUANTITY (METRIC TONS CO2e)':'ghg_quantity_metric_tons_co2e'})
-# Delete prefixes in columns that have them
+# replace spaces with underscores to match Carto table formatting requirements
 df.columns = df.columns.str.replace(' ', '_')
 # Turn all column names to lowercase
 df.columns = [x.lower() for x in df.columns]
