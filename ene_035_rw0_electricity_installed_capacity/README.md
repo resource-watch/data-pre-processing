@@ -3,7 +3,7 @@ This file describes the data pre-processing that was done to [the Electricity In
 
 The data was provided by the source through its API in a json format.
 
-Below, we describe the steps used to reformat the table so that it is formatted correctly to upload to Carto. We read in the data as a pandas dataframe, deleted rows without data, and removed data of regions that consist of multiple geographies.
+Below, we describe the steps used to reformat the table so that it is formatted correctly to upload to Carto. We read in the data as a pandas dataframe, deleted rows without data, and removed data of regions that consist of multiple geographies. A new column 'datetime' was created to store the time period of the data as the first date of the year. 
 
 Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/ene_035_rw0_electricity_installed_capacity/ene_035_rw0_electricity_installed_capacity_processing.py) for more details on this processing.
 
