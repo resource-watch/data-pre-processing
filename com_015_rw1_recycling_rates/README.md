@@ -14,8 +14,7 @@ Below, we describe the steps used to reformat the table so that it is formatted 
 7. Remove column 'Reference Period Code' and 'Reference Period' since they are all NaNs.
 8. Replace NaN in the table with None.
 9. Convert years in the 'year' column to datetime objects and store them in a new column 'datetime'.
-10. Change whitespaces in column names to underscore.
-11. Convert the column names to lowercase to match Carto column name requirements.
+10. Replace whitespaces in column names with underscores and convert the column names to lowercase to match Carto column name requirements.
 
 Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/com_015_rw1_recycling_rates/com_015_rw1_recycling_rates_processing.py) for more details on this processing.
 

@@ -34,7 +34,6 @@ logger.info('Executing script for dataset: ' + dataset_name)
 # within this directory, create files to store raw and processed data
 data_dir = util_files.prep_dirs(dataset_name)
 
-
 '''
 Download data and save to your data directory
 
@@ -43,12 +42,12 @@ https://stats.oecd.org/Index.aspx?DataSetCode=MUNW
 Above the table, there is a 'Export' button that will lead to a dropdown menu containing different export options.
 Once you select 'Text file (CSV)' from the menu, a new window will occur and allow you to download the data as a csv file to your Downloads folder.
 '''
+# the path to the downloaded data file in the Downloads folder
 download = glob.glob(os.path.join(os.path.expanduser("~"), 'Downloads', 'MUNW_*.csv'))[0]
 
 # Move this file into your data directory
 raw_data_file = os.path.join(data_dir, os.path.basename(download))
 shutil.move(download,raw_data_file)
-
 
 '''
 Process data
@@ -66,7 +65,7 @@ df = df.loc[df['Variable'] == 'Recycling']
 # remove column 'Reference Period Code' and 'Reference Period' since they are all NaNs 
 df = df.drop(columns = ['VAR','YEA','Unit Code','Flag Codes','Reference Period Code','Reference Period'])
 
-#replace NaN in the table with None
+# replace NaN in the table with None
 df = df.where((pd.notnull(df)), None)
 
 # convert the years in the 'Year' column to datetime objects and store them in a new column 'datetime'
