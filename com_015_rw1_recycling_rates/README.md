@@ -18,7 +18,7 @@ Below, we describe the steps used to reformat the table so that it is formatted 
 
 Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/com_015_rw1_recycling_rates/com_015_rw1_recycling_rates_processing.py) for more details on this processing.
 
-You can view the processed Effect of Agricultural Policies on Commodity Prices dataset [on Resource Watch](https://resourcewatch.org/data/explore/46e7870a-5590-42c7-bf5b-56c7def7399b).
+You can view the processed Recycled Waste dataset [on Resource Watch](https://resourcewatch.org/data/explore/46e7870a-5590-42c7-bf5b-56c7def7399b).
 
 You can also download the original dataset [directly through Resource Watch](https://wri-public-data.s3.amazonaws.com/resourcewatch/com_015_rw1_recycling_rates.zip), or [from the source website](https://stats.oecd.org/Index.aspx?DataSetCode=MUNW).
 
