@@ -39,7 +39,7 @@ Download data and save to your data directory
 
 Data can be downloaded at the following link:
 http://data.uis.unesco.org/Index.aspx
-From the left panel, click to select 'EDUCATION' - 'Sustainable Development Goals 1 and 4' - '4.1.4 Out-of-school rate'.
+From the left panel, click to select 'EDUCATION' - 'Sustainable Development Goals 1 and 4' - 'Sustainable Development Goal 4' - 'Target 4.1' - '4.1.4 Out-of-school rate' - '4.1.4 Out-of-school rate by school age and sex (administrative data)'.
 Above the table, there is a 'Export' button that will lead to a dropdown menu containing different export options.
 Once you select 'Text file (CSV)' from the menu, a new window will occur and allow you to download the data as a csv file to your Downloads folder.
 '''
