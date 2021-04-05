@@ -1,4 +1,3 @@
-import dotenv
 import logging
 import pandas as pd
 import glob
@@ -10,7 +9,6 @@ if utils_path not in sys.path:
 import util_files
 import util_cloud
 import util_carto
-import urllib
 import requests
 from zipfile import ZipFile
 
@@ -42,7 +40,9 @@ url = 'http://fenixservices.fao.org/faostat/static/bulkdownloads/Emissions_Agric
 
 # download the data from the source
 raw_data_file = os.path.join(data_dir, os.path.basename(url))
-urllib.request.urlretrieve(url, raw_data_file)
+r = requests.get(url)  
+with open(raw_data_file, 'wb') as f:
+    f.write(r.content)
 
 # unzip source data
 raw_data_file_unzipped = raw_data_file.split('.')[0]
@@ -59,6 +59,20 @@ df = pd.read_csv(os.path.join(raw_data_file_unzipped, 'Emissions_Agriculture_Agr
 df = df.loc[df['Item Code'] == 1711]
 # filter elements to only retain Emissions (CO2eq)
 df = df.loc[df['Element Code'] == 7231]
+# List of areas that we want to exclude from our dataframe
+# so that we only have countries and not aggregated regions
+areas_lst = [
+    "Africa", "Americas", "Annex I countries", "Asia", "Caribbean", 
+    "Central America", "Central Asia", "Eastern Africa", "Eastern Asia", 
+    "Eastern Europe", "Europe", "European Union (27)","European Union (28)", 
+    "Land Locked Developing Countries","Least Developed Countries","Low Income Food Deficit Countries", 
+    "Net Food Importing Developing Countries","Non-Annex I countries", "Northern Africa",
+    "Northern America","Northern Europe","OECD","Small Island Developing States","South America",
+    "South-eastern Asia","Southern Africa","Southern Asia","Southern Europe",
+    "Western Africa","Western Asia","Western Europe","Western Sahara","World"
+]
+# filter dataframe based on areas list
+df = df[~df['Area'].isin(areas_lst)]
 # create datetime column with year information
 df['datetime'] = pd.to_datetime(df.Year, format='%Y')
 # convert from gigagrams to gigatonnes and store in new column
