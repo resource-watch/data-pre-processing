@@ -1,3 +1,6 @@
+import dotenv
+#insert the location of your .env file here:
+dotenv.load_dotenv('/home/eduardo/Documents/RW_github/cred/.env')
 import logging
 import pandas as pd
 import glob
@@ -69,7 +72,8 @@ areas_lst = [
     "Net Food Importing Developing Countries","Non-Annex I countries", "Northern Africa",
     "Northern America","Northern Europe","OECD","Small Island Developing States","South America",
     "South-eastern Asia","Southern Africa","Southern Asia","Southern Europe",
-    "Western Africa","Western Asia","Western Europe","Western Sahara","World"
+    "Western Africa","Western Asia","Western Europe","Western Sahara","World",
+    "Middle Africa", "Oceania"
 ]
 # filter dataframe based on areas list
 df = df[~df['Area'].isin(areas_lst)]
