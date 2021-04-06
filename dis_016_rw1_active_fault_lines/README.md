@@ -16,4 +16,4 @@ You can view the processed Active Fault Lines dataset [on Resource Watch](https:
 
 You can also download the original dataset [directly through Resource Watch](https://wri-public-data.s3.amazonaws.com/resourcewatch/dis_016_rw1_active_fault_lines.zip), or [from the source website](https://zenodo.org/record/3376300).
 
-###### Note: This dataset processing was done by [Weiqi Zhou](https://www.wri.org/profile/weiqi-zhou), and QC'd by [Yujing Wu](https://www.wri.org/profile/yujing-wu).
+###### Note: This dataset processing was done by [Weiqi Zhou](https://www.wri.org/profile/weiqi-zhou), and QC'd by [Amelia Snyder](https://www.wri.org/profile/amelia-snyder).
