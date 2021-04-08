@@ -8,9 +8,7 @@ import util_files
 import util_cloud
 import util_carto
 from zipfile import ZipFile
-import shutil
 import logging
-import glob
 import urllib
 from bs4 import BeautifulSoup
 import datetime

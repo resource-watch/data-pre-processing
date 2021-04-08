@@ -11,4 +11,4 @@ You can view the processed Water Conflict Map dataset [on Resource Watch](https:
 
 You can also download the original dataset [directly through Resource Watch](https://wri-public-data.s3.amazonaws.com/resourcewatch/soc_049_rw0_water_conflict_map.zip), or [from the source website](https://www.worldwater.org/water-conflict/).
 
-###### Note: This dataset processing was done by [Yujing Wu](https://www.wri.org/profile/yujing-wu)., and QC'd by [Yujing Wu](https://www.wri.org/profile/yujing-wu)..
+###### Note: This dataset processing was done by [Yujing Wu](https://www.wri.org/profile/yujing-wu)., and QC'd by [Yujing Wu](https://www.wri.org/profile/yujing-wu).
