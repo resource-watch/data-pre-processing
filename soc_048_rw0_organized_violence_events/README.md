@@ -7,6 +7,6 @@ Please see the [Python script](https://github.com/resource-watch/data-pre-proces
 
 You can view the processed Organized Violence Events dataset [on Resource Watch](http://resourcewatch.org/data/explore/9b6e6bce-efce-49a5-b603-385b8dae29e0).
 
-You can also download the original dataset [directly through Resource Watch](http://wri-public-data.s3.amazonaws.com/resourcewatch/soc_048_rw0_organized_violence_events.zip), or [from the source website](http://ucdp.uu.se/downloads/).
+You can also download the original dataset [directly through Resource Watch](https://wri-public-data.s3.amazonaws.com/resourcewatch/soc_048_rw0_organized_violence_events.zip), or [from the source website](http://ucdp.uu.se/downloads/).
 
 ###### Note: This dataset processing was done by [Yujing Wu](https://www.wri.org/profile/yujing-wu), and QC'd by [Yujing Wu](https://www.wri.org/profile/yujing-wu).
