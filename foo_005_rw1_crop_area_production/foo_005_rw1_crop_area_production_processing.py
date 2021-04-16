@@ -1,8 +1,5 @@
 import os
 import sys
-import dotenv
-#insert the location of your .env file here:
-dotenv.load_dotenv('/home/eduardo/Documents/RW_github/cred/.env')
 utils_path = os.path.join(os.path.abspath(os.getenv('PROCESSING_DIR')),'utils')
 if utils_path not in sys.path:
     sys.path.append(utils_path)
