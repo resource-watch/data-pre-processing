@@ -3,7 +3,10 @@ This file describes the data pre-processing that was done to [the World Water Co
 
 The source provided the data as a PHP file.
 
-The 'Start' and 'End' columns were renamed to be 'start_year' and 'end_year' since 'end' is a reserved word in PostgreSQL. The start and end year of the conflicts were converted to datetime objects (using first day of January to fill day and month for each conflict) and stored in two new columns 'start_dt' and 'end_dt'. The 'Conflict Type' column was renamed to be 'conflict_type'. The resulting table was uploaded to Carto.
+Below, we describe the steps used to reformat the table to upload it to Carto.
+
+1. Rename the 'Start' and 'End' columns to 'start_year' and 'end_year' since 'end' is a reserved word in PostgreSQL.
+2. Convert the start and end year of the conflicts to datetime objects using first day of January to fill day and month for each conflict and store them in two new columns 'start_dt' and 'end_dt'. 3. Convert column headers to lowercase and replace spaces within them with underscores so that the table can be uploaded to Carto without losing information.
 
 Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/soc_049_rw0_water_conflict_map/soc_049_rw0_water_conflict_map_processing.py) for more details on this processing.
 
