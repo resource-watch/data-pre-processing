@@ -59,16 +59,21 @@ def create_carto_schema(df):
 
     return output
 
-def convert_geometry(geometries):
+def convert_geometry(geom):
     '''
     Function to convert shapely geometries to geojsons
-    INPUT   geometries: shapely geometries (list of shapely geometries)
-    RETURN  output: geojsons (list of geojsons)
+    INPUT   geom: shapely geometry 
+    RETURN  geojsons 
     '''
-    output = []
-    for geom in geometries:
-        output.append(geom.__geo_interface__)
-    return output
+    # if it's a polygon
+    if geom.geom_type == 'Polygon':
+        return geom.__geo_interface__
+    # if it's a multipoint series containing only one point
+    elif (geom.geom_type == 'MultiPoint') & (len(geom) == 1):
+        return geom[0].__geo_interface__
+    else:
+        return geom.__geo_interface__
+
 
 def checkCreateTable(table, schema, id_field='', time_field=''):
     '''
@@ -98,6 +103,53 @@ def checkCreateTable(table, schema, id_field='', time_field=''):
         if time_field:
             createIndex(table, time_field, user=CARTO_USER, key=CARTO_KEY)
 
+def insert_carto_query(row, schema, table_name):
+    '''
+    Build the sql query that inserts a row to carto 
+    INPUT   row: row of data to insert to carto (series)
+            table_name: the name of the newly created table on Carto (string)
+            schema: a dictionary of column names and data types in order to upload data to Carto (dictionary)
+    RETURN  sql query that can be included in a post request (string)
+    '''
+    # replace all null values with None
+    row = row.where(row.notnull(), None)
+    insert_exception = None
+    # convert the geometry in the geometry column to geojsons
+    row['geometry'] = convert_geometry(row['geometry'])
+    # construct the sql query to upload the row to the carto table
+    fields = schema.keys()
+    values = _dumpRows([row.values.tolist()], tuple(schema.values()))
+    return 'INSERT INTO "{}" ({}) VALUES {}'.format(table_name, ', '.join(fields), values)
+
+def insert_carto_send(sql):
+    '''
+    Send a request to carto API
+    INPUT   sql: sql query that can be included in a post request (string)
+    OUTPUT  index of the row sent
+    '''
+    # maximum attempts to make
+    n_tries = 5
+    # sleep time between each attempt   
+    retry_wait_time = 6
+
+    for i in range(n_tries):
+        try:
+            r = requests.post('https://{}.carto.com/api/v2/sql'.format(CARTO_USER), json={'api_key': CARTO_KEY,'q': sql})
+            r.raise_for_status()
+        except Exception as e: # if there's an exception do this
+            insert_exception = e
+            logging.warning('Attempt #{} to upload unsuccessful. Trying again after {} seconds'.format(i, retry_wait_time))
+            logging.debug('Exception encountered during upload attempt: '+ str(e))
+            time.sleep(retry_wait_time)
+        else: # if no exception do this
+            return row.index
+    else:
+        # this happens if the for loop completes, ie if it attempts to insert row n_tries times
+        logging.error('Upload has failed after {} attempts'.format(n_tries))
+        logging.error('Problematic row: '+ str(row))
+        logging.error('Raising exception encountered during last upload attempt')
+        logging.error(insert_exception)
+        raise insert_exception
 
 def shapefile_to_carto(table_name, schema, gdf, privacy):
     '''
@@ -111,48 +163,13 @@ def shapefile_to_carto(table_name, schema, gdf, privacy):
           gdf: a geodataframe storing all the data to upload (geodataframe)
           privacy: the privacy setting of the dataset to upload to Carto (string)
     '''
-    # create a request session 
-    s = requests.Session()
-
-    def insert_carto(row):
-        # replace all null values with None
-        row = row.where(row.notnull(), None)
-        # maximum attempts to make
-        n_tries = 5
-        # sleep time between each attempt   
-        retry_wait_time = 6
-    
-        insert_exception = None
-        # convert the geometry in the geometry column to geojsons
-        row['geometry'] = convert_geometry(row['geometry'])
-        # construct the sql query to upload the row to the carto table
-        fields = schema.keys()
-        values = _dumpRows([row.values.tolist()], tuple(schema.values()))
-        sql = 'INSERT INTO "{}" ({}) VALUES {}'.format(table_name, ', '.join(fields), values)
-
-        for i in range(n_tries):
-            try:
-                r = s.post('https://{}.carto.com/api/v2/sql'.format(CARTO_USER), json={'api_key': CARTO_KEY,'q': sql})
-                r.raise_for_status()
-            except Exception as e: # if there's an exception do this
-                insert_exception = e
-                logging.warning('Attempt #{} to upload unsuccessful. Trying again after {} seconds'.format(i, retry_wait_time))
-                logging.debug('Exception encountered during upload attempt: '+ str(e))
-                time.sleep(retry_wait_time)
-            else: # if no exception do this
-                break # break this for loop, because we don't need to try again
-        else:
-            # this happens if the for loop completes, ie if it attempts to insert row n_tries times
-            logging.error('Upload has failed after {} attempts'.format(n_tries))
-            logging.error('Problematic row: '+ str(row))
-            logging.error('Raising exception encountered during last upload attempt')
-            logging.error(insert_exception)
-            raise insert_exception
-
     # insert the rows contained in the geodataframe copy to the empty new table on Carto
     with ThreadPoolExecutor(max_workers=10) as executor:
         for index, row in gdf.iterrows():
-            executor.submit(insert_carto, row)
+            # build the sql query to send to Carto 
+            query = insert_carto_query(row, schema, table_name)
+            # submit the task to the executor
+            executor.submit(insert_carto_send, query)
     logging.info('Upload complete!')
 
     # Change privacy of table on Carto
