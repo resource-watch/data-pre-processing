@@ -199,13 +199,9 @@ def sendSql(sql, user=None, key=None, f='', post=True):
     r.raise_for_status()
     return r
 
-def get(sql, user=None, key=None, f=''):
-    '''Send arbitrary sql and return response object or False'''
-    return sendSql(sql, user, key, f, False)
-
 def getTables(user=None, key=None, f='csv'):
     '''Get the list of tables'''
-    r = get('SELECT * FROM CDB_UserTables()', user, key, f)
+    r = sendSql('SELECT * FROM CDB_UserTables()', user, key, f, False)
     if f == 'csv':
         return r.text.splitlines()[1:]
     return r
