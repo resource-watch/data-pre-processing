@@ -125,7 +125,7 @@ def insert_carto_send(sql):
     '''
     Send a request to carto API
     INPUT   sql: sql query that can be included in a post request (string)
-    OUTPUT  index of the row sent
+    OUTPUT  index of the row sent (number)
     '''
     # maximum attempts to make
     n_tries = 5
@@ -134,6 +134,7 @@ def insert_carto_send(sql):
 
     for i in range(n_tries):
         try:
+            # send the request 
             r = requests.post('https://{}.carto.com/api/v2/sql'.format(CARTO_USER), json={'api_key': CARTO_KEY,'q': sql})
             r.raise_for_status()
         except Exception as e: # if there's an exception do this
@@ -144,7 +145,7 @@ def insert_carto_send(sql):
         else: # if no exception do this
             return row.index
     else:
-        # this happens if the for loop completes, ie if it attempts to insert row n_tries times
+        # this happens if the for loop completes, ie if it attempts to insert row n_tries times without succeeding
         logging.error('Upload has failed after {} attempts'.format(n_tries))
         logging.error('Problematic row: '+ str(row))
         logging.error('Raising exception encountered during last upload attempt')
@@ -163,7 +164,7 @@ def shapefile_to_carto(table_name, schema, gdf, privacy):
           gdf: a geodataframe storing all the data to upload (geodataframe)
           privacy: the privacy setting of the dataset to upload to Carto (string)
     '''
-    # insert the rows contained in the geodataframe copy to the empty new table on Carto
+    # initiate a ThreadPoolExecutor with 10 workers 
     with ThreadPoolExecutor(max_workers=10) as executor:
         for index, row in gdf.iterrows():
             # build the sql query to send to Carto 
@@ -192,6 +193,7 @@ def sendSql(sql, user=None, key=None, f='', post=True):
             post: whether this is a POST request (boolean)
     RETURN  the response from the API
     '''
+    # the url to which the request will be sent 
     url = "https://{}.carto.com/api/v2/sql".format(user)
     payload = {
         'api_key': key,
@@ -213,10 +215,12 @@ def getTables(user=None, key=None, f='csv'):
     INPUT   user: the username of the Carto account (string)
             key: the key for Carto API (string)
             f： the format parameter included in the payload (string)
-    RETURN  the response from the API
+    RETURN  tables stored on the Carto account (list of strings if f is 'csv' else response object)
     '''
+    # send the request to Carto API to fetch the tables stored in the Carto account
     r = sendSql('SELECT * FROM CDB_UserTables()', user, key, f, False)
     if f == 'csv':
+        # split the response to get a list of tables 
         return r.text.splitlines()[1:]
     return r
 
@@ -227,7 +231,8 @@ def createTable(table, schema, user=None, key=None):
             schema: a dictionary of the column names and types of data stored in them (ordered dictionary)
             user: the username of the Carto account (string)
             key: the key for Carto API (string)
-    RETURN  executing the function to CartoDBfy the table
+    RETURN  calling the function to CartoDBfy the table if the query to create table has been successfully sent
+            otherwise returns False (boolean)
     '''
     items = schema.items() if isinstance(schema, dict) else schema
     defslist = ['{} {}'.format(k, v) for k, v in items]
