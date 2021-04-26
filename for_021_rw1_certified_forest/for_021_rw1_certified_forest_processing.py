@@ -57,12 +57,14 @@ Process data
 df = normalized_data.copy()
 # Slice dataframe to retain only columns of interest
 df = df[['indicator_code','indicator_reference','series','seriesDescription',
-        'geoAreaName', 'ISO3','unitsCode','unitsDesc', 'value_2000',
+        'geoAreaName', 'ISO3', 'value_2000',
         'value_2005','value_2010','value_2015','value_2016',
         'value_2017','value_2018','value_2019','sources']]
 # convert tables from wide form (each year is a column) to long form
 df = pd.melt(df,id_vars=['indicator_code','indicator_reference','series','seriesDescription',
-        'geoAreaName', 'ISO3','unitsCode','unitsDesc','sources'],var_name='year', value_name='total_area_certified_thousand_ha')
+        'geoAreaName', 'ISO3','sources'],var_name='year', value_name='total_area_certified_ha')
+# Converting total area certified from thousands of hectares to hectares
+df['total_area_certified_ha'] = df['total_area_certified_ha'] *1000
 # remove initial strings in year column and convert it to integer
 df['year'] = df['year'].str[6:].astype('int64')
 # create a new column 'datetime' to store years as datetime objects
