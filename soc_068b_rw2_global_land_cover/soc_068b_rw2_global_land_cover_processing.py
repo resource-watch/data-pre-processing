@@ -42,6 +42,7 @@ Download data and save to your data directory
 '''
 logger.info('Downloading raw data')
 # download the data from the source
+# use CDS API https://cds.climate.copernicus.eu/api-how-to
 c = cdsapi.Client()
 for year in range(1992,2020):
     if year<2016:
