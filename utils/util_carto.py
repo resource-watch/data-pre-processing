@@ -183,7 +183,15 @@ def shapefile_to_carto(table_name, schema, gdf, privacy):
     dataset.save()
     
 def sendSql(sql, user=None, key=None, f='', post=True):
-    '''Send arbitrary sql and return response object or False'''
+    '''
+    Send arbitrary sql and return response object or False
+    INPUT   sql: the sql query that will be included in the body of the request (string)
+            user: the username of the Carto account (string)
+            key: the key for Carto API (string)
+            f： the format parameter included in the payload (string)
+            post: whether this is a POST request (boolean)
+    RETURN  the response from the API
+    '''
     url = "https://{}.carto.com/api/v2/sql".format(user)
     payload = {
         'api_key': key,
@@ -200,7 +208,13 @@ def sendSql(sql, user=None, key=None, f='', post=True):
     return r
 
 def getTables(user=None, key=None, f='csv'):
-    '''Get the list of tables'''
+    '''
+    Get the list of tables in the Carto account
+    INPUT   user: the username of the Carto account (string)
+            key: the key for Carto API (string)
+            f： the format parameter included in the payload (string)
+    RETURN  the response from the API
+    '''
     r = sendSql('SELECT * FROM CDB_UserTables()', user, key, f, False)
     if f == 'csv':
         return r.text.splitlines()[1:]
@@ -209,10 +223,11 @@ def getTables(user=None, key=None, f='csv'):
 def createTable(table, schema, user=None, key=None):
     '''
     Create table with schema and CartoDBfy table
-
-    `schema` should be a dict or list of tuple pairs with
-     - keys as field names and
-     - values as field types
+    INPUT   table: the name of the Carto table to be created (string)
+            schema: a dictionary of the column names and types of data stored in them (ordered dictionary)
+            user: the username of the Carto account (string)
+            key: the key for Carto API (string)
+    RETURN  executing the function to CartoDBfy the table
     '''
     items = schema.items() if isinstance(schema, dict) else schema
     defslist = ['{} {}'.format(k, v) for k, v in items]
@@ -222,13 +237,28 @@ def createTable(table, schema, user=None, key=None):
     return False
 
 def _cdbfyTable(table, user=None, key=None):
-    '''CartoDBfy table so that it appears in Carto UI'''
+    '''
+    CartoDBfy table so that it appears in Carto UI
+    INPUT   table: the name of the Carto table (string)
+            user: the username of the Carto account (string)
+            key: the key for Carto API (string)
+    RETURN  calling the function to send Carto API the query to CartoDBfy the table 
+    '''
     sql = "SELECT cdb_cartodbfytable('{}','\"{}\"')".format(user, table)
     return sendSql(sql, user, key)
 
 def createIndex(table, fields, unique='', using='', user=None,
                 key=None):
-    '''Create index on table on field(s)'''
+    '''
+    Create index on table on field(s)
+    INPUT   table: the name of the Carto table (string)
+            fields: the column(s) based on which the index is created (string or list of strings)
+            unique: whether this is unique index (string)
+            using: whether the index is created based on column(s) (string)
+            user: the username of the Carto account (string)
+            key: the key for Carto API (string)
+    RETURN  calling the function to send Carto API the query to create index for the table
+    '''
     fields = (fields,) if isinstance(fields, str) else fields
     f_underscore = '_'.join(fields)
     f_comma = ','.join(fields)
@@ -241,7 +271,9 @@ def createIndex(table, fields, unique='', using='', user=None,
 def _escapeValue(value, dtype):
     '''
     Escape value for SQL based on field type
-
+    INPUT   value: the value to be included in the query (can be of different data types as listed below)
+            dtype: the data types of the value （string) 
+    RETURN  SQL string ready to be included in the query to Carto API (string)
     TYPE         Escaped
     None      -> NULL
     geometry  -> string as is; obj dumped as GeoJSON
@@ -267,7 +299,12 @@ def _escapeValue(value, dtype):
         return str(value)
     
 def _dumpRows(rows, dtypes):
-    '''Escapes rows of data to SQL strings'''
+    '''
+    Escapes rows of data to SQL strings
+    INPUT   rows: rows of data to convert to SQL strings (list of lists)
+            dtypes: the data type of the columns (list of strings)
+    RETURN  SQL string ready to be included in the query to Carto API (string)
+    '''
     dumpedRows = []
     for row in rows:
         escaped = [
