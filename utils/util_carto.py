@@ -1,12 +1,18 @@
 import os
-import pandas as pd
+import time
+import json
+import requests
+from concurrent.futures import ThreadPoolExecutor
 from carto.datasets import DatasetManager
 from carto.auth import APIKeyAuthClient
-import cartosql
 from collections import OrderedDict
 import logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
+
+# username and api key of the carto account 
+CARTO_USER = os.getenv('CARTO_WRI_RW_USER')
+CARTO_KEY = os.getenv('CARTO_WRI_RW_KEY')
 
 def upload_to_carto(file, privacy, collision_strategy='skip'):
     '''
@@ -17,7 +23,7 @@ def upload_to_carto(file, privacy, collision_strategy='skip'):
             set the parameter to 'overwrite' if you want to overwrite the existing table on Carto
     '''
     # set up carto authentication using local variables for username (CARTO_WRI_RW_USER) and API key (CARTO_WRI_RW_KEY)
-    auth_client = APIKeyAuthClient(api_key=os.getenv('CARTO_WRI_RW_KEY'), base_url="https://{user}.carto.com/".format(user=os.getenv('CARTO_WRI_RW_USER')))
+    auth_client = APIKeyAuthClient(api_key=CARTO_KEY, base_url="https://{user}.carto.com/".format(user=CARTO_USER))
     # set up dataset manager with authentication
     dataset_manager = DatasetManager(auth_client)
     # upload dataset to carto
@@ -53,6 +59,22 @@ def create_carto_schema(df):
 
     return output
 
+def convert_geometry(geom):
+    '''
+    Function to convert shapely geometries to geojsons
+    INPUT   geom: shapely geometry 
+    RETURN  geojsons 
+    '''
+    # if it's a polygon
+    if geom.geom_type == 'Polygon':
+        return geom.__geo_interface__
+    # if it's a multipoint series containing only one point
+    elif (geom.geom_type == 'MultiPoint') & (len(geom) == 1):
+        return geom[0].__geo_interface__
+    else:
+        return geom.__geo_interface__
+
+
 def checkCreateTable(table, schema, id_field='', time_field=''):
     '''
     Create the table if it does not exist, and pull list of IDs already in the table if it does
@@ -65,32 +87,70 @@ def checkCreateTable(table, schema, id_field='', time_field=''):
     '''
 
     # check it the table already exists in Carto
-    if cartosql.tableExists(table, user=os.getenv('CARTO_WRI_RW_USER'), key=os.getenv('CARTO_WRI_RW_KEY')):
+    if table in getTables(user=CARTO_USER, key=CARTO_KEY):
         # if the table does exist, get a list of all the values in the id_field column
         print('Carto table already exists.')
     else:
         # if the table does not exist, create it with columns based on the schema input
         print('Table {} does not exist, creating'.format(table))
-        cartosql.createTable(table, schema, user=os.getenv('CARTO_WRI_RW_USER'), key=os.getenv('CARTO_WRI_RW_KEY'))
+        createTable(table, schema, user=CARTO_USER, key=CARTO_KEY)
         # if a unique ID field is specified, set it as a unique index in the Carto table; when you upload data, Carto
         # will ensure no two rows have the same entry in this column and return an error if you try to upload a row with
         # a duplicate unique ID
         if id_field:
-            cartosql.createIndex(table, id_field, unique=True, user=os.getenv('CARTO_WRI_RW_USER'), key=os.getenv('CARTO_WRI_RW_KEY'))
+            createIndex(table, id_field, unique=True, user=CARTO_USER, key=CARTO_KEY)
         # if a time_field is specified, set it as an index in the Carto table; this is not a unique index
         if time_field:
-            cartosql.createIndex(table, time_field, user=os.getenv('CARTO_WRI_RW_USER'), key=os.getenv('CARTO_WRI_RW_KEY'))
+            createIndex(table, time_field, user=CARTO_USER, key=CARTO_KEY)
 
-def convert_geometry(geometries):
+def insert_carto_query(row, schema, table_name):
     '''
-    Function to convert shapely geometries to geojsons
-    INPUT   geometries: shapely geometries (list of shapely geometries)
-    RETURN  output: geojsons (list of geojsons)
+    Build the sql query that inserts a row to carto 
+    INPUT   row: row of data to insert to carto (series)
+            table_name: the name of the newly created table on Carto (string)
+            schema: a dictionary of column names and data types in order to upload data to Carto (dictionary)
+    RETURN  sql query that can be included in a post request (string)
     '''
-    output = []
-    for geom in geometries:
-        output.append(geom.__geo_interface__)
-    return output
+    # replace all null values with None
+    row = row.where(row.notnull(), None)
+    insert_exception = None
+    # convert the geometry in the geometry column to geojsons
+    row['geometry'] = convert_geometry(row['geometry'])
+    # construct the sql query to upload the row to the carto table
+    fields = schema.keys()
+    values = _dumpRows([row.values.tolist()], tuple(schema.values()))
+    return 'INSERT INTO "{}" ({}) VALUES {}'.format(table_name, ', '.join(fields), values)
+
+def insert_carto_send(sql):
+    '''
+    Send a request to carto API
+    INPUT   sql: sql query that can be included in a post request (string)
+    OUTPUT  index of the row sent (number)
+    '''
+    # maximum attempts to make
+    n_tries = 5
+    # sleep time between each attempt   
+    retry_wait_time = 6
+
+    for i in range(n_tries):
+        try:
+            # send the request 
+            r = requests.post('https://{}.carto.com/api/v2/sql'.format(CARTO_USER), json={'api_key': CARTO_KEY,'q': sql})
+            r.raise_for_status()
+        except Exception as e: # if there's an exception do this
+            insert_exception = e
+            logging.warning('Attempt #{} to upload unsuccessful. Trying again after {} seconds'.format(i, retry_wait_time))
+            logging.debug('Exception encountered during upload attempt: '+ str(e))
+            time.sleep(retry_wait_time)
+        else: # if no exception do this
+            return row.index
+    else:
+        # this happens if the for loop completes, ie if it attempts to insert row n_tries times without succeeding
+        logging.error('Upload has failed after {} attempts'.format(n_tries))
+        logging.error('Problematic row: '+ str(row))
+        logging.error('Raising exception encountered during last upload attempt')
+        logging.error(insert_exception)
+        raise insert_exception
 
 def shapefile_to_carto(table_name, schema, gdf, privacy):
     '''
@@ -104,22 +164,157 @@ def shapefile_to_carto(table_name, schema, gdf, privacy):
           gdf: a geodataframe storing all the data to upload (geodataframe)
           privacy: the privacy setting of the dataset to upload to Carto (string)
     '''
-    # create a copy of the geodataframe
-    gdf_converted = gdf.copy()
-    # convert the geometry of the geodataframe copy to geojsons
-    gdf_converted['geometry'] = convert_geometry(gdf_converted.geometry)
-    # insert the rows contained in the geodataframe copy to the empty new table on Carto
-    for index, row in gdf_converted.iterrows():
-        # Carto does not accept Nans for numeric columns; convert them to None
-        row = row.where(pd.notnull(row), None)
-        cartosql.insertRows(table_name, schema.keys(), schema.values(), [row.values.tolist()], user=os.getenv('CARTO_WRI_RW_USER'), key=os.getenv('CARTO_WRI_RW_KEY'))
+    # initiate a ThreadPoolExecutor with 10 workers 
+    with ThreadPoolExecutor(max_workers=10) as executor:
+        for index, row in gdf.iterrows():
+            # build the sql query to send to Carto 
+            query = insert_carto_query(row, schema, table_name)
+            # submit the task to the executor
+            executor.submit(insert_carto_send, query)
+    logging.info('Upload complete!')
 
     # Change privacy of table on Carto
     #set up carto authentication using local variables for username (CARTO_WRI_RW_USER) and API key (CARTO_WRI_RW_KEY)
-    auth_client = APIKeyAuthClient(api_key=os.getenv('CARTO_WRI_RW_KEY'), base_url="https://{user}.carto.com/".format(user=os.getenv('CARTO_WRI_RW_USER')))
+    auth_client = APIKeyAuthClient(api_key=CARTO_KEY, base_url="https://{user}.carto.com/".format(user=CARTO_USER))
     #set up dataset manager with authentication
     dataset_manager = DatasetManager(auth_client)
     #set dataset privacy
     dataset = dataset_manager.get(table_name)
     dataset.privacy = privacy
     dataset.save()
+    
+def sendSql(sql, user=None, key=None, f='', post=True):
+    '''
+    Send arbitrary sql and return response object or False
+    INPUT   sql: the sql query that will be included in the body of the request (string)
+            user: the username of the Carto account (string)
+            key: the key for Carto API (string)
+            f： the format parameter included in the payload (string)
+            post: whether this is a POST request (boolean)
+    RETURN  the response from the API
+    '''
+    # the url to which the request will be sent 
+    url = "https://{}.carto.com/api/v2/sql".format(user)
+    payload = {
+        'api_key': key,
+        'q': sql,
+    }
+    if len(f):
+        payload['format'] = f
+    logging.debug((url, payload))
+    if post:
+        r = requests.post(url, json=payload)
+    else:
+        r = requests.get(url, params=payload)
+    r.raise_for_status()
+    return r
+
+def getTables(user=None, key=None, f='csv'):
+    '''
+    Get the list of tables in the Carto account
+    INPUT   user: the username of the Carto account (string)
+            key: the key for Carto API (string)
+            f： the format parameter included in the payload (string)
+    RETURN  tables stored on the Carto account (list of strings if f is 'csv' else response object)
+    '''
+    # send the request to Carto API to fetch the tables stored in the Carto account
+    r = sendSql('SELECT * FROM CDB_UserTables()', user, key, f, False)
+    if f == 'csv':
+        # split the response to get a list of tables 
+        return r.text.splitlines()[1:]
+    return r
+
+def createTable(table, schema, user=None, key=None):
+    '''
+    Create table with schema and CartoDBfy table
+    INPUT   table: the name of the Carto table to be created (string)
+            schema: a dictionary of the column names and types of data stored in them (ordered dictionary)
+            user: the username of the Carto account (string)
+            key: the key for Carto API (string)
+    RETURN  calling the function to CartoDBfy the table if the query to create table has been successfully sent
+            otherwise returns False (boolean)
+    '''
+    items = schema.items() if isinstance(schema, dict) else schema
+    defslist = ['{} {}'.format(k, v) for k, v in items]
+    sql = 'CREATE TABLE "{}" ({})'.format(table, ','.join(defslist))
+    if sendSql(sql, user, key):
+        return _cdbfyTable(table, user, key)
+    return False
+
+def _cdbfyTable(table, user=None, key=None):
+    '''
+    CartoDBfy table so that it appears in Carto UI
+    INPUT   table: the name of the Carto table (string)
+            user: the username of the Carto account (string)
+            key: the key for Carto API (string)
+    RETURN  calling the function to send Carto API the query to CartoDBfy the table 
+    '''
+    sql = "SELECT cdb_cartodbfytable('{}','\"{}\"')".format(user, table)
+    return sendSql(sql, user, key)
+
+def createIndex(table, fields, unique='', using='', user=None,
+                key=None):
+    '''
+    Create index on table on field(s)
+    INPUT   table: the name of the Carto table (string)
+            fields: the column(s) based on which the index is created (string or list of strings)
+            unique: whether this is unique index (string)
+            using: whether the index is created based on column(s) (string)
+            user: the username of the Carto account (string)
+            key: the key for Carto API (string)
+    RETURN  calling the function to send Carto API the query to create index for the table
+    '''
+    fields = (fields,) if isinstance(fields, str) else fields
+    f_underscore = '_'.join(fields)
+    f_comma = ','.join(fields)
+    unique = 'UNIQUE' if unique else ''
+    using = 'USING {}'.format(using) if using else ''
+    sql = 'CREATE {} INDEX idx_{}_{} ON {} {} ({})'.format(
+        unique, table, f_underscore, table, using, f_comma)
+    return sendSql(sql, user, key)
+
+def _escapeValue(value, dtype):
+    '''
+    Escape value for SQL based on field type
+    INPUT   value: the value to be included in the query (can be of different data types as listed below)
+            dtype: the data types of the value （string) 
+    RETURN  SQL string ready to be included in the query to Carto API (string)
+    TYPE         Escaped
+    None      -> NULL
+    geometry  -> string as is; obj dumped as GeoJSON
+    text      -> single quote escaped
+    timestamp -> single quote escaped
+    varchar   -> single quote escaped
+    else      -> as is
+    '''
+    if value is None:
+        return "NULL"
+    if dtype == 'geometry':
+        # if not string assume GeoJSON and assert WKID
+        if isinstance(value, str):
+            return value
+        else:
+            value = json.dumps(value)
+            return "ST_SetSRID(ST_GeomFromGeoJSON('{}'),4326)".format(value)
+    elif dtype in ('text', 'timestamp', 'varchar'):
+        # quote strings, escape quotes, and drop nbsp
+        return "'{}'".format(
+            str(value).replace("'", "''"))
+    else:
+        return str(value)
+    
+def _dumpRows(rows, dtypes):
+    '''
+    Escapes rows of data to SQL strings
+    INPUT   rows: rows of data to convert to SQL strings (list of lists)
+            dtypes: the data type of the columns (list of strings)
+    RETURN  SQL string ready to be included in the query to Carto API (string)
+    '''
+    dumpedRows = []
+    for row in rows:
+        escaped = [
+            _escapeValue(row[i], dtypes[i])
+            for i in range(len(dtypes))
+        ]
+        dumpedRows.append('({})'.format(','.join(escaped)))
+    return ','.join(dumpedRows)
