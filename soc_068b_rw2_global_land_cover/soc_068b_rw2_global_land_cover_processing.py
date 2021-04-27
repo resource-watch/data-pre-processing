@@ -18,8 +18,8 @@ import glob
 import cdsapi
 
 
-# Set up logging
-# Get the top-level logger object
+# set up logging
+# get the top-level logger object
 logger = logging.getLogger()
 for handler in logger.handlers: logger.removeHandler(handler)
 logger.setLevel(logging.INFO)
@@ -44,6 +44,7 @@ logger.info('Downloading raw data')
 # download the data from the source
 # use CDS API https://cds.climate.copernicus.eu/api-how-to
 c = cdsapi.Client()
+# data for 1992-2015 is version 2.0.7; data for 2016-2019 is version 2.1.1
 for year in range(1992,2020):
     if year<2016:
         c.retrieve(
@@ -77,6 +78,7 @@ for raw_data in raw_data_file:
     zip_ref.extractall(data_dir)
     zip_ref.close()
 raw_data_file_unzipped = glob.glob(os.path.join(data_dir,'*.nc'))
+# sort file by year
 raw_data_file_unzipped = sorted(raw_data_file_unzipped, key = lambda x: x.split('-')[7])
 
 '''
@@ -90,7 +92,8 @@ processed_data_file = [os.path.join(raw_file[:-3]+'_lccs_class.tif') for raw_fil
 '''
 Upload processed data to Google Earth Engine
 '''
-# Set up uploading chunk size
+# set up uploading chunk size
+# The default setting requires an uploading speed at 10MB/min. Reduce the chunk size, if the network condition is not good.
 storage.blob._DEFAULT_CHUNKSIZE = 5 * 1024* 1024  # 5 MB
 storage.blob._MAX_MULTIPART_SIZE = 5 * 1024* 1024  # 5 MB
 
@@ -110,7 +113,7 @@ ee.Initialize(auth)
 # set pyramiding policy for GEE upload
 pyramiding_policy = 'MODE' #check
 
-# Create an image collection where we will put the processed data files in GEE
+# create an image collection where we will put the processed data files in GEE
 image_collection = f'projects/resource-watch-gee/{dataset_name}'
 ee.data.createAsset({'type': 'ImageCollection'}, image_collection)
 
@@ -123,16 +126,17 @@ print('Privacy set to public.')
 band_ids = ['b1']
 
 task_id = []
-# Upload processed data files to GEE
+# upload processed data files to GEE
 for uri,year in zip(gcs_uris,range(1992,2020)):
+    # filenames for 1992-2015 start with 'ESACCI'
     if 'ESACCI' in uri:
-        # generate an asset name for the current file by using the filename (minus the file type extension)
+        # generate an asset name for the current file by using the dataset name and year
         asset_name = f'projects/resource-watch-gee/{dataset_name}/{dataset_name}_{year}'
         # create the band manifest for this asset
         mf_bands = [{'id': band_id, 'tileset_band_index': band_ids.index(band_id), 'tileset_id': os.path.basename(uri)[:-22],
                  'pyramidingPolicy': pyramiding_policy} for band_id in band_ids]
     else:
-        # generate an asset name for the current file by using the filename (minus the file type extension)
+        # generate an asset name for the current file by using the dataset name and year
         asset_name = f'projects/resource-watch-gee/{dataset_name}/{dataset_name}_{year}'
         # create the band manifest for this asset
         mf_bands = [{'id': band_id, 'tileset_band_index': band_ids.index(band_id), 'tileset_id': os.path.basename(uri)[:-19],
@@ -156,8 +160,6 @@ aws_bucket = 'wri-projects'
 s3_prefix = 'resourcewatch/raster/'
 
 logger.info('Uploading original data to S3.')
-# Upload raw data file to S3
-
 # Copy the raw data into a zipped file to upload to S3
 raw_data_dir = os.path.join(data_dir, dataset_name+'.zip')
 with ZipFile(raw_data_dir,'w') as zipped:
