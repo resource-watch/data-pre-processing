@@ -110,14 +110,14 @@ for shape_file in shape_files:
     out_gdf = out_gdf.append(gdf)
     
     # Order columns
-    df = gdf[['ogc_fid','pxlval','Year']]
+    df = gdf[['ogc_fid','pxlval','Year','geometry']]
     
     print(index_buffer)
 
     # Upload to Carto
     print('Uploading processed data to Carto.')
     print('Inserting new rows for shapefile: {}'.format(shape_file))
-    util_carto.shapefile_to_carto(dataset_name+'_edit', CARTO_SCHEMA.keys(),CARTO_SCHEMA.values(), df)
+    util_carto.shapefile_to_carto(dataset_name+'_edit', CARTO_SCHEMA, df)
     
 #save processed dataset to shapefile
 out_gdf.to_file(processed_data_file,driver='ESRI Shapefile')
