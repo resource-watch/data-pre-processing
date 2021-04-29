@@ -152,7 +152,7 @@ def insert_carto_send(sql):
         logging.error(insert_exception)
         raise insert_exception
 
-def shapefile_to_carto(table_name, schema, gdf, privacy):
+def shapefile_to_carto(table_name, schema, gdf, privacy = 'LINK'):
     '''
     Function to upload a shapefile to Carto
     Note: Shapefiles can also be zipped and uploaded to Carto through the upload_to_carto function
@@ -166,12 +166,17 @@ def shapefile_to_carto(table_name, schema, gdf, privacy):
     '''
     # initiate a ThreadPoolExecutor with 10 workers 
     with ThreadPoolExecutor(max_workers=10) as executor:
+        futures = []
+        # create an empty list to store the index of the rows uploaded
+        all_ids = []
         for index, row in gdf.iterrows():
             # build the sql query to send to Carto 
             query = insert_carto_query(row, schema, table_name)
             # submit the task to the executor
-            executor.submit(insert_carto_send, query)
-    logging.info('Upload complete!')
+            futures.append(executor.submit(insert_carto_send, query))
+        for future in as_completed(futures):
+            all_ids.append(future.result())
+    logging.info('Upload of {} rows complete!'.format(len(all_ids)))
 
     # Change privacy of table on Carto
     #set up carto authentication using local variables for username (CARTO_WRI_RW_USER) and API key (CARTO_WRI_RW_KEY)
