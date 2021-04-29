@@ -7,9 +7,7 @@ import util_files
 import util_cloud
 import urllib
 import ee
-import subprocess
 import logging
-import glob
 import time
 
 # set up logging
@@ -52,6 +50,7 @@ task = ee.batch.Export.image.toAsset(image = mosaicked,
                              scale = 30,
                              maxPixels = 1e13,
                              assetId = asset_name)
+# start the task
 task.start()
 
 '''
