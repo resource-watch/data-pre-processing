@@ -53,16 +53,15 @@ task = ee.batch.Export.image.toAsset(image = mosaicked,
 # start the task
 task.start()
 
-'''
-# uncomment if you want to check the export task status
+# check task status
 # set the state to 'RUNNING' because we have started the task
 state = 'RUNNING'
 # set a start time to track the time it takes to upload the image
 start = time.time()
-# wait for task to complete, but quit if it takes more than 21600 seconds
-while state == 'RUNNING' and (time.time() - start) < 21600:
-    # wait for 20 minutes before checking the state
-    time.sleep(1200)
+# wait for task to complete, but quit if it takes more than 1800 seconds (30 minutes)
+while state == 'RUNNING' and (time.time() - start) < 1800:
+    # wait for 10 minutes before checking the state
+    time.sleep(600)
     # check the status of the upload
     status = task.status()['state']
     logging.info('Current Status: ' + status +', run time (min): ' + str((time.time() - start)/60))
@@ -75,4 +74,4 @@ while state == 'RUNNING' and (time.time() - start) < 21600:
         state = status
         logging.error(task.status()['error_message'])
         logging.debug(task.status())
-'''
+
