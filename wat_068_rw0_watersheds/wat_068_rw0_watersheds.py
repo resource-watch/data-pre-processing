@@ -1,11 +1,13 @@
 import logging
 import pandas as pd
+import geopandas as gpd
 import numpy as np
 import glob
 import os
 import sys
 import dotenv
 import requests
+from collections import OrderedDict
 from datetime import datetime
 import dotenv
 rw_env_val = os.path.abspath(os.getenv('RW_ENV'))
@@ -40,44 +42,94 @@ logger.info('Executing script for dataset: ' + dataset_name)
 # within this directory, create files to store raw and processed data
 data_dir = util_files.prep_dirs(dataset_name)
 
+
 '''
 Download data and save to your data directory
 '''
-# Data can be downloaded at (direct link):
-# https://www.dropbox.com/sh/hmpwobbz9qixxpe/AACPCyoHHAQUt_HNdIbWOFF4a/HydroBASINS/standard?dl=1
+# Use the nested file folders to navigate to stadard folder within the HydroBASINS folder
+# url root folder = https://www.dropbox.com/sh/hmpwobbz9qixxpe/AACPCyoHHAQUt_HNdIbWOFF4a/HydroBASINS/standard?dl=0&subfolder_nav_tracking=1
+# For each geographic region "xx" download the zipped folder for hybas_xx_lev01-12_v1c 
+# Manually move the files into the data folder (wat_068_rw0_watersheds/data)
 
-# download the data from the source
-logger.info('Downloading raw data')
-# do url request
+# construct a sting template to specify the file name for given region
+zip_file_template = 'data/hybas_{}_lev01-12_v1c.zip'
 
-# insert the url used to download the data from the source website
-url='https://www.dropbox.com/sh/hmpwobbz9qixxpe/AACPCyoHHAQUt_HNdIbWOFF4a/HydroBASINS/standard?dl=1'
-download_file_name='standard.zip'
+# make string array with the two letter codes for each region
+region_ids = ['af','ar','as', 'au','eu','gr','na','sa','si']
 
-# download the data from the source
-raw_data_file = os.path.join(data_dir,download_file_name)
-urllib.request.urlretrieve(url, raw_data_file)
+# create an empty list to store the extracted file names
+namelist = []
+ 
+logger.info('Unzip raw data')
+
+# unzip source data for each region using a for loop
+for region_id in region_ids:
+    # create object for the regional zip file using the template
+    zip_file_name = zip_file_template.format(region_id) 
+    # unzip source data
+    with ZipFile(zip_file_name, 'r') as zip:
+        # add name of exctracted file to list 
+        namelist.extend((zip.namelist()))
+        # zip.extractall(data_dir)
 
 '''
-Process the data 
+Process the data and upload to carto 
 '''
 
-# unzip the data
-
-# combine files into the desired shapefiles
-# one (global) output shapefile for each watershed level
+# Define object that stores which basin levels will be processed. There are 12 basin levels for each region.
+include_levels = [True, False, False, False, False, False, False, False, False, False, False, False]
 
 
+# Read included basin-level shapefiles into Python using a for loop
+for i in range(12):
+    
+    # Test if the basin level should be included, using the index
+    if not include_levels[i]:
+        continue
+   
+    else:
+        # create an empty list of regional shapefile to be merged
+        file_list = []
+        # create a str to match the basin level, using the index
+        n = str(i+1).zfill(2)
 
+        # iterate through the list of extracted file names using a for loop
+        for name in namelist:
+            
+            # read shapefiles for included basin level as a gdf
+            if n in name and name.endswith('.shp'):
+                gdf = gpd.read_file("data/" + name)
+                # Add gdf to the basin level file list
+                file_list.append(gdf) 
+                
+                # Add level column, pulled from the index
+                level = i+1
+                gdf['level'] = level
+                print(gdf)
 
-'''
-Upload processed data to Carto
-'''
-logger.info('Uploading processed data to Carto.')
+                # convert the column names to lowercase
+                gdf.columns = [x.lower() for x in gdf.columns]
+        
+        # merge gdfs for basin level
+        out_gdf = gpd.GeoDataFrame(pd.concat(file_list))
+        print(out_gdf)
 
-# upload each shapefile corresponding to each basin level
-# some type of for loop / list comprehension to execute for each file
-        # util_carto.upload_to_carto(processed_data_file, 'LINK')
+         ## Generate name for processed dataset
+        processed_data_file = os.path.join(data_dir, dataset_name+ '_lev'+ n + '_edit.shp')
+        
+        ## save processed dataset to shapefile
+        logger.debug('Creating shapefile')
+        out_gdf.to_file(processed_data_file,driver='ESRI Shapefile')
+
+        # upload to carto
+        logger.info('Uploading processed data to Carto.')
+        util_carto.upload_to_carto(processed_data_file, 'LINK')
+        
+
+# # upload each shapefile corresponding to each basin level
+
+# # some type of for loop / list comprehension to execute for each file
+#         # util_carto.upload_to_carto(processed_data_file, 'LINK')
 
 '''
 Upload original data and processed data to Amazon S3 storage
