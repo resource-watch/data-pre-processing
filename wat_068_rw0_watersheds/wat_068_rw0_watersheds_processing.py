@@ -9,6 +9,8 @@ import dotenv
 import requests
 from datetime import datetime
 import dotenv
+rw_env_val = os.path.abspath(os.getenv('RW_ENV'))
+dotenv.load_dotenv(rw_env_val)
 utils_path = os.path.join(os.path.abspath(os.getenv('PROCESSING_DIR')),'utils')
 if utils_path not in sys.path:
     sys.path.append(utils_path)
@@ -47,7 +49,14 @@ Download data and save to your data directory
 # use the nested file folders to navigate to stadard folder within the HydroBASINS folder
 
 # For each geographic region "xx" download the zipped folder for all twelve basin levels, hybas_xx_lev01-12_v1c.
-# Manually move the files into the data folder (wat_068_rw0_watersheds/data)
+
+# move the data from 'Downloads' into the data directory
+source = os.path.join(os.getenv("DOWNLOAD_DIR"),'hybas_*_lev01-12_v1c.zip')
+
+dest_dir = os.path.abspath(data_dir)
+for file in glob.glob(source):
+    print(file)
+    shutil.copy(file, dest_dir)
 
 # construct a string template to specify the file name for the zipped file of given region
 zip_file_template = 'data/hybas_{}_lev01-12_v1c.zip'
