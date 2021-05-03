@@ -14,12 +14,12 @@ logger = logging.getLogger(__name__)
 CARTO_USER = os.getenv('CARTO_WRI_RW_USER')
 CARTO_KEY = os.getenv('CARTO_WRI_RW_KEY')
 
-def upload_to_carto(file, privacy, *tags:str, collision_strategy='skip'):
+def upload_to_carto(file, privacy, tags=['rw'], collision_strategy='skip'):
     '''
     Upload tables to Carto
     INPUT   file: location of file on local computer that you want to upload (string)
             privacy: the privacy setting of the dataset to upload to Carto (string)
-            tags: add one or more tags(string) to the dataset, default is "rw"
+            tags: one or more tags to add to the dataset on Carto (list of strings)
             collision_strategy: determines what happens if a table with the same name already exists
             due to changes in carto api if set to skip and table name already exists it will raise an exception
             set the parameter to 'overwrite' if you want to overwrite the existing table on Carto
@@ -38,16 +38,9 @@ def upload_to_carto(file, privacy, *tags:str, collision_strategy='skip'):
         sys.exit(1)
     # adding tags
     # pass one or more tags as strings, default is "rw"
-    if tags:
-        new_tags = []
-        for tag in tags:
-            new_tags.append(tag)
-    else:
-        new_tags = ['rw']
     # set up tags     
-    dataset.tags = new_tags
-    for tag in new_tags:
-        logger.info('Adding the following tag to table:{}'.format(tag))
+    dataset.tags = tags
+logger.info('Adding the following tags to table: {}'.format(tags))
     # set dataset privacy
     dataset.privacy = privacy
     dataset.save()
