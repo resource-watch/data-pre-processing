@@ -7,4 +7,4 @@ You can view the processed Soil Carbon Stocks dataset [on Resource Watch](https:
 
 You can also download the original dataset [from the source website](https://files.isric.org/soilgrids/latest/data/soc/).
 
-###### Note: This dataset processing was done by [Weiqi Zhou](https://www.wri.org/profile/weiqi-zhou), and QC'd by [Yujing Wu](https://www.wri.org/profile/yujing-wu).
+###### Note: This dataset processing was done by [Weiqi Zhou](https://www.wri.org/profile/weiqi-zhou), and QC'd by [Amelia Snyder](https://www.wri.org/profile/amelia-snyder).
