@@ -40,7 +40,7 @@ def upload_to_carto(file, privacy, tags=['rw'], collision_strategy='skip'):
     # pass one or more tags as strings, default is "rw"
     # set up tags     
     dataset.tags = tags
-logger.info('Adding the following tags to table: {}'.format(tags))
+    logger.info('Adding the following tags to table: {}'.format(tags))
     # set dataset privacy
     dataset.privacy = privacy
     dataset.save()
