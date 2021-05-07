@@ -77,14 +77,14 @@ for region_id in region_ids:
     with ZipFile(zip_file_name, 'r') as zip:
         # add name of exctracted file to list 
         raw_namelist.extend((zip.namelist()))
-        zip.extractall(data_dir)
+        #zip.extractall(data_dir)
 
 '''
 Process the data and upload to carto 
 '''
 
 # Define object that stores which basin levels will be processed. There are 12 basin levels for each region.
-include_levels = [False, True, False, False, False, True, False, False, False, False, False, False]
+include_levels = [False, False, True, True, True, True, True, True, False, False, False, False]
 
 
 # Read included basin-level shapefiles into Python using a for loop
@@ -178,7 +178,7 @@ with ZipFile(raw_zip_dir,'w') as zip:
 logger.info('Uploading original data to S3.')
 
 # Upload raw data file to S3
-# uploaded = util_cloud.aws_upload(raw_zip_dir, aws_bucket, s3_prefix+os.path.basename(raw_zip_dir))
+uploaded = util_cloud.aws_upload(raw_zip_dir, aws_bucket, s3_prefix+os.path.basename(raw_zip_dir))
 
 logger.info('Zipping processed data files.')
 
@@ -191,4 +191,4 @@ with ZipFile(processed_zip_dir,'w') as zip:
 logger.info('Uploading processed data to S3.')
 
 # Upload processed data file to S3
-# uploaded = util_cloud.aws_upload(processed_zip_dir, aws_bucket, s3_prefix+os.path.basename(processed_zip_dir))
+uploaded = util_cloud.aws_upload(processed_zip_dir, aws_bucket, s3_prefix+os.path.basename(processed_zip_dir))
