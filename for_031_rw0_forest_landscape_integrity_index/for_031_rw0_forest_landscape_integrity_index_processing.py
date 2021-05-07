@@ -61,21 +61,8 @@ Process data
 # in this case "processed" data file is the same tif
 # but we have to rename it
 processed_data_file = os.path.join(data_dir,dataset_name+'.tif')
-
- # Open band 1 as array
-ds = gdal.Open(raw_data_file)
-b1 = ds.GetRasterBand(1)
-b1_array = b1.ReadAsArray()
-
-# Divide the array by a factor of 1000 to get the true values
-processed_data = b1_array/10000
-
 logger.info(processed_data_file)
-# save array, using ds as a prototype
-gdal_array.SaveArray(processed_data.astype("float32"), processed_data_file, "GTIFF", ds)
-
-# close the dataset
-ds = None
+copyfile(raw_data_file, processed_data_file)
 
 '''
 Upload processed data to Google Earth Engine
@@ -107,15 +94,15 @@ band_ids = ['flii',
 # list missing values in the original tif
 missing_values = [-9999, 
             ]
-mf_bands = [{'id': band_id, 'tileset_band_index': band_ids.index(band_id), 'missing_data.values': missing_values, 'tileset_id': dataset_name,
+mf_bands = [{'id': band_id, 'tileset_band_index': band_ids.index(band_id), 'missing_data': {'values': missing_values}, 'tileset_id': dataset_name,
              'pyramidingPolicy': pyramiding_policy} for band_id in band_ids]
 # create manifest for asset upload
 manifest = util_cloud.gee_manifest_complete(asset_name, gcs_uris[0], mf_bands)
 # upload processed data file to GEE
 task_id = util_cloud.gee_ingest(manifest, public=True)
 # remove files from Google Cloud Storage
-#util_cloud.gcs_remove(gcs_uris, gcs_bucket=gcsBucket)
-#logger.info('Files deleted from Google Cloud Storage.')
+util_cloud.gcs_remove(gcs_uris, gcs_bucket=gcsBucket)
+logger.info('Files deleted from Google Cloud Storage.')
 
 '''
 Upload original data and processed data to Amazon S3 storage
