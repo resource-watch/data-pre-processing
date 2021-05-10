@@ -1,5 +1,3 @@
-# UNDER CONSTRUCTION
-
 # Author: Rachel Thoms 
 # Date: 2021 May 07
 import os
@@ -17,7 +15,6 @@ from zipfile import ZipFile
 from osgeo import gdal, gdal_array
 import ee
 from google.cloud import storage
-from shutil import copyfile #why doesnt this work when I import shutil?
 import logging  
 
 # Set up logging
@@ -44,13 +41,13 @@ Download data and save to your data directory
 '''
 # data source page:
 #     https://drive.google.com/drive/folders/180DXlbF4dwCYhBW025YkZbhNHnrW5NlW
-# download the flii_earth.tif file 
+# click and download the flii_earth.tif file 
 
 # move the data from 'Downloads' into the data directory
 tifname = 'flii_earth.tif'
 source_dir = os.path.join(os.getenv("DOWNLOAD_DIR"),tifname)
 dest_dir = os.path.abspath(data_dir)
-#shutil.copy(source_dir, dest_dir)
+shutil.copy(source_dir, dest_dir)
 
 # set name of raw data file
 raw_data_file = os.path.join(data_dir,tifname)
@@ -62,7 +59,7 @@ Process data
 # but we have to rename it
 processed_data_file = os.path.join(data_dir,dataset_name+'.tif')
 logger.info(processed_data_file)
-copyfile(raw_data_file, processed_data_file)
+shutil.copyfile(raw_data_file, processed_data_file)
 
 '''
 Upload processed data to Google Earth Engine
@@ -112,19 +109,18 @@ Upload original data and processed data to Amazon S3 storage
 aws_bucket = 'wri-projects'
 s3_prefix = 'resourcewatch/raster/'
 
-#logger.info('Uploading original data to S3.')
+logger.info('Uploading original data to S3.')
 # Upload raw data file to S3
-print('Uploading original data to S3.')
 renamed_raw_file = os.path.join(data_dir, dataset_name+'.zip')
 copyfile(raw_data_file,renamed_raw_file)
 
 # Upload raw data file to S3
-#uploaded = util_cloud.aws_upload(renamed_raw_file, aws_bucket, s3_prefix+os.path.basename(renamed_raw_file))
+uploaded = util_cloud.aws_upload(renamed_raw_file, aws_bucket, s3_prefix+os.path.basename(renamed_raw_file))
 
-#logger.info('Uploading processed data to S3.')
+logger.info('Uploading processed data to S3.')
 # Copy the processed data into a zipped file to upload to S3
 processed_data_dir = os.path.join(data_dir, dataset_name+'_edit.zip')
 with ZipFile(processed_data_dir,'w') as zip:
     zip.write(processed_data_file, os.path.basename(processed_data_file))
-# Upload processed data file to S3
-#uploaded = util_cloud.aws_upload(processed_data_dir, aws_bucket, s3_prefix+os.path.basename(processed_data_dir))
+#Upload processed data file to S3
+uploaded = util_cloud.aws_upload(processed_data_dir, aws_bucket, s3_prefix+os.path.basename(processed_data_dir))
