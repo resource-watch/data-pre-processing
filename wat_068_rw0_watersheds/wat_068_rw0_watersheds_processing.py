@@ -56,7 +56,7 @@ source = os.path.join(os.getenv("DOWNLOAD_DIR"),'hybas_*_lev01-12_v1c.zip')
 dest_dir = os.path.abspath(data_dir)
 for file in glob.glob(source):
     print(file)
-    shutil.copy(file, dest_dir)
+    #shutil.copy(file, dest_dir)
 
 # construct a string template to specify the file name for the zipped file of given region
 zip_file_template = 'data/hybas_{}_lev01-12_v1c.zip'
@@ -142,12 +142,12 @@ for i in range(12):
         out_zip_dir = os.path.join(processed_data_file[:-4] + '.zip')
         with ZipFile(out_zip_dir,'w') as zip:
             for file in out_filelist:
-                zip.write(file, os.path.basename(file))
+                #zip.write(file, os.path.basename(file))
                 zipfile_list.append(file)
 
         # Upload zipfile to carto
-        logger.info('Uploading processed data to Carto.')
-        util_carto.upload_to_carto(out_zip_dir, 'LINK')
+        logger.info('Uploading processed data for ' + processed_data_file +' to Carto.')
+        #util_carto.upload_to_carto(out_zip_dir, 'LINK')
         
 
 '''
@@ -169,16 +169,16 @@ with ZipFile(raw_zip_dir,'w') as zip:
         # Exclude pdfs to avoid multiple copies of the documentation file
         if not file.endswith('.pdf'):
             file_path = "data/" + file
-            zip.write(file_path, os.path.basename(file_path))
+            #zip.write(file_path, os.path.basename(file_path))
    
     # Manually add the documentation file
     pdf = 'data/HydroBASINS_TechDoc_v1c.pdf'
-    zip.write(pdf, os.path.basename(pdf))
+    #zip.write(pdf, os.path.basename(pdf))
 
-logger.info('Uploading original data to S3.')
+#logger.info('Uploading original data to S3.')
 
 # Upload raw data file to S3
-uploaded = util_cloud.aws_upload(raw_zip_dir, aws_bucket, s3_prefix+os.path.basename(raw_zip_dir))
+#uploaded = util_cloud.aws_upload(raw_zip_dir, aws_bucket, s3_prefix+os.path.basename(raw_zip_dir))
 
 logger.info('Zipping processed data files.')
 
