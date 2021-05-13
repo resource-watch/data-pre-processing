@@ -10,6 +10,7 @@ if utils_path not in sys.path:
     sys.path.append(utils_path)
 import util_files
 import util_cloud
+import subprocess
 import shutil
 from zipfile import ZipFile
 from osgeo import gdal, gdal_array
@@ -59,7 +60,12 @@ Process data
 # but we have to rename it
 processed_data_file = os.path.join(data_dir,dataset_name+'.tif')
 logger.info(processed_data_file)
-shutil.copyfile(raw_data_file, processed_data_file)
+
+cmd = ['gdal_calc.py','-A', raw_data_file, '--outfile={}'.format(processed_data_file), '--cal=A/1000']
+completed_process = subprocess.run(cmd, shell=False)
+logging.debug(str(completed_process))
+
+#shutil.copyfile(raw_data_file, processed_data_file)
 
 '''
 Upload processed data to Google Earth Engine
@@ -89,7 +95,7 @@ band_ids = ['flii',
            ]
 
 # list missing values in the original tif
-missing_values = [-9999, 
+missing_values = [-9.999, 
             ]
 mf_bands = [{'id': band_id, 'tileset_band_index': band_ids.index(band_id), 'missing_data': {'values': missing_values}, 'tileset_id': dataset_name,
              'pyramidingPolicy': pyramiding_policy} for band_id in band_ids]
