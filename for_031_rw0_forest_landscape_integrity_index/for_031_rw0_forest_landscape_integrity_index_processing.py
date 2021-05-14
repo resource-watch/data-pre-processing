@@ -56,16 +56,18 @@ raw_data_file = os.path.join(data_dir,tifname)
 '''
 Process data
 '''
-# in this case "processed" data file is the same tif
-# but we have to rename it
+# The data source multiplied the data by 1000 to store values in Integer format. 
+# We need to divide the data by 1000 to obtain proper values (Range 0-10) for display on RW.
+
+# Create file name for processed data
 processed_data_file = os.path.join(data_dir,dataset_name+'.tif')
+
 logger.info(processed_data_file)
 
-cmd = ['gdal_calc.py','-A', raw_data_file, '--outfile={}'.format(processed_data_file), '--cal=A/1000']
+#Divide pixel values by 1000
+cmd = ['gdal_calc.py','-A', raw_data_file, '--outfile={}'.format(processed_data_file), '--cal=A/1000','--NoDataValue=-9999']
 completed_process = subprocess.run(cmd, shell=False)
 logging.debug(str(completed_process))
-
-#shutil.copyfile(raw_data_file, processed_data_file)
 
 '''
 Upload processed data to Google Earth Engine
@@ -94,8 +96,8 @@ asset_name = f'projects/resource-watch-gee/{dataset_name}'
 band_ids = ['flii',
            ]
 
-# list missing values in the original tif
-missing_values = [-9.999, 
+# list missing values in the original tif 
+missing_values = [-9999, 
             ]
 mf_bands = [{'id': band_id, 'tileset_band_index': band_ids.index(band_id), 'missing_data': {'values': missing_values}, 'tileset_id': dataset_name,
              'pyramidingPolicy': pyramiding_policy} for band_id in band_ids]
@@ -118,7 +120,7 @@ s3_prefix = 'resourcewatch/raster/'
 logger.info('Uploading original data to S3.')
 # Upload raw data file to S3
 renamed_raw_file = os.path.join(data_dir, dataset_name+'.zip')
-copyfile(raw_data_file,renamed_raw_file)
+shutil.copyfile(raw_data_file,renamed_raw_file)
 
 # Upload raw data file to S3
 uploaded = util_cloud.aws_upload(renamed_raw_file, aws_bucket, s3_prefix+os.path.basename(renamed_raw_file))
