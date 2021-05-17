@@ -1,5 +1,3 @@
-# Author: Rachel Thoms 
-# Date: 2021 May 07
 import os
 import sys
 import dotenv
