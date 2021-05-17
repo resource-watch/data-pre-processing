@@ -41,9 +41,6 @@ https://drive.google.com/drive/folders/180DXlbF4dwCYhBW025YkZbhNHnrW5NlW
 Right-click on 'flii_earth.tif' and select 'Download' from the dropdown menu, 
 the data would be downloaded as a GeoTIFF file to your Downloads folder.
 '''
-# data source page:
-#     https://drive.google.com/drive/folders/180DXlbF4dwCYhBW025YkZbhNHnrW5NlW
-# click and download the flii_earth.tif file 
 
 # move the data from 'Downloads' into the data directory
 tifname = 'flii_earth.tif'
