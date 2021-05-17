@@ -11,7 +11,6 @@ import util_cloud
 import subprocess
 import shutil
 from zipfile import ZipFile
-from osgeo import gdal, gdal_array
 import ee
 from google.cloud import storage
 import logging  
