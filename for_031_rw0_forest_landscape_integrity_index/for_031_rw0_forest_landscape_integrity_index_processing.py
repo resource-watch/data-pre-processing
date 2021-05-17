@@ -1,8 +1,6 @@
 import os
 import sys
 import dotenv
-rw_env_val = os.path.abspath(os.getenv('RW_ENV'))
-dotenv.load_dotenv(rw_env_val)
 utils_path = os.path.join(os.path.abspath(os.getenv('PROCESSING_DIR')),'utils')
 if utils_path not in sys.path:
     sys.path.append(utils_path)
