@@ -12,4 +12,4 @@ You can view the processed dataset for [display on Resource Watch](https://resou
 
 You can also download the original dataset [from the source website](https://www.forestintegrity.com/download-data).
 
-###### Note: This dataset processing was done by [Rachel Thoms](https://www.wri.org/profile/rachel-thoms) and QC'd by []().
+###### Note: This dataset processing was done by [Rachel Thoms](https://www.wri.org/profile/rachel-thoms) and QC'd by [Yujing Wu](https://www.wri.org/profile/yujing-wu).
