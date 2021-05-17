@@ -65,7 +65,7 @@ processed_data_file = os.path.join(data_dir,dataset_name+'.tif')
 
 logger.info(processed_data_file)
 
-#Divide pixel values by 1000
+# Divide pixel values by 1000 to create a new GeoTIFF file
 cmd = ['gdal_calc.py','-A', raw_data_file, '--outfile={}'.format(processed_data_file), '--cal=A/1000.00','--NoDataValue=-9999','--type=Float32']
 completed_process = subprocess.run(cmd, shell=False)
 logging.debug(str(completed_process))
