@@ -5,12 +5,8 @@ import numpy as np
 import glob
 import os
 import sys
-import dotenv
 import requests
 from datetime import datetime
-import dotenv
-rw_env_val = os.path.abspath(os.getenv('RW_ENV'))
-dotenv.load_dotenv(rw_env_val)
 utils_path = os.path.join(os.path.abspath(os.getenv('PROCESSING_DIR')),'utils')
 if utils_path not in sys.path:
     sys.path.append(utils_path)
@@ -43,19 +39,19 @@ data_dir = util_files.prep_dirs(dataset_name)
 
 '''
 Download data and save to your data directory
+Data can be downloaded from the following link:
+https://www.dropbox.com/sh/hmpwobbz9qixxpe/AACPCyoHHAQUt_HNdIbWOFF4a/HydroBASINS/standard?dl=0&subfolder_nav_tracking=1
+Each folder contains the data for one of the 9 regions
+Within each folder, click on the zipped folder named 'hybas_xx_lev01-12_v1c'
+The download button at the top right corner will allow you to download the data to your Downloads folder
 '''
-
-# From the root folder on HydroSHEDS (url = https://www.dropbox.com/sh/hmpwobbz9qixxpe/AACPCyoHHAQUt_HNdIbWOFF4a/HydroBASINS/standard?dl=0&subfolder_nav_tracking=1)
-# use the nested file folders to navigate to stadard folder within the HydroBASINS folder
-
-# For each geographic region "xx" download the zipped folder for all twelve basin levels, hybas_xx_lev01-12_v1c.
 
 # move the data from 'Downloads' into the data directory
 source = os.path.join(os.getenv("DOWNLOAD_DIR"),'hybas_*_lev01-12_v1c.zip')
 
 dest_dir = os.path.abspath(data_dir)
 for file in glob.glob(source):
-    print(file)
+    logger.info(file)
     shutil.copy(file, dest_dir)
 
 # construct a string template to specify the file name for the zipped file of given region
@@ -128,7 +124,7 @@ for i in range(12):
         logger.debug('Creating shapefile')
         out_gdf.to_file(processed_data_file,driver='ESRI Shapefile')
     
-        # Create a str of the file name of the processed data files, exculding the file extention
+        # Create a string of the file name of the processed data files, excluding the file extension
         out_str = processed_data_file[:-3]+'*'
         
         # Create a list of the shapefile components by grabbing files that match the str 
@@ -159,7 +155,6 @@ aws_bucket = 'wri-public-data'
 s3_prefix = 'resourcewatch/'
 
 logger.info('Zipping original data files.')
-
 
 # Copy the raw data into a zipped file to upload to S3
 raw_zip_dir = os.path.join(data_dir, dataset_name+'.zip')
