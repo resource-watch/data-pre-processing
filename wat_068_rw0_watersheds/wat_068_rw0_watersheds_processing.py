@@ -82,7 +82,6 @@ Process the data and upload to carto
 # Define object that stores which basin levels will be processed. There are 12 basin levels for each region.
 include_levels = [False, False, True, True, True, True, True, True, False, False, False, False]
 
-
 # Read included basin-level shapefiles into Python using a for loop
 for i in range(12):
     
@@ -91,27 +90,27 @@ for i in range(12):
         continue
    
     else:
-        # create an empty list to hold the gdfs to be merged (1 per region)
+        # create an empty list to hold the geopandas dataframes to be merged (1 per region)
         gdf_list = []
        
-        # create a str of the basin level padded by zeros, using the index
+        # create a string of the basin level padded by zeros, using the index
         n = str(i+1).zfill(2)
 
         # iterate through the list of extracted file names using a for loop
         for name in raw_namelist:
             
-            # read shapefiles that include the corresponding basin level as a gdf
+            # read shapefiles that include the corresponding basin level as a geopandas dataframe
             if n in name and name.endswith('.shp'):
                 gdf = gpd.read_file("data/" + name)
                 
-                # Add the gdf to the list
+                # Add the geopandas dataframe to the list
                 gdf_list.append(gdf) 
                 
                 # Add level column, pulled from the index
                 level = i+1
                 gdf['level'] = level
         
-        # merge gdfs for basin level
+        # merge geopandas dataframes for basin level
         out_gdf = gpd.GeoDataFrame(pd.concat(gdf_list))
 
          # convert the column names to lowercase
@@ -127,7 +126,7 @@ for i in range(12):
         # Create a string of the file name of the processed data files, excluding the file extension
         out_str = processed_data_file[:-3]+'*'
         
-        # Create a list of the shapefile components by grabbing files that match the str 
+        # Create a list of the shapefile components by grabbing files that match the string
         out_filelist = glob.glob(out_str)
         
         zipfile_list = []
@@ -145,7 +144,6 @@ for i in range(12):
         logger.info('Uploading processed data for ' + processed_data_file +' to Carto.')
         util_carto.upload_to_carto(out_zip_dir, 'LINK')
         
-
 '''
 Upload original data and processed data to Amazon S3 storage
 '''

@@ -4,12 +4,13 @@ This file describes the data pre-processing for the [HydroBASINS](https://www.hy
 The source provided data as regional tiles in individual polygon shapefiles, one for each
 region and each Pfafstetter level. 
 
-Due to the resolution of the sub-basins delinations, the breakdowns provided by levels 3-8 are most relevant for analysis, and were thus selected for display on Resource Watch. 
+Due to the resolution of the sub-basins delineations, the breakdowns provided by levels 3-8 are most relevant for analysis, and were thus selected for display on Resource Watch. 
 
 Below, we describe the steps used to reformat the shapefiles to upload them to Carto.
 
 1. For each relevant basin level, read in the shapefiles for the nine regional tiles as a geopandas dataframe.
-2. Combine shapefiles for each basin level into one shapefile that includes all regional tiles, with a column for 'level' to indicate which level the file represents.
+2. Convert column names to lowercase to match Carto column name requirements.
+3. Combine shapefiles for each basin level into one shapefile that includes all regional tiles, with a column for 'level' to indicate which level the file represents.
 
 Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/wat_068_rw0_watersheds/wat_068_rw0_watersheds_processing.py) for more details on this processing.
 
