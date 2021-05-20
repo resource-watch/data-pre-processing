@@ -4,7 +4,7 @@ This file describes the data pre-processing for the [HydroBASINS](https://www.hy
 The source provided data as regional tiles in individual polygon shapefiles, one for each
 region and each Pfafstetter level. 
 
-Due to the resolution of the sub-basins delinations, the breakdowns provided by levels 3-8 are most relevant for analysis, and were thus selected for display on Resource Watch. 
+Due to the resolution of the sub-basins delineations, the breakdowns provided by levels 3-8 are most relevant for analysis, and were thus selected for display on Resource Watch. 
 
 Below, we describe the steps used to combine the regional shapefiles by level and insert these into a single carto table.
 
