@@ -10,8 +10,9 @@ Below, we describe the steps used to combine the regional shapefiles by level an
 
 For each relevant basin level:
 1. Read in the shapefiles for the nine regional tiles as a geopandas dataframe.
-2. Combine shapefiles for all regional tiles at the given level into one shapefile, with a column for 'level' to indicate which level the file represents.
-3. Upload the combined shapefile to Carto.
+2. Convert the column names to lowercase to match Carto column name requirements.
+3. Combine shapefiles for all regional tiles at the given level into one shapefile, with a column for 'level' to indicate which level the file represents.
+4. Upload the combined shapefile to Carto.
 
 The shapefiles for each level were then combined into into a single table on carto. For example, the following SQL statement was used to insert the level 4 shapefile into the new, combined table: 
 ```

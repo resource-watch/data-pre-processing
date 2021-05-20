@@ -35,8 +35,6 @@ logger.info('Executing script for dataset: ' + dataset_name)
 # create a new sub-directory within your specified dir called 'data'
 # within this directory, create files to store raw and processed data
 data_dir = util_files.prep_dirs(dataset_name)
-
-
 '''
 Download data and save to your data directory
 Data can be downloaded from the following link:
