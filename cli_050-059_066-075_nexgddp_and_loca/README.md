@@ -1,4 +1,4 @@
-## Projected Sea Level Rise Dataset Pre-processing
+## NEX-GDDP and LOCA Dataset Pre-processing
 This file describes the data pre-processing that was done to the [NEX_GDDP and LOCA datasets](https://doi.org/10.46830/writn.19.00117) for display on Resource Watch as the following datasets:
 
 - [Projected Change in Annual Average Temperature](https://resourcewatch.org/data/explore/4ca6826c-718d-457d-b4e2-e9277d7ed62c).
