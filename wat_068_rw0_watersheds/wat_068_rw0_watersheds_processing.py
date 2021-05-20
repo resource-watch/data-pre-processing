@@ -143,7 +143,7 @@ for i in range(12):
 
         # Upload zipfile to carto
         logger.info('Uploading processed data for ' + processed_data_file +' to Carto.')
-        util_carto.upload_to_carto(out_zip_dir, 'LINK')
+        util_carto.upload_to_carto(out_zip_dir, 'LINK', tags=['ow'])
         
 
 '''

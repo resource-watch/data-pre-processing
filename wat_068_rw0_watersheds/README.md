@@ -6,10 +6,18 @@ region and each Pfafstetter level.
 
 Due to the resolution of the sub-basins delinations, the breakdowns provided by levels 3-8 are most relevant for analysis, and were thus selected for display on Resource Watch. 
 
-Below, we describe the steps used to reformat the shapefiles to upload them to Carto.
+Below, we describe the steps used to combine the regional shapefiles by level and insert these into a single carto table.
 
-1. For each relevant basin level, read in the shapefiles for the nine regional tiles as a geopandas dataframe.
-2. Combine shapefiles for each basin level into one shapefile that includes all regional tiles, with a column for 'level' to indicate which level the file represents.
+For each relevant basin level:
+1. Read in the shapefiles for the nine regional tiles as a geopandas dataframe.
+2. Combine shapefiles for all regional tiles at the given level into one shapefile, with a column for 'level' to indicate which level the file represents.
+3. Upload the combined shapefile to Carto.
+
+The shapefiles for each level were then combined into into a single table on carto. For example, the following SQL statement was used to insert the level 4 shapefile into the new, combined table: 
+```
+INSERT INTO wat_068_rw0_watersheds_edit(the_geom, hybas_id, next_down, next_sink, main_bas, dist_sink, dist_main, sub_area, up_area, pfaf_id, endo, coast, _order, sort, level) SELECT the_geom, hybas_id, next_down, next_sink, main_bas, dist_sink, dist_main, sub_area, up_area, pfaf_id, endo, coast, _order, sort, level 
+FROM wat_068_rw0_watersheds_lev04_edit
+```
 
 Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/wat_068_rw0_watersheds/wat_068_rw0_watersheds_processing.py) for more details on this processing.
 
