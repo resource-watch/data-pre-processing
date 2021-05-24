@@ -1,19 +1,12 @@
-## UNDER CONSTRUCTION BY RT
-
 import logging
-import pandas as pd
 import geopandas as gpd
-import numpy as np
 import glob
 import os
 import sys
 import dotenv
 import requests
-from datetime import datetime
 import dotenv
-rw_env_val = os.path.abspath(os.getenv('RW_ENV'))
-dotenv.load_dotenv(rw_env_val)
-utils_path = os.path.join(os.path.abspath(os.getenv('PROCESSING_DIR')),'utils')
+utils_path = os.path.join(os.getenv('PROCESSING_DIR'),'utils')
 if utils_path not in sys.path:
     sys.path.append(utils_path)
 import util_files
@@ -51,7 +44,7 @@ url = 'http://wcmc.io/WCMC_027'
 
 # download the data from the source
 raw_data_file = os.path.join(data_dir, 'WCMC027_Saltmarsh_v6_1.zip')
-#urllib.request.urlretrieve(url, raw_data_file)
+urllib.request.urlretrieve(url, raw_data_file)
 
 # unzip source data
 raw_data_file_unzipped = raw_data_file.split('.')[0]
@@ -95,11 +88,11 @@ with ZipFile(raw_data_dir,'w') as zip:
 
 logger.info('Uploading original data to S3.')
 # Upload raw data file to S3
-#uploaded = util_cloud.aws_upload(raw_data_dir, aws_bucket, s3_prefix+os.path.basename(raw_data_dir))
+uploaded = util_cloud.aws_upload(raw_data_dir, aws_bucket, s3_prefix+os.path.basename(raw_data_dir))
 
 # Copy the processed data into a zipped file to upload to S3
 processed_data_dir = os.path.join(data_dir, dataset_name+'_edit.zip')
-# Find al the necessary components of the shapefile 
+# Find all the necessary components of the shapefile 
 processed_data_files = glob.glob(os.path.join(data_dir, dataset_name + '_edit.*'))
 with ZipFile(processed_data_dir,'w') as zip:
      for file in processed_data_files:
@@ -107,7 +100,7 @@ with ZipFile(processed_data_dir,'w') as zip:
 
 logger.info('Uploading processed data to S3.')
 # Upload processed data file to S3
-#uploaded = util_cloud.aws_upload(processed_data_dir, aws_bucket, s3_prefix+os.path.basename(processed_data_dir))
+uploaded = util_cloud.aws_upload(processed_data_dir, aws_bucket, s3_prefix+os.path.basename(processed_data_dir))
 
 '''
 Upload processed data to Carto
@@ -115,4 +108,4 @@ Upload processed data to Carto
 
 logger.info('Uploading data to Carto.')
 # upload the shapefile to Carto
-util_carto.upload_to_carto(processed_data_dir, 'LINK',tags=['ow','rt'])
+util_carto.upload_to_carto(processed_data_dir, 'LINK',tags=['ow'])
