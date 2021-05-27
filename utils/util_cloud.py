@@ -10,6 +10,7 @@ import logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
+
 def gcs_upload(files, prefix='', gcs_bucket=None):
     '''
     Upload files to Google Cloud Storage
@@ -120,21 +121,32 @@ def gee_ingest(manifest, public=False):
     # start ingestion process
     uploaded = False
     logger.debug('Submitting asset for upload to GEE using the following manifest: \n' + str(manifest))
-    ee.data.startIngestion(task_id, manifest, True)
+    task = ee.data.startIngestion(task_id, manifest, True)
+    # set the state to 'RUNNING' because we have started the task
+    state = 'RUNNING'
     # if process is still running, wait before checking ingestion again
-    while uploaded == False:
+    while uploaded == False and state != 'FAILED':
         try:
             ee.data.getAsset(manifest['name'])
             uploaded = True
+            logging.info(state)
             logger.debug('GEE asset created: {}'.format(asset))
+            if public==True:
+                # set dataset privacy to public
+                acl = {"all_users_can_read": True}
+                ee.data.setAssetAcl(manifest['name'], acl)
+                logging.info('Privacy set to public.')
         except:
-            time.sleep(30)
-    if public==True:
-        # set dataset privacy to public
-        acl = {"all_users_can_read": True}
-        ee.data.setAssetAcl(manifest['name'], acl)
-        logger.debug('Privacy set to public.')
-    return task_id
+            time.sleep(200)
+            state = ee.data.getTaskStatus(task['id'])[0]['state']
+            # log if the task is running and change the state
+            if state == 'RUNNING':
+                logging.info(state)
+            # log an error if the task fails and change the state
+            elif state == 'FAILED':
+                logging.info(state)
+                logging.error(ee.data.getTaskStatus(task['id'])[0]['error_message'])
+    return task['id']
 
 def gcs_remove(gcs_uris, gcs_bucket=None):
     '''
