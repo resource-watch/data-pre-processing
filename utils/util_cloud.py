@@ -10,7 +10,6 @@ import logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-
 def gcs_upload(files, prefix='', gcs_bucket=None):
     '''
     Upload files to Google Cloud Storage
