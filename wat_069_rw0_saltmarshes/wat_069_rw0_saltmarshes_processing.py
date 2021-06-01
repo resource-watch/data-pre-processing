@@ -3,9 +3,6 @@ import geopandas as gpd
 import glob
 import os
 import sys
-import dotenv
-import requests
-import dotenv
 utils_path = os.path.join(os.getenv('PROCESSING_DIR'),'utils')
 if utils_path not in sys.path:
     sys.path.append(utils_path)
