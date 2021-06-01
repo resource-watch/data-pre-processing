@@ -6,7 +6,8 @@ The source provided the data as a PHP file.
 Below, we describe the steps used to reformat the table to upload it to Carto.
 
 1. Rename the 'Start' and 'End' columns to 'start_year' and 'end_year' since 'end' is a reserved word in PostgreSQL.
-2. Convert the start and end year of the conflicts to datetime objects using first day of January to fill day and month for each conflict and store them in two new columns 'start_dt' and 'end_dt'. 3. Convert column headers to lowercase and replace spaces within them with underscores so that the table can be uploaded to Carto without losing information.
+2. Convert the start and end year of the conflicts to datetime objects using first day of January to fill day and month for each conflict and store them in two new columns 'start_dt' and 'end_dt'. 
+3. Convert column headers to lowercase and replace spaces within them with underscores so that the table can be uploaded to Carto without losing information.
 
 Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/soc_049_rw0_water_conflict_map/soc_049_rw0_water_conflict_map_processing.py) for more details on this processing.
 
