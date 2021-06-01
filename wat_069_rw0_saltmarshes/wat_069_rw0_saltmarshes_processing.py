@@ -9,7 +9,6 @@ if utils_path not in sys.path:
 import util_files
 import util_cloud
 import util_carto
-import shutil
 from zipfile import ZipFile
 import urllib
 
@@ -60,6 +59,9 @@ gdf = gpd.read_file(shapefile)
 
 # convert the data type of column 'METADATA_I' to integer
 gdf['METADATA_I'] = gdf['METADATA_I'].astype(int)
+
+# convert the column names to lowercase
+gdf.columns = [x.lower() for x in gdf.columns]
 
 # create a path to save the processed shapefile later
 processed_data_file = os.path.join(data_dir, dataset_name+'_edit.shp')

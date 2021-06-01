@@ -5,8 +5,8 @@ The source provided this dataset as two shapefiles - one of which contains polyg
 
 Below, we describe the steps used to reformat the polygon shapefile:
 1. Read in the polygon shapefile as a geopandas data frame.
-2. Change the data type of column 'METADATA_I' to integers.
-3. Change the columns to lowercase
+2. Convert the data type of column 'METADATA_I' to integer.
+3. Convert the column names to lowercase.
 4. Project the data so its coordinate system is WGS84.
 
 Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/wat_069_rw0_saltmarshes/wat_069_rw0_saltmarshes_processing.py) for more details on this processing.
