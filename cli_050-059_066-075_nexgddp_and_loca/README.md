@@ -18,6 +18,6 @@ Please see the [Python script](https://github.com/resource-watch/data-pre-proces
 
 You can view the processed dataset for display on Resource Watch at the links above.
 
-You can also download the original dataset from [Google Drive](https://drive.google.com/drive/u/0/folders/1KdLXZTvC9RSCOOMKpqrDs6BCMco1ER1g).
+You can also download the original datasets for [NEX-GDDP](https://wri-public-data.s3.amazonaws.com/resourcewatch/raster/nexgddp.zip) and [LOCA](https://wri-public-data.s3.amazonaws.com/resourcewatch/raster/loca.zip).
 
 ###### Note: This dataset processing was done by [Amelia Snyder](https://www.wri.org/profile/amelia-snyder).

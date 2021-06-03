@@ -3,6 +3,7 @@ import os
 from google.cloud import storage
 from google_drive_downloader import GoogleDriveDownloader as gdd
 import logging
+from zipfile import ZipFile
 utils_path = os.path.join(os.path.abspath(os.getenv('PROCESSING_DIR')),'utils')
 if utils_path not in sys.path:
     sys.path.append(utils_path)
@@ -172,3 +173,19 @@ for dataset in datasets:
                     util_cloud.gcs_remove(gs_uris, gcs_bucket=gcs_bucket)
 
                     logger.info('Files deleted from Google Cloud Storage.')
+
+                    '''
+                    Upload original data and processed data to Amazon S3 storage
+                    '''
+                    # amazon storage info
+                    aws_bucket = 'wri-public-data'
+                    s3_prefix = 'resourcewatch/raster/'
+
+                    logger.info('Uploading processed data to S3.')
+
+                    # Copy the processed data into a zipped file to upload to S3
+                    processed_data_dir = os.path.join(dataset_name+'_edit.zip')
+                    with ZipFile(processed_data_dir,'w') as zip:
+                        zip.write(file, os.path.basename(file))
+                    # Upload processed data file to S3
+                    uploaded = util_cloud.aws_upload(processed_data_dir, aws_bucket, s3_prefix+os.path.basename(processed_data_dir))
