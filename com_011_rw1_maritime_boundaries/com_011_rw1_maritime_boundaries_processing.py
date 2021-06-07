@@ -60,11 +60,14 @@ for zip_ref_file, raw_data_unzipped in zip(zip_ref,raw_data_file_unzipped):
 '''
 Process data
 '''
-# load in the polygon shapefiles
+# load in the three polygon shapefiles
+# territorial seas (12NM) shapefile
 shp_12nm = glob.glob(os.path.join(raw_data_file_unzipped[0], 'World_12NM_v3_20191118/eez_12nm_v3.shp'))[0]
 gdf_12nm = gpd.read_file(shp_12nm)
+# exclusive economic zones (200NM) shapefile
 shp_eez = glob.glob(os.path.join(raw_data_file_unzipped[1], 'World_EEZ_v11_20191118/eez_v11.shp'))[0]
 gdf_eez = gpd.read_file(shp_eez)
+# contiguous zones (24NM) shapefile
 shp_24nm = glob.glob(os.path.join(raw_data_file_unzipped[2], 'World_24NM_v3_20191118/eez_24nm_v3.shp'))[0]
 gdf_24nm = gpd.read_file(shp_24nm)
 
