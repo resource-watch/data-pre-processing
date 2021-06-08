@@ -14,4 +14,4 @@ You can view the processed dataset for [display on Resource Watch](https://bit.l
 
 You can also download the original dataset [directly through Resource Watch](https://wri-public-data.s3.amazonaws.com/resourcewatch/for_021_rw1_certified_forest.zip), or [from the source website](https://unstats-undesa.opendata.arcgis.com/datasets/13a621d222c243dc906d7ee53d13eff3).
 
-###### Note: This dataset processing was done by [Eduardo Castillero Reyes](https://wrimexico.org/profile/eduardo-castillero-reyes), and QC'd by...
+###### Note: This dataset processing was done by [Eduardo Castillero Reyes](https://wrimexico.org/profile/eduardo-castillero-reyes), and QC'd by [Amelia Snyder](https://www.wri.org/profile/amelia-snyder).
