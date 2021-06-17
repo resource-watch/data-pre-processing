@@ -47,20 +47,21 @@ urllib.request.urlretrieve(url, raw_data_file)
 '''
 Process data
 '''
-# read in the 'Overall Scores' sheet of the Excel file as a dataframe
+# read in the sheet that contains the overall scores as a pandas dataframe
 df=pd.read_excel(raw_data_file, sheet_name="TableS3-GHG FOOD system emi", header=2) # selecting 4th row as the column names
 #convert table from wide form (each year is a column) to long form (a single column of years and a single column of values)
-df_edit = pd.melt (df, id_vars= ['Country_code_A3','Name'] , var_name = 'year', value_name = 'ghg_food_emissions_mtco2e')
+df_edit = pd.melt(df, id_vars= ['Country_code_A3','Name'] , var_name = 'year', value_name = 'ghg_food_emissions_mtco2e')
 #convert year column from object to integer
 df_edit.year=df_edit.year.astype('int64')
 # create a new column 'datetime' to store years as datetime objects
 df_edit['datetime'] = [datetime(x, 1, 1) for x in df_edit.year]
-#Turn all column names to lowercase
+# turn all column names to lowercase
 df_edit.columns = [x.lower() for x in df_edit.columns]
 # rename value to value_gigagrams
 df_edit.rename(columns={'name':'country_name'}, inplace=True)
-#replace NaN in table with None
+# replace NaN in table with None
 df_edit=df_edit.where((pd.notnull(df_edit)), None)
+
 # save processed dataset to csv
 processed_data_file = os.path.join(data_dir, dataset_name+'_edit.csv')
 df_edit.to_csv(processed_data_file, index=False)
