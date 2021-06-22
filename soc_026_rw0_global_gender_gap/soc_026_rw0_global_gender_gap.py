@@ -54,6 +54,7 @@ df = df.reset_index(drop=True)
 
 #replace comma with decimal
 df = df.replace(',','.', regex=True)
+df = df.replace('+','', regex=True)
 
 #Remove first and second halves of df, then concatenate
 df_first_half = df[['Rank', 'Country', 'Unnamed: 0', 'Rank.1', 'Unnamed: 1']]
@@ -64,9 +65,14 @@ df_second_half.columns = ['Rank', 'Country', 'Unnamed: 0', 'Rank.1', 'Unnamed: 1
 frames = [df_first_half, df_second_half]
 df_concat = pd.concat(frames).reset_index(drop=True) 
 
-#remove space after Gender Gap Index Value
-df_concat['Gender_Gap_Index'] = df_concat['Unnamed: 0'].str.split(' ').str[0]
+#remove space after Gender Gap Index score, and change in score from 2016 and 2020
+df_concat['Score'] = df_concat['Unnamed: 0'].str.split(' ').str[0]
+df_concat['Score change 2020'] = df_concat['Unnamed: 1'].str.split(' ').str[0]
+df_concat['Score change 2016'] = df_concat['Unnamed: 1'].str.split(' ').str[1]
 
+#drop unused columns from last step
+df_concat.drop(['Unnamed:0', 'Unnamed:1'], inplace=True, axis=1)
+df_concat.columns = ['Rank', 'Country', 'Score']
 
 
 # save unprocessed source data to put on S3 (below)
