@@ -1,4 +1,5 @@
 import pandas as pd
+from pandas import DataFrame
 import io
 import requests
 import os
@@ -42,7 +43,31 @@ url = 'http://www3.weforum.org/docs/WEF_GGGR_2021.pdf' #check
 # https://pypi.org/project/tabula-py/
 # https://nbviewer.jupyter.org/github/chezou/tabula-py/blob/master/examples/tabula_example.ipynb
 r = requests.get(url)
-df = tabula.read_pdf('http://www3.weforum.org/docs/WEF_GGGR_2021.pdf', pages='10')
+df_pdf = tabula.read_pdf('http://www3.weforum.org/docs/WEF_GGGR_2021.pdf', pages='10', stream=True)
+
+#remove first dataframe in list with titles
+df = df_pdf[1]
+
+#remove rows without a country
+df = df.dropna(subset = ['Country'])
+df = df.reset_index(drop=True)
+
+#replace comma with decimal
+df = df.replace(',','.', regex=True)
+
+#Remove first and second halves of df, then concatenate
+df_first_half = df[['Rank', 'Country', 'Unnamed: 0', 'Rank.1', 'Unnamed: 1']]
+df_second_half = df[['Rank.2','Country.1', 'Unnamed: 2', 'Rank.3', 'Unnamed: 3']]
+df_second_half.columns = ['Rank', 'Country', 'Unnamed: 0', 'Rank.1', 'Unnamed: 1']
+
+#concatenate
+frames = [df_first_half, df_second_half]
+df_concat = pd.concat(frames).reset_index(drop=True) 
+
+#remove space after Gender Gap Index Value
+df_concat['Gender_Gap_Index'] = df_concat['Unnamed: 0'].str.split(' ').str[0]
+
+
 
 # save unprocessed source data to put on S3 (below)
 raw_data_file = os.path.join(data_dir, os.path.basename(url))
@@ -89,7 +114,7 @@ Upload original data and processed data to Amazon S3 storage
 '''
 # initialize AWS variables
 aws_bucket = 'wri-public-data'
-s3_prefix = 'resourcewatch/'
+s3_prefix = 'resourcewatch'
 
 logger.info('Uploading original data to S3.')
 # Upload raw data file to S3
