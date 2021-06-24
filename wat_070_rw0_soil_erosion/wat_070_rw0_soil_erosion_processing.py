@@ -35,12 +35,11 @@ dataset_name = 'wat_070_rw0_soil_erosion'
 data_dir = util_files.prep_dirs(dataset_name)
 
 # create a dictionary to store information about the dataset
-# REMIDER to add back in tifs that have already been uploaded 'global_Erosion_2002.tif', 'global_Erosion_2007.tif', 'global_Erosion_2012.tif'
 data_dict = OrderedDict()
 
 data_dict= {
     'url': None,
-    'tifs': ['global_Erosion_2017.tif','global_Erosion_2020.tif'],
+    'tifs': ['global_Erosion_2002.tif', 'global_Erosion_2007.tif', 'global_Erosion_2012.tif', 'global_Erosion_2017.tif','global_Erosion_2020.tif'],
     'raw_data_file':[],
     'processed_data_file': [],
     'sds': [
@@ -51,6 +50,7 @@ data_dict= {
     'pyramiding_policy': 'MEAN',
     'band_ids': []
 }
+
 '''
 The data was provided directly from the source as a GeoTiff and downloaded manually into the downloads folder. 
 For access to the most recent data, please contact the principal author Tor Vagen (t.vagen@cgiar.org).
@@ -74,7 +74,7 @@ for i in range(len(data_dict['tifs'])):
     data_dict['processed_data_file'].append(os.path.join(data_dir,dataset_name + '_' + year +'.tif'))
 
     logger.info('Processing data for ' + data_dict['processed_data_file'][i])
-    # project the data into into WGS84 (espg 4326) using the command terminal
+    # project the data into into WGS84 (espg 4326) using the command line terminal
     cmd = 'gdalwarp -of GTiff -t_srs EPSG:4326 {} {}'
     # format to command line
     posix_cmd = shlex.split(cmd.format(data_dict['raw_data_file'][i], data_dict['processed_data_file'][i]), posix=True)     
@@ -98,7 +98,7 @@ pyramiding_policy = 'MEAN' #check
 
 # Create an image collection where we will put the processed data files in GEE
 image_collection = f'projects/resource-watch-gee/{dataset_name}'
-#ee.data.createAsset({'type': 'ImageCollection'}, image_collection)
+ee.data.createAsset({'type': 'ImageCollection'}, image_collection)
 
 # set image collection's privacy to public
 acl = {"all_users_can_read": True}
@@ -117,6 +117,7 @@ task_id = []
 # storage.blob._DEFAULT_CHUNKSIZE = 10 * 1024* 1024  # 10 MB
 # storage.blob._MAX_MULTIPART_SIZE = 10 * 1024* 1024  # 10 MB
 
+#loop though the processed data files to upload to Google Cloud Storage and Google Earth Engine
 for i in range(len(data_dict['tifs'])):
     logger.info('Uploading '+ data_dict['processed_data_file'][i]+' to Google Cloud Storage.')
     # upload files to Google Cloud Storage
