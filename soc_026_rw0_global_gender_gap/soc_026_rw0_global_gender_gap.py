@@ -2,6 +2,7 @@ import pandas as pd
 from pandas import DataFrame
 import io
 import requests
+import json
 import os
 import sys
 import tabula
@@ -13,6 +14,8 @@ import util_cloud
 import util_carto
 import logging
 from zipfile import ZipFile
+from carto.datasets import DatasetManager
+
 
 # Set up logging
 # Get the top-level logger object
@@ -42,8 +45,34 @@ url = 'http://www3.weforum.org/docs/WEF_GGGR_2021.pdf' #check
 # read in data to tabulas/ pandas dataframe
 # https://pypi.org/project/tabula-py/
 # https://nbviewer.jupyter.org/github/chezou/tabula-py/blob/master/examples/tabula_example.ipynb
-r = requests.get(url)
+r_url = requests.get(url)
 df_pdf = tabula.read_pdf('http://www3.weforum.org/docs/WEF_GGGR_2021.pdf', pages='10', stream=True)
+
+'''
+Import table from Carto
+'''
+#https://carto.com/developers/sql-api/guides/copy-queries/
+api_key = 'b246a1a3d6adcd53ef1e057c149a17ed8b7c3edb'
+username = 'wri-rw'
+
+q = 'SELECT * FROM soc_026_gender_gap_index_1'
+url = 'https://wri-rw.carto.com/api/v2/sql'
+r = requests.get(url, params={'api_key': api_key, 'q': q}).text
+r.raise_for_status()
+
+
+
+
+'''
+Process data
+'''
+years = ['2006','2008','2009','2010','2011','2012', '2013', '2014','2015','2016', '2017', '2018', '2020', '2021']
+page_number = [15, ]
+links = ['http://www3.weforum.org/docs/WEF_GenderGap_Report_2006.pdf', ]
+
+
+
+#2021
 
 #remove first dataframe in list with titles
 df = df_pdf[1]
@@ -54,7 +83,7 @@ df = df.reset_index(drop=True)
 
 #replace comma with decimal
 df = df.replace(',','.', regex=True)
-df = df.replace('+','', regex=True)
+# df = df.replace('+','', regex=True) How do I replace the + and - ? Do I need to?
 
 #Remove first and second halves of df, then concatenate
 df_first_half = df[['Rank', 'Country', 'Unnamed: 0', 'Rank.1', 'Unnamed: 1']]
@@ -71,43 +100,17 @@ df_concat['Score change 2020'] = df_concat['Unnamed: 1'].str.split(' ').str[0]
 df_concat['Score change 2016'] = df_concat['Unnamed: 1'].str.split(' ').str[1]
 
 #drop unused columns from last step
-df_concat.drop(['Unnamed:0', 'Unnamed:1'], inplace=True, axis=1)
-df_concat.columns = ['Rank', 'Country', 'Score']
+df_concat = df_concat.drop(['Unnamed: 0', 'Unnamed: 1'], axis=1)
+df_concat.columns = ['Rank', 'Country', 'Rank Change', 'Score', 'Score change 2020', 'Score change 2016']
+
+#reorder columns to match dataset from pdf
+df_concat = df_concat[['Rank', 'Country', 'Score', 'Rank Change', 'Score change 2020', 'Score change 2016']]
 
 
 # save unprocessed source data to put on S3 (below)
 raw_data_file = os.path.join(data_dir, os.path.basename(url))
 df.to_excel(raw_data_file, header = False, index = False)
 
-'''
-Process data
-'''
-
-# drop header rows
-df = df.iloc[7:] #check
-
-# drop columns without data
-df = df.drop(df.columns.difference(['Unnamed: 0','Table 5. Gender Inequality Index', 'Unnamed: 2','Unnamed: 4',
-                                    'Unnamed: 6', 'Unnamed: 8','Unnamed: 10','Unnamed: 12', 'Unnamed: 14',
-                                    'Unnamed: 16', 'Unnamed: 18']), 1) #check
-
-#delete rows with missing values
-df = df.dropna()
-
-#rename columns
-df.columns = ['HDI rank','Country','2018_GIIvalue', '2018_GIIrank', '2015 Maternal Mortality (per 1000 births)',
-              '2015-2020 Adolescent birth rate (births per 1,000 women ages 15–19)',
-              '2018 Share of seats in parliament','2010-2018 fem with secondary ed',
-              '2010-2018 male with secondary ed', '2018 fem labor', '2018 male labor'] #check
-
-#replace all '..' with None
-df = df.replace({'..':None})
-#replace all NaN with None
-final_df=df.where((pd.notnull(df)), None)
-
-#save processed dataset to csv
-processed_data_file = os.path.join(data_dir, dataset_name+'_edit.csv')
-final_df.to_csv(processed_data_file, index=False)
 
 '''
 Upload processed data to Carto
