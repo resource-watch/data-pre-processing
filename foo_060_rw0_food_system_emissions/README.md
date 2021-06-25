@@ -8,7 +8,7 @@ The source provided this dataset as an excel file, containing data from 1990-201
 4. Replace NaN in the table with None.
 5. The column "name" was renamed as "country_name" 
 
-Please see the [Python script](https://github.com/resource-watch/data-pre-processing/tree/master/foo_060_food_system_emissions_processing.py) for more details on this processing.
+Please see the [Python script](https://github.com/resource-watch/data-pre-processing/tree/master/foo_060_rw0_food_system_emissions_processing.py) for more details on this processing.
 
 You can view the processed dataset for [display on Resource Watch](https://bit.ly/3fXLxlg).
 
