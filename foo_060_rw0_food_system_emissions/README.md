@@ -7,10 +7,11 @@ The source provided this dataset as an excel file, containing data from 1990-201
 3. Convert the column headers to lowercase to match Carto column name requirements.
 4. Replace NaN in the table with None.
 5. The column "name" was renamed as "country_name" 
+
 Please see the [Python script](https://github.com/resource-watch/data-pre-processing/tree/master/foo_060_food_system_emissions_processing.py) for more details on this processing.
 
 You can view the processed dataset for [display on Resource Watch](https://bit.ly/3fXLxlg).
 
-You can also download the original dataset [directly through Resource Watch](https://wri-public-data.s3.amazonaws.com/resourcewatch/foo_060_food_system_emissions.zip), or [from the source website](https://edgar.jrc.ec.europa.eu/edgar_food#wtsau).
+You can also download the original dataset [directly through Resource Watch](https://wri-public-data.s3.amazonaws.com/resourcewatch/foo_060_rw0_food_system_emissions.zip), or [from the source website](https://edgar.jrc.ec.europa.eu/edgar_food#wtsau).
 
 ###### Note: This dataset processing was done by [Eduardo Castillero Reyes](https://wrimexico.org/profile/eduardo-castillero-reyes), and QC'd by [Yujing Wu](https://www.wri.org/profile/yujing-wu).
