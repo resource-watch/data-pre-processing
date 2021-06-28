@@ -1,5 +1,6 @@
 import pandas as pd
 from pandas import DataFrame
+import numpy as np
 import io
 import requests
 import json
@@ -42,11 +43,8 @@ Download data and save to your data directory
 # insert the url used to download the data from the source website
 url = 'http://www3.weforum.org/docs/WEF_GGGR_2021.pdf' #check
 
-# read in data to tabulas/ pandas dataframe
-# https://pypi.org/project/tabula-py/
-# https://nbviewer.jupyter.org/github/chezou/tabula-py/blob/master/examples/tabula_example.ipynb
-r_url = requests.get(url)
-df_pdf = tabula.read_pdf('http://www3.weforum.org/docs/WEF_GGGR_2021.pdf', pages='10', stream=True)
+
+
 
 '''
 Import table from Carto
@@ -58,24 +56,32 @@ username = 'wri-rw'
 q = 'SELECT * FROM soc_026_gender_gap_index_1'
 url = 'https://wri-rw.carto.com/api/v2/sql'
 r = requests.get(url, params={'api_key': api_key, 'q': q}).text
-r.raise_for_status()
 
+col_soc_026 = ['cartodb_id', 'country', 'economic_participation_and_opportunity_subindex_rank', 'economic_participation_and_opportunity_subindex_score', 'educational_attainment_subindex_rank',
+'educational_attainment_subindex_score', 'field_13', 'field_14', 'field_15', 'health_and_survival_subindex_rank', 'health_and_survival_subindex_score', 'overall_index_rank', 'overall_index_score', 'political_empowerment_subindex_rank', 'political_empowerment_subindex_score', 'the_geom', 'the_geom_webmercator', 'year']
+df_dict = json.loads(r)
+
+
+df_carto = pd.DataFrame(df_dict['rows'])
+#pd.DataFrame.from_dict(list(df_dict.items()),orient = 'index', columns=col_soc_026)
 
 
 
 '''
 Process data
 '''
-years = ['2006','2008','2009','2010','2011','2012', '2013', '2014','2015','2016', '2017', '2018', '2020', '2021']
-page_number = [15, ]
-links = ['http://www3.weforum.org/docs/WEF_GenderGap_Report_2006.pdf', ]
-
-
 
 #2021
 
+# read in data to tabulas/ pandas dataframe
+# https://pypi.org/project/tabula-py/
+# https://nbviewer.jupyter.org/github/chezou/tabula-py/blob/master/examples/tabula_example.ipynb
+
+r_url = requests.get(url)
+df_pdf21 = tabula.read_pdf('http://www3.weforum.org/docs/WEF_GGGR_2021.pdf', pages=['10','18','19'], stream=True)
+
 #remove first dataframe in list with titles
-df = df_pdf[1]
+df = df_pdf21[1]
 
 #remove rows without a country
 df = df.dropna(subset = ['Country'])
@@ -95,50 +101,23 @@ frames = [df_first_half, df_second_half]
 df_concat = pd.concat(frames).reset_index(drop=True) 
 
 #remove space after Gender Gap Index score, and change in score from 2016 and 2020
-df_concat['Score'] = df_concat['Unnamed: 0'].str.split(' ').str[0]
-df_concat['Score change 2020'] = df_concat['Unnamed: 1'].str.split(' ').str[0]
-df_concat['Score change 2016'] = df_concat['Unnamed: 1'].str.split(' ').str[1]
+df_concat['overall_index_score'] = df_concat['Unnamed: 0'].str.split(' ').str[0]
+
 
 #drop unused columns from last step
-df_concat = df_concat.drop(['Unnamed: 0', 'Unnamed: 1'], axis=1)
-df_concat.columns = ['Rank', 'Country', 'Rank Change', 'Score', 'Score change 2020', 'Score change 2016']
+df_concat = df_concat.drop(['Unnamed: 0', 'Unnamed: 1', 'Rank.1'], axis=1)
+df_concat.columns = ['overall_index_rank', 'country', 'overall_index_score']
+df_concat['year'] = np.where(df_concat['overall_index_score'], 2021, 0)
 
 #reorder columns to match dataset from pdf
-df_concat = df_concat[['Rank', 'Country', 'Score', 'Rank Change', 'Score change 2020', 'Score change 2016']]
+df_concat = df_concat[['country', 'overall_index_rank','overall_index_score','year']]
+
+#Four subindexes
+df_pdf21_2 = tabula.read_pdf('http://www3.weforum.org/docs/WEF_GGGR_2021.pdf', pages=['10','18','19'], stream=True)
+
+#remove first dataframe in list with titles
+df = df_pdf[1]
 
 
-# save unprocessed source data to put on S3 (below)
-raw_data_file = os.path.join(data_dir, os.path.basename(url))
-df.to_excel(raw_data_file, header = False, index = False)
 
 
-'''
-Upload processed data to Carto
-'''
-logger.info('Uploading processed data to Carto.')
-util_carto.upload_to_carto(processed_data_file, 'LINK')
-
-'''
-Upload original data and processed data to Amazon S3 storage
-'''
-# initialize AWS variables
-aws_bucket = 'wri-public-data'
-s3_prefix = 'resourcewatch'
-
-logger.info('Uploading original data to S3.')
-# Upload raw data file to S3
-
-# Copy the raw data into a zipped file to upload to S3
-raw_data_dir = os.path.join(data_dir, dataset_name+'.zip')
-with ZipFile(raw_data_dir,'w') as zip:
-    zip.write(raw_data_file, os.path.basename(raw_data_file))
-# Upload raw data file to S3
-uploaded = util_cloud.aws_upload(raw_data_dir, aws_bucket, s3_prefix+os.path.basename(raw_data_dir))
-
-logger.info('Uploading processed data to S3.')
-# Copy the processed data into a zipped file to upload to S3
-processed_data_dir = os.path.join(data_dir, dataset_name+'_edit.zip')
-with ZipFile(processed_data_dir,'w') as zip:
-    zip.write(processed_data_file, os.path.basename(processed_data_file))
-# Upload processed data file to S3
-uploaded = util_cloud.aws_upload(processed_data_dir, aws_bucket, s3_prefix+os.path.basename(processed_data_dir))
