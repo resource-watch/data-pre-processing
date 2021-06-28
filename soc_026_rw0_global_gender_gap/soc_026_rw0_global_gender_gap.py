@@ -107,6 +107,7 @@ df_concat['overall_index_score'] = df_concat['Unnamed: 0'].str.split(' ').str[0]
 #drop unused columns from last step
 df_concat = df_concat.drop(['Unnamed: 0', 'Unnamed: 1', 'Rank.1'], axis=1)
 df_concat.columns = ['overall_index_rank', 'country', 'overall_index_score']
+#add year
 df_concat['year'] = np.where(df_concat['overall_index_score'], 2021, 0)
 
 #reorder columns to match dataset from pdf
@@ -115,9 +116,78 @@ df_concat = df_concat[['country', 'overall_index_rank','overall_index_score','ye
 #Four subindexes
 df_pdf21_2 = tabula.read_pdf('http://www3.weforum.org/docs/WEF_GGGR_2021.pdf', pages=['10','18','19'], stream=True)
 
-#remove first dataframe in list with titles
-df = df_pdf[1]
+#1. Economic Information and Opportunity 
+df2 = df_pdf21[2]
+df2 = df2.replace(',','.', regex=True)
+
+df2_first_econ = df2[['Rank', 'Country', 'Score (0–1)']]
+df2_second_econ = df2[['Rank.1', 'Country.1', 'Score (0–1).1']]
+df2_second_econ.columns = ['Rank', 'Country', 'Score (0–1)']
+
+#concatenate and rename columns
+frames2 = [df2_first_econ, df2_second_econ]
+df_concat2 = pd.concat(frames2).reset_index(drop=True) 
+df_concat2.columns = ['economic_participation_and_opportunity_subindex_rank','country',
+       'economic_participation_and_opportunity_subindex_score']
+#add year
+df_concat2['year'] = np.where(df_concat2['economic_participation_and_opportunity_subindex_score'], 2021, 0)
 
 
 
+
+#2. Educational Attainment
+df2_first_edu = df2[['Rank.2', 'Country.2', 'Score (0–1).2']]
+df2_second_edu = df2[['Rank.3', 'Country.3', 'Score (0–1).3']]
+df2_second_edu.columns = ['Rank.2', 'Country.2', 'Score (0–1).2']
+
+#concatenate and rename columns
+frames3 = [df2_first_edu, df2_second_edu]
+df_concat3 = pd.concat(frames3).reset_index(drop=True) 
+df_concat3.columns = ['educational_attainment_subindex_rank','country',
+       'educational_attainment_subindex_score']
+
+#add year
+df_concat3['year'] = np.where(df_concat3['educational_attainment_subindex_score'], 2021, 0)
+
+
+
+
+#3. Health and Survival
+df3 = df_pdf21[3]
+df3 = df3.replace(',','.', regex=True)
+
+df3_first_health = df3[['Rank', 'Country', 'Score (0–1)']]
+df3_second_health = df3[['Rank.1', 'Country.1', 'Score (0–1).1']]
+df3_second_health.columns = ['Rank', 'Country', 'Score (0–1)']
+
+#concatenate and rename columns
+frames4 = [df3_first_health, df3_second_health]
+df_concat4 = pd.concat(frames4).reset_index(drop=True) 
+df_concat4.columns = ['health_and_survival_subindex_rank','country',
+       'health_and_survival_subindex_score']
+#add year
+df_concat4['year'] = np.where(df_concat4['health_and_survival_subindex_score'], 2021, 0)
+
+
+
+
+#4. Political Empowerment
+df3_first_pol = df3[['Rank.2', 'Country.2', 'Score (0–1).2']]
+df3_second_pol = df3[['Rank.3', 'Country.3', 'Score (0–1).3']]
+df3_second_pol.columns = ['Rank.2', 'Country.2', 'Score (0–1).2']
+
+#concatenate and rename columns
+frames5 = [df3_first_pol, df3_second_pol]
+df_concat5 = pd.concat(frames5).reset_index(drop=True) 
+df_concat5.columns = ['political_empowerment_subindex_rank','country',
+       'political_empowerment_subindex_score']
+#add year
+df_concat5['year'] = np.where(df_concat5['political_empowerment_subindex_score'], 2021, 0)
+
+
+#Merge the 5 tables ttogether
+df21_final = df_concat.merge(df_concat2, left_on=['year','country'], right_on = ['year','country'])
+df21_final = df21_final.merge(df_concat3, left_on=['year','country'], right_on = ['year','country'])
+df21_final = df21_final.merge(df_concat4, left_on=['year','country'], right_on = ['year','country'])
+df21_final = df21_final.merge(df_concat5, left_on=['year','country'], right_on = ['year','country'])
 
