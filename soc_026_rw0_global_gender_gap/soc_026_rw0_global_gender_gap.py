@@ -133,8 +133,6 @@ df_concat2.columns = ['economic_participation_and_opportunity_subindex_rank','co
 df_concat2['year'] = np.where(df_concat2['economic_participation_and_opportunity_subindex_score'], 2021, 0)
 
 
-
-
 #2. Educational Attainment
 df2_first_edu = df2[['Rank.2', 'Country.2', 'Score (0–1).2']]
 df2_second_edu = df2[['Rank.3', 'Country.3', 'Score (0–1).3']]
@@ -148,8 +146,6 @@ df_concat3.columns = ['educational_attainment_subindex_rank','country',
 
 #add year
 df_concat3['year'] = np.where(df_concat3['educational_attainment_subindex_score'], 2021, 0)
-
-
 
 
 #3. Health and Survival
@@ -169,8 +165,6 @@ df_concat4.columns = ['health_and_survival_subindex_rank','country',
 df_concat4['year'] = np.where(df_concat4['health_and_survival_subindex_score'], 2021, 0)
 
 
-
-
 #4. Political Empowerment
 df3_first_pol = df3[['Rank.2', 'Country.2', 'Score (0–1).2']]
 df3_second_pol = df3[['Rank.3', 'Country.3', 'Score (0–1).3']]
@@ -185,9 +179,123 @@ df_concat5.columns = ['political_empowerment_subindex_rank','country',
 df_concat5['year'] = np.where(df_concat5['political_empowerment_subindex_score'], 2021, 0)
 
 
-#Merge the 5 tables ttogether
-df21_final = df_concat.merge(df_concat2, left_on=['year','country'], right_on = ['year','country'])
-df21_final = df21_final.merge(df_concat3, left_on=['year','country'], right_on = ['year','country'])
-df21_final = df21_final.merge(df_concat4, left_on=['year','country'], right_on = ['year','country'])
-df21_final = df21_final.merge(df_concat5, left_on=['year','country'], right_on = ['year','country'])
+#Merge the 5 tables together
+df21_final = df_concat.merge(df_concat2,how='outer', left_on=['year','country'], right_on = ['year','country'])
+df21_final = df21_final.merge(df_concat3,how='outer', left_on=['year','country'], right_on = ['year','country'])
+df21_final = df21_final.merge(df_concat4,how='outer', left_on=['year','country'], right_on = ['year','country'])
+df21_final = df21_final.merge(df_concat5,how='outer', left_on=['year','country'], right_on = ['year','country'])
 
+
+'''
+2020
+'''
+
+# read in data to tabulas/ pandas dataframe
+df_pdf20 = tabula.read_pdf('http://www3.weforum.org/docs/WEF_GGGR_2020.pdf', pages=['9','12','13'], stream=True)
+
+#remove first dataframe in list with titles
+df20 = df_pdf20[1]
+
+#remove rows without a country
+df20 = df20.dropna(subset = ['Country'])
+df20 = df20.reset_index(drop=True)
+
+#replace comma with decimal
+df20 = df20.replace(',','.', regex=True)
+
+#Remove first and second halves of df, then concatenate
+df20_first_half = df20[['Rank', 'Country', 'Score (0–1)']]
+df20_second_half = df20[['Rank.1', 'Country.1', 'Score (0–1).1']]
+df20_second_half.columns = ['Rank', 'Country', 'Score (0–1)']
+
+#concatenate
+frames20 = [df20_first_half, df20_second_half]
+df20_concat = pd.concat(frames20).reset_index(drop=True) 
+
+#remove space after Gender Gap Index score, and change in score from 2016 and 2020
+
+
+#drop unused columns from last step
+df20_concat.columns = ['overall_index_rank', 'country', 'overall_index_score']
+#add year
+df20_concat['year'] = np.where(df20_concat['overall_index_score'], 2020, 0)
+
+#reorder columns to match dataset from pdf20
+df20_concat = df20_concat[['country', 'overall_index_rank','overall_index_score','year']]
+
+#Four subindexes
+
+#1. Economic Information and Opportunity 
+df202 = df_pdf20[2]
+df202 = df202.replace(',','.', regex=True)
+
+df202_first_econ = df202[['Rank', 'Country', 'Score (0–1)']]
+df202_second_econ = df202[['Rank.1', 'Country.1', 'Score (0–1).1']]
+df202_second_econ.columns = ['Rank', 'Country', 'Score (0–1)']
+
+#concatenate and rename columns
+frames202 = [df202_first_econ, df202_second_econ]
+df20_concat2 = pd.concat(frames202).reset_index(drop=True) 
+df20_concat2.columns = ['economic_participation_and_opportunity_subindex_rank','country',
+       'economic_participation_and_opportunity_subindex_score']
+#add year
+df20_concat2['year'] = np.where(df20_concat2['economic_participation_and_opportunity_subindex_score'], 2020, 0)
+
+
+#2. Educational Attainment
+df202_first_edu = df202[['Rank.2', 'Country.2', 'Score (0–1).2']]
+df202_second_edu = df202[['Rank.3', 'Country.3', 'Score (0–1).3']]
+df202_second_edu.columns = ['Rank.2', 'Country.2', 'Score (0–1).2']
+
+#concatenate and rename columns
+frames3 = [df202_first_edu, df202_second_edu]
+df20_concat3 = pd.concat(frames3).reset_index(drop=True) 
+df20_concat3.columns = ['educational_attainment_subindex_rank','country',
+       'educational_attainment_subindex_score']
+
+#add year
+df20_concat3['year'] = np.where(df20_concat3['educational_attainment_subindex_score'], 2020, 0)
+
+
+#3. Health and Survival
+df203 = df_pdf20[3]
+df203 = df3.replace(',','.', regex=True)
+
+df203_first_health = df203[['Rank', 'Country', 'Score (0–1)']]
+df203_second_health = df203[['Rank.1', 'Country.1', 'Score (0–1).1']]
+df203_second_health.columns = ['Rank', 'Country', 'Score (0–1)']
+
+#concatenate and rename columns
+frames4 = [df203_first_health, df203_second_health]
+df20_concat4 = pd.concat(frames4).reset_index(drop=True) 
+df20_concat4.columns = ['health_and_survival_subindex_rank','country',
+       'health_and_survival_subindex_score']
+#add year
+df20_concat4['year'] = np.where(df20_concat4['health_and_survival_subindex_score'], 2020, 0)
+
+
+#4. Political Empowerment
+df203_first_pol = df203[['Rank.2', 'Country.2', 'Score (0–1).2']]
+df203_second_pol = df203[['Rank.3', 'Country.3', 'Score (0–1).3']]
+df203_second_pol.columns = ['Rank.2', 'Country.2', 'Score (0–1).2']
+
+#concatenate and rename columns
+frames5 = [df203_first_pol, df203_second_pol]
+df20_concat5 = pd.concat(frames5).reset_index(drop=True) 
+df20_concat5.columns = ['political_empowerment_subindex_rank','country',
+       'political_empowerment_subindex_score']
+#add year
+df20_concat5['year'] = np.where(df20_concat5['political_empowerment_subindex_score'], 2020, 0)
+
+
+#Merge the 5 tables together
+df2020_final = df20_concat.merge(df20_concat2, how='outer', left_on=['year','country'], right_on = ['year','country'])
+df2020_final = df2020_final.merge(df20_concat3, left_on=['year','country'], right_on = ['year','country'],how='outer')
+df2020_final = df2020_final.merge(df20_concat4, left_on=['year','country'], right_on = ['year','country'],how='outer')
+df2020_final = df2020_final.merge(df20_concat5, left_on=['year','country'], right_on = ['year','country'],how='outer')
+
+'''
+Merge 2020 and 2021
+'''
+frames_20_21 = [df2020_final, df21_final]
+df_new_years = pd.concat(frames_20_21).reset_index(drop=True)
