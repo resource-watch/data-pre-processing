@@ -44,8 +44,6 @@ Download data and save to your data directory
 url = 'http://www3.weforum.org/docs/WEF_GGGR_2021.pdf' #check
 
 
-
-
 '''
 Import table from Carto
 '''
@@ -299,3 +297,10 @@ Merge 2020 and 2021
 '''
 frames_20_21 = [df2020_final, df21_final]
 df_new_years = pd.concat(frames_20_21).reset_index(drop=True)
+
+'''
+Merge new years with old
+'''
+frames_carto_upload = [df_carto, df_new_years]
+df_carto_upload = pd.concat(frames_carto_upload).reset_index(drop=True)
+
