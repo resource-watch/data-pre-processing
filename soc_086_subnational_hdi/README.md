@@ -4,7 +4,7 @@ The source provided two files, a csv file containing the shdi data and a shapefi
 
 The following steps describe the processing performed by the Resource Watch team to the dataset:
 
-1. The shapefile was read as a geopandas dataframe. The columns were formatted to comply with Carto's requirements.
+1. The shapefile was read as a geopandas dataframe.
 2. The csv file was read as a pandas dataframe. Then it was converted from wide to long form by storing the available years into a single column.
 3. A column containing the year information as a datetime value was created.
 4. The pandas dataframe was formatted to comply with Carto format requirements.
@@ -15,4 +15,4 @@ You can view the processed dataset for [display on Resource Watch](https://bit.l
 
 You can also download the original dataset [directly through Resource Watch](https://wri-public-data.s3.amazonaws.com/resourcewatch/soc_086_subnational_hdi.zip), or [from the source website](https://globaldatalab.org/shdi/view/shdi/).
 
-###### Note: This dataset processing was done by [Eduardo Castillero Reyes](https://wrimexico.org/profile/eduardo-castillero-reyes), and QC'd by ...
+###### Note: This dataset processing was done by [Eduardo Castillero Reyes](https://wrimexico.org/profile/eduardo-castillero-reyes), and QC'd by [Amelia Snyder](https://www.wri.org/profile/amelia-snyder).
