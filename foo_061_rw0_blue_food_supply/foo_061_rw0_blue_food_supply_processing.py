@@ -41,7 +41,7 @@ Download data and save to your data directory
 data_dict= {
     'version' : [' new', 'historic'],
     'urls': ['http://fenixservices.fao.org/faostat/static/bulkdownloads/FoodBalanceSheets_E_All_Data_(Normalized).zip','http://fenixservices.fao.org/faostat/static/bulkdownloads/FoodBalanceSheetsHistoric_E_All_Data_(Normalized).zip'],
-    'raw_files': [],
+    'raw_data_file': [],
     'processed_dfs': []
   } 
  
@@ -57,7 +57,7 @@ for url in data_dict['urls']:
     raw_data_file_unzipped = raw_data_file.split('.')[0]
     zip_ref = ZipFile(raw_data_file, 'r')
     zip_ref.extractall(raw_data_file_unzipped)
-    data_dict['raw_files'].append(raw_data_file_unzipped)
+    data_dict['raw_data_file'].append(raw_data_file_unzipped)
     zip_ref.close()
 
 '''
@@ -70,8 +70,7 @@ item_list = food_list + total
 
 # list of areas we want to exlude from our dataframe
 # so that we only have countries and not aggregated regions
-areas_list = [
-    'World', 'Africa', 'Eastern Africa',
+areas_list = ['Africa', 'Eastern Africa',
     'Middle Africa', 'Northern Africa', 'Southern Africa',
     'Western Africa', 'Americas', 'Northern America',
     'Central America', 'Caribbean', 'South America', 'Asia',
@@ -85,7 +84,7 @@ areas_list = [
     'Low Income Food Deficit Countries',
     'Net Food Importing Developing Countries']
 
-for file in data_dict['raw_files']:
+for file in data_dict['raw_data_file']:
     # read in the data as a pandas dataframe 
     df = pd.read_csv(os.path.join(file, file.split('/')[1] + '.csv'),encoding='latin-1')
     
@@ -93,7 +92,6 @@ for file in data_dict['raw_files']:
     df= df[df['Item'].isin(item_list)]
     
     df['Type']= np.where(df['Item'].isin(food_list),'Ocean-Sourced Food', 'Grand Total')
-    print(df.head)
 
     # filter data to the variables of interest "Food supply (kcal/capita/day)" and "Protein supply quantity (g/capita/day)"
     elements = ['664','674']
@@ -102,29 +100,34 @@ for file in data_dict['raw_files']:
     # filter out exculded areas 
     df = df[~df['Area'].isin(areas_list)]
 
-    # sum the food supply values by area (country)
-    df = df.groupby(['Area','Year Code', 'Type']).agg({'Area Code':'first','Element':'first', 'Value':'sum'}).reset_index()
-
     # store the processed df
     data_dict['processed_dfs'].append(df)
 
-#join the new and historic datasets
+# join the new and historic datasets
 df= pd.concat(data_dict['processed_dfs'])
 
-#rename the value and year columns
+# rename the value and year columns
 df.rename(columns={'Year Code':'year'}, inplace=True)
 
 # change whitespaces in columns
 df.columns = df.columns.str.replace(' ', '_')
 
-#Turn all column names to lowercase 
+# turn all column names to lowercase 
 df.columns = [x.lower() for x in df.columns]
 
-#convert Year column to date time object
+
+# remove duplicate columns
+df = df.loc[:,~df.columns.duplicated()]
+
+# convert Year column to date time object
 df['datetime'] = pd.to_datetime(df.year, format='%Y')
 
-#sort the new data frame by country and year
-df= df.sort_values(by=['area','datetime','type'])
+# convert value column to a float
+df['value'] = df['value'].astype('float64')
+
+# sort the new data frame by country and year
+print(df.columns)
+df= df.sort_values(by=['area','year','type','item'])
 
 # save processed dataset to csv
 processed_data_file = os.path.join(data_dir, dataset_name+'_edit.csv')
@@ -145,10 +148,11 @@ s3_prefix = 'resourcewatch/'
 
 logger.info('Uploading original data to S3.')
 # Copy the raw data into a zipped file to upload to S3
-# Copy the raw data into a zipped file to upload to S3
 raw_data_dir = os.path.join(data_dir, dataset_name+'.zip')
 with ZipFile(raw_data_dir,'w') as zip:
-    zip.write(raw_data_file, os.path.basename(raw_data_file))
+     raw_data_files = data_dict['raw_data_file']
+     for raw_data_file in raw_data_files:
+        zip.write(raw_data_file, os.path.basename(raw_data_file))
 # Upload raw data file to S3
 uploaded = util_cloud.aws_upload(raw_data_dir, aws_bucket, s3_prefix+os.path.basename(raw_data_dir))
 
@@ -158,6 +162,5 @@ logger.info('Uploading processed data to S3.')
 processed_data_dir = os.path.join(data_dir, dataset_name+'_edit.zip')
 with ZipFile(processed_data_dir,'w') as zip:
     zip.write(processed_data_file, os.path.basename(processed_data_file)) 
-        
 # Upload processed data file to S3
 uploaded = util_cloud.aws_upload(processed_data_dir, aws_bucket, s3_prefix + os.path.basename(processed_data_dir))
