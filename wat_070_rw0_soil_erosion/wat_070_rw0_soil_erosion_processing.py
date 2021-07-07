@@ -52,9 +52,11 @@ data_dict= {
 }
 
 '''
+Download the data and move to your data directory 
 The data was provided directly from the source as a GeoTiff and downloaded manually into the downloads folder. 
-For access to the most recent data, please contact the principal author Tor Vagen (t.vagen@cgiar.org).
+For access to the most recent data, please contact the principal author Tor Vagen (t.vagen@cgiar.org).access to the most recent data, please contact the principal author Tor Vagen (t.vagen@cgiar.org).
 '''
+
 # move the data from 'Downloads' into the data directory
 for tif in data_dict['tifs']:
     source_dir = os.path.join(os.getenv("DOWNLOAD_DIR"), tif)
@@ -153,15 +155,15 @@ Upload original data and processed data to Amazon S3 storage
 aws_bucket = 'wri-projects'
 s3_prefix = 'resourcewatch/raster/'
 
-logger.info('Uploading original data to S3.')
-# Upload raw data file to S3
+# Copy the raw data into a zipped file to upload to S3
 
 print('Uploading original data to S3.')
 # Copy the raw data into a zipped file to upload to S3
 raw_data_dir = os.path.join(data_dir, dataset_name+'.zip')
-with ZipFile(raw_data_dir,'w') as zipped:
-    for file in data_dict['raw_data_file']:
-        zipped.write(file, os.path.basename(file))
+with ZipFile(raw_data_dir,'w') as zip:
+     raw_data_files = data_dict['raw_data_file']
+     for raw_data_file in raw_data_files:
+        zip.write(raw_data_file, os.path.basename(raw_data_file))
 
 # Upload raw data file to S3
 uploaded = util_cloud.aws_upload(raw_data_dir, aws_bucket, s3_prefix + os.path.basename(raw_data_dir))
@@ -170,8 +172,9 @@ logger.info('Uploading processed data to S3.')
 # Copy the processed data into a zipped file to upload to S3
 processed_data_dir = os.path.join(data_dir, dataset_name+'_edit.zip')
 with ZipFile(processed_data_dir,'w') as zipped:
-    for file in data_dict['processed_data_file']:
-        zipped.write(file, os.path.basename(file))
+    processed_data_files = data_dict['processed_data_file']
+    for procedded_data_file in processed_data_files:
+        zip.write(procedded_data_file, os.path.basename(raw_data_file))
 
 # Upload processed data file to S3
 uploaded = util_cloud.aws_upload(processed_data_dir, aws_bucket, s3_prefix + os.path.basename(processed_data_dir))
