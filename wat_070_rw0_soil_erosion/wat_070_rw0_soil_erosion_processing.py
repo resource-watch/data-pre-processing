@@ -8,6 +8,7 @@ import util_files
 import util_cloud
 import subprocess
 import shutil
+import zipfile
 from zipfile import ZipFile
 import ee
 from google.cloud import storage
@@ -78,19 +79,9 @@ for i in range(len(data_dict['tifs'])):
     logger.info('Processing data for ' + data_dict['processed_data_file'][i])
     
     # project the data into WGS84 (espg 4326) using the command line terminal
-    # convert the geotiff to a vrt to maintain compression
-    cmd = 'gdalwarp -of vrt -t_srs EPSG:4326 {} {}'
-    # create the name for the processed vrt
-    processed_vrt= (os.path.join(data_dir,dataset_name + '_' + year +'.vrt'))
+    cmd = 'gdalwarp -of GTiff -t_srs EPSG:4326 {} {}'
     # format to command line and run
-    posix_cmd = shlex.split(cmd.format(data_dict['raw_data_file'][i], processed_vrt), posix=True)     
-    completed_process= subprocess.check_call(posix_cmd)   
-    logging.debug(str(completed_process))
-   
-    # translate the vrt file back into a geotiff
-    cmd = 'gdal_translate -co compress=LZW {} {}'
-    # format to command line and run
-    posix_cmd = shlex.split(cmd.format(processed_vrt, data_dict['processed_data_file'][i]), posix=True)     
+    posix_cmd = shlex.split(cmd.format(data_dict['raw_data_file'][i], data_dict['processed_data_file'][i]), posix=True)     
     completed_process= subprocess.check_call(posix_cmd)   
     logging.debug(str(completed_process))
 
@@ -185,7 +176,7 @@ processed_data_dir = os.path.join(data_dir, dataset_name+'_edit.zip')
 with ZipFile(processed_data_dir,'w') as zip:
     processed_data_files = data_dict['processed_data_file']
     for processed_data_file in processed_data_files:
-        zip.write(processed_data_file, os.path.basename(processed_data_file))
+        zip.write(processed_data_file, os.path.basename(processed_data_file),compress_type= zipfile.ZIP_DEFLATED)
 
 # Upload processed data file to S3
 uploaded = util_cloud.aws_upload(processed_data_dir, aws_bucket, s3_prefix + os.path.basename(processed_data_dir))
