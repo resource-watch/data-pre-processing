@@ -7,6 +7,8 @@ import json
 import os
 import sys
 import tabula
+import dotenv
+dotenv.load_dotenv('C:\\Users\\Jason.Winik\\OneDrive - World Resources Institute\\Documents\\GitHub\\cred\\.env')
 utils_path = os.path.join(os.path.abspath(os.getenv('PROCESSING_DIR')),'utils')
 if utils_path not in sys.path:
     sys.path.append(utils_path)
@@ -15,8 +17,6 @@ import util_cloud
 import util_carto
 import logging
 from zipfile import ZipFile
-from carto.datasets import DatasetManager
-
 
 # Set up logging
 # Get the top-level logger object
@@ -38,13 +38,6 @@ logger.info('Executing script for dataset: ' + dataset_name)
 data_dir = util_files.prep_dirs(dataset_name)
 
 '''
-Download data and save to your data directory
-'''
-# insert the url used to download the data from the source website
-url = 'http://www3.weforum.org/docs/WEF_GGGR_2021.pdf' #check
-
-
-'''
 Import table from Carto
 '''
 #https://carto.com/developers/sql-api/guides/copy-queries/
@@ -54,28 +47,18 @@ username = 'wri-rw'
 q = 'SELECT * FROM soc_026_gender_gap_index_1'
 url = 'https://wri-rw.carto.com/api/v2/sql'
 r = requests.get(url, params={'api_key': api_key, 'q': q}).text
-
-col_soc_026 = ['cartodb_id', 'country', 'economic_participation_and_opportunity_subindex_rank', 'economic_participation_and_opportunity_subindex_score', 'educational_attainment_subindex_rank',
-'educational_attainment_subindex_score', 'field_13', 'field_14', 'field_15', 'health_and_survival_subindex_rank', 'health_and_survival_subindex_score', 'overall_index_rank', 'overall_index_score', 'political_empowerment_subindex_rank', 'political_empowerment_subindex_score', 'the_geom', 'the_geom_webmercator', 'year']
 df_dict = json.loads(r)
-
-
 df_carto = pd.DataFrame(df_dict['rows'])
-#pd.DataFrame.from_dict(list(df_dict.items()),orient = 'index', columns=col_soc_026)
-
-
 
 '''
 Process data
 '''
-
 #2021
 
 # read in data to tabulas/ pandas dataframe
 # https://pypi.org/project/tabula-py/
 # https://nbviewer.jupyter.org/github/chezou/tabula-py/blob/master/examples/tabula_example.ipynb
 
-r_url = requests.get(url)
 df_pdf21 = tabula.read_pdf('http://www3.weforum.org/docs/WEF_GGGR_2021.pdf', pages=['10','18','19'], stream=True)
 
 #remove first dataframe in list with titles
@@ -87,7 +70,7 @@ df = df.reset_index(drop=True)
 
 #replace comma with decimal
 df = df.replace(',','.', regex=True)
-# df = df.replace('+','', regex=True) How do I replace the + and - ? Do I need to?
+
 
 #Remove first and second halves of df, then concatenate
 df_first_half = df[['Rank', 'Country', 'Unnamed: 0', 'Rank.1', 'Unnamed: 1']]
@@ -98,7 +81,7 @@ df_second_half.columns = ['Rank', 'Country', 'Unnamed: 0', 'Rank.1', 'Unnamed: 1
 frames = [df_first_half, df_second_half]
 df_concat = pd.concat(frames).reset_index(drop=True) 
 
-#remove space after Gender Gap Index score, and change in score from 2016 and 2020
+#remove space after Gender Gap Index score
 df_concat['overall_index_score'] = df_concat['Unnamed: 0'].str.split(' ').str[0]
 
 
@@ -176,8 +159,7 @@ df_concat5.columns = ['political_empowerment_subindex_rank','country',
 #add year
 df_concat5['year'] = np.where(df_concat5['political_empowerment_subindex_score'], 2021, 0)
 
-
-#Merge the 5 tables together
+# Merge the 5 tables together
 df21_final = df_concat.merge(df_concat2,how='outer', left_on=['year','country'], right_on = ['year','country'])
 df21_final = df21_final.merge(df_concat3,how='outer', left_on=['year','country'], right_on = ['year','country'])
 df21_final = df21_final.merge(df_concat4,how='outer', left_on=['year','country'], right_on = ['year','country'])
@@ -292,15 +274,47 @@ df2020_final = df2020_final.merge(df20_concat3, left_on=['year','country'], righ
 df2020_final = df2020_final.merge(df20_concat4, left_on=['year','country'], right_on = ['year','country'],how='outer')
 df2020_final = df2020_final.merge(df20_concat5, left_on=['year','country'], right_on = ['year','country'],how='outer')
 
-'''
-Merge 2020 and 2021
-'''
+
+# Merge 2020 and 2021
 frames_20_21 = [df2020_final, df21_final]
 df_new_years = pd.concat(frames_20_21).reset_index(drop=True)
 
-'''
-Merge new years with old
-'''
+
+# Merge new years with old
 frames_carto_upload = [df_carto, df_new_years]
 df_carto_upload = pd.concat(frames_carto_upload).reset_index(drop=True)
 
+#save processed dataset to csv
+processed_data_file = os.path.join(data_dir, dataset_name+'_edit.csv')
+df_carto_upload.to_csv(processed_data_file, index=False)
+
+'''
+Upload processed data to Carto
+'''
+logger.info('Uploading processed data to Carto.')
+util_carto.upload_to_carto(processed_data_file, 'LINK')
+
+'''
+Upload original data and processed data to Amazon S3 storage
+'''
+# initialize AWS variables
+aws_bucket = 'wri-public-data'
+s3_prefix = 'resourcewatch/'
+
+logger.info('Uploading original data to S3.')
+# Upload raw data file to S3
+
+# Copy the raw data into a zipped file to upload to S3
+raw_data_dir = os.path.join(data_dir, dataset_name+'.zip')
+with ZipFile(raw_data_dir,'w') as zip:
+    zip.write(raw_data_file, os.path.basename(raw_data_file))
+Upload raw data file to S3
+uploaded = util_cloud.aws_upload(raw_data_dir, aws_bucket, s3_prefix+os.path.basename(raw_data_dir))
+
+logger.info('Uploading processed data to S3.')
+# Copy the processed data into a zipped file to upload to S3
+processed_data_dir = os.path.join(data_dir, dataset_name+'_edit.zip')
+with ZipFile(processed_data_dir,'w') as zip:
+    zip.write(processed_data_file, os.path.basename(processed_data_file))
+# Upload processed data file to S3
+uploaded = util_cloud.aws_upload(processed_data_dir, aws_bucket, s3_prefix+os.path.basename(processed_data_dir))
