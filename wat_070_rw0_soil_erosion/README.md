@@ -11,4 +11,4 @@ You can view the processed dataset for [display on Resource Watch](https://resou
 
 You can also contact the source to get access original dataset [from the source website](http://landscapeportal.org/blog/30/).
 
-###### Note: This dataset processing was done by [Rachel Thoms](https://www.wri.org/profile/rachel-thoms) and QC'd by [](https://www.wri.org/profile/).
+###### Note: This dataset processing was done by [Rachel Thoms](https://www.wri.org/profile/rachel-thoms) and QC'd by [Weiqi Zhou](https://www.wri.org/profile/weiqi-zhou).

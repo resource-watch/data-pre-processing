@@ -54,7 +54,7 @@ data_dict= {
 '''
 Download the data and move to your data directory 
 The data was provided directly from the source as a GeoTiff and downloaded manually into the downloads folder. 
-For access to the most recent data, please contact the principal author Tor Vagen (t.vagen@cgiar.org).access to the most recent data, please contact the principal author Tor Vagen (t.vagen@cgiar.org).
+For access to the most recent data, please contact the principal author Tor Vagen (t.vagen@cgiar.org).
 '''
 
 # move the data from 'Downloads' into the data directory
@@ -69,17 +69,28 @@ for tif in data_dict['tifs']:
 '''
 Process data
 '''
-# Create file name for processed data
+# Project and compress each tif
 for i in range(len(data_dict['tifs'])):
     # set a new file name to represent processed data
-    year= data_dict['tifs'][i][15:19]
+    year= data_dict['tifs'][i][15:19] 
     data_dict['processed_data_file'].append(os.path.join(data_dir,dataset_name + '_' + year +'.tif'))
-
+    
     logger.info('Processing data for ' + data_dict['processed_data_file'][i])
-    # project the data into into WGS84 (espg 4326) using the command line terminal
-    cmd = 'gdalwarp -of GTiff -t_srs EPSG:4326 {} {}'
-    # format to command line
-    posix_cmd = shlex.split(cmd.format(data_dict['raw_data_file'][i], data_dict['processed_data_file'][i]), posix=True)     
+    
+    # project the data into WGS84 (espg 4326) using the command line terminal
+    # convert the geotiff to a vrt to maintain compression
+    cmd = 'gdalwarp -of vrt -t_srs EPSG:4326 {} {}'
+    # create the name for the processed vrt
+    processed_vrt= (os.path.join(data_dir,dataset_name + '_' + year +'.vrt'))
+    # format to command line and run
+    posix_cmd = shlex.split(cmd.format(data_dict['raw_data_file'][i], processed_vrt), posix=True)     
+    completed_process= subprocess.check_call(posix_cmd)   
+    logging.debug(str(completed_process))
+   
+    # translate the vrt file back into a geotiff
+    cmd = 'gdal_translate -co compress=LZW {} {}'
+    # format to command line and run
+    posix_cmd = shlex.split(cmd.format(processed_vrt, data_dict['processed_data_file'][i]), posix=True)     
     completed_process= subprocess.check_call(posix_cmd)   
     logging.debug(str(completed_process))
 
@@ -100,7 +111,7 @@ pyramiding_policy = 'MEAN' #check
 
 # Create an image collection where we will put the processed data files in GEE
 image_collection = f'projects/resource-watch-gee/{dataset_name}'
-ee.data.createAsset({'type': 'ImageCollection'}, image_collection)
+#ee.data.createAsset({'type': 'ImageCollection'}, image_collection)
 
 # set image collection's privacy to public
 acl = {"all_users_can_read": True}
@@ -125,7 +136,7 @@ for i in range(len(data_dict['tifs'])):
     # upload files to Google Cloud Storage
     gcs_uri= util_cloud.gcs_upload(data_dict['raw_data_file'][i], dataset_name, gcs_bucket=gcsBucket)
     
-    logger.info('Uploading '+ data_dict['processed_data_file'][i]+ 'Google Earth Engine.')
+    logger.info('Uploading '+ data_dict['processed_data_file'][i]+ ' Google Earth Engine.')
     # generate an asset name for the current file by using the filename (minus the file type extension)
     file_name=data_dict['processed_data_file'][i].split('.')[0].split('/')[1]
     asset_name = f'projects/resource-watch-gee/{dataset_name}/{file_name}'
@@ -139,7 +150,7 @@ for i in range(len(data_dict['tifs'])):
     # create complete manifest for asset upload
     manifest = util_cloud.gee_manifest_complete(asset_name, gcs_uri[0], mf_bands)
     
-    # upload the file from GCS to GEE
+    # upload the file from Google Cloud Storage to Google Earth Engine
     task = util_cloud.gee_ingest(manifest)
     print(asset_name + ' uploaded to GEE')
     task_id.append(task)
@@ -152,7 +163,7 @@ for i in range(len(data_dict['tifs'])):
 Upload original data and processed data to Amazon S3 storage
 '''
 # initialize AWS variables
-aws_bucket = 'wri-projects'
+aws_bucket = 'wri-public-data'
 s3_prefix = 'resourcewatch/raster/'
 
 # Copy the raw data into a zipped file to upload to S3
@@ -171,10 +182,10 @@ uploaded = util_cloud.aws_upload(raw_data_dir, aws_bucket, s3_prefix + os.path.b
 logger.info('Uploading processed data to S3.')
 # Copy the processed data into a zipped file to upload to S3
 processed_data_dir = os.path.join(data_dir, dataset_name+'_edit.zip')
-with ZipFile(processed_data_dir,'w') as zipped:
+with ZipFile(processed_data_dir,'w') as zip:
     processed_data_files = data_dict['processed_data_file']
-    for procedded_data_file in processed_data_files:
-        zip.write(procedded_data_file, os.path.basename(raw_data_file))
+    for processed_data_file in processed_data_files:
+        zip.write(processed_data_file, os.path.basename(processed_data_file))
 
 # Upload processed data file to S3
 uploaded = util_cloud.aws_upload(processed_data_dir, aws_bucket, s3_prefix + os.path.basename(processed_data_dir))
