@@ -23,4 +23,4 @@ You can view the processed dataset for [display on Resource Watch](https://resou
 
 You can also download the original dataset [directly through Resource Watch](https://wri-public-data.s3.amazonaws.com/resourcewatch/foo_061_rw0_marine_food_supply.zip), or [from the source website](http://www.fao.org/faostat/en/#data/FBS).
 
-###### Note: This dataset processing was done by [Rachel Thoms](https://www.wri.org/profile/rachel-thoms), and QC'd by [](https://www.wri.org/profile).
+###### Note: This dataset processing was done by [Rachel Thoms](https://www.wri.org/profile/rachel-thoms), and QC'd by [Yujing Wu](https://www.wri.org/profile/Yuging-Wu).
