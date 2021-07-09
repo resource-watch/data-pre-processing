@@ -37,7 +37,12 @@ data_dir = util_files.prep_dirs(dataset_name)
 Download data and save to your data directory
 '''
 # The data is provided as two data sets ('New' and 'Historic')
-# Create a data dictionary to store the relevant information about each file including the url
+# Create a data dictionary to store the relevant information about each file 
+    # version: version of data (string)
+    # url: url to retrieve data (string)
+    # raw_data_file: empty list for raw data files (list)
+    # processed_dfs: empty list for processed dataframes (list)
+
 data_dict= {
     'version' : [' new', 'historic'],
     'urls': ['http://fenixservices.fao.org/faostat/static/bulkdownloads/FoodBalanceSheets_E_All_Data_(Normalized).zip','http://fenixservices.fao.org/faostat/static/bulkdownloads/FoodBalanceSheetsHistoric_E_All_Data_(Normalized).zip'],
@@ -66,6 +71,7 @@ Process the data
 # list of marine food items and totals to include
 food_list =['Aquatic Plants', 'Aquatic Animals, Others','Cephalopods','Crustaceans','Demersal Fish', 'Fish, Body Oil', 'Fish, Liver Oil', 'Marine Fish, Other', 'Meat, Aquatic Mammals', 'Molluscs, Other', 'Pelagic Fish']
 total = ['Grand Total']
+# combine the listed items into a single list
 item_list = food_list + total 
 
 # list of areas we want to exlude from our dataframe
