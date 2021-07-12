@@ -74,7 +74,7 @@ total = ['Grand Total']
 # combine the listed items into a single list
 item_list = food_list + total 
 
-# list of areas we want to exlude from our dataframe
+# list of areas we want to exclude from our dataframe
 # so that we only have countries and not aggregated regions
 areas_list = ['Africa', 'Eastern Africa',
     'Middle Africa', 'Northern Africa', 'Southern Africa',
@@ -103,7 +103,7 @@ for file in data_dict['raw_data_file']:
     elements = ['664','674']
     df= df[df['Element Code'].isin(elements)]
 
-    # filter out exculded areas 
+    # filter out excluded areas 
     df = df[~df['Area'].isin(areas_list)]
 
     # store the processed df
@@ -115,7 +115,7 @@ df= pd.concat(data_dict['processed_dfs'])
 # rename the value and year columns
 df.rename(columns={'Year Code':'year'}, inplace=True)
 
-# change whitespaces in columns
+# replace whitespaces with underscores in column headers
 df.columns = df.columns.str.replace(' ', '_')
 
 # turn all column names to lowercase 
