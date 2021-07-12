@@ -34,7 +34,7 @@ data_dir = util_files.prep_dirs(dataset_name)
 Download data and save to your data directory
 '''
 # insert the url used to find the series ids of the data 
-url = 'https://ucdp.uu.se/downloads/ged/ged201-csv.zip'
+url = 'https://ucdp.uu.se/downloads/ged/ged211-csv.zip'
 
 # download the data from the source
 raw_data_file = os.path.join(data_dir, os.path.basename(url))
@@ -50,7 +50,7 @@ zip_ref.close()
 Process the data 
 '''
 # read the data into a pandas dataframe
-df = pd.read_csv(os.path.join(raw_data_file_unzipped, 'ged201.csv'), encoding='utf-8', header=0)
+df = pd.read_csv(os.path.join(raw_data_file_unzipped, 'ged211.csv'), encoding='utf-8', header=0)
 
 # save dataset to csv
 processed_data_file = os.path.join(data_dir, dataset_name+'_edit.csv')
