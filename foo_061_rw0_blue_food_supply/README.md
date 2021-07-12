@@ -1,7 +1,7 @@
 # Food from the Sea (Blue Food Supply)
 This file describes the data pre-processing that was done to the [New](http://www.fao.org/faostat/en/#data/FBS) and [Historic](http://www.fao.org/faostat/en/#data/FBSH) Food Balance Sheets for displaying the Food from the Sea dataset [on Resource Watch](https://resourcewatch.org/data/explore/24ad32a0-b25f-44ff-9bc0-2650ea29e0b4).
 
-The source provided two datasets, one for years collected with historic methodology and one for years collected with new methodology, as a CSV files within a zip folders.
+The source provided two datasets, one for years collected with historic methodology and one for years collected with new methodology, as two CSV files within two zipped folders.
 
 Below we describe the main steps taken to process the data and combine the two files to upload the data to Carto.
 
