@@ -1,5 +1,5 @@
 ## Organized Violence Events Dataset Pre-processing
-This file describes the data pre-processing that was done to [UCDP Georeferenced Event Dataset (GED) Global version 20.1](https://ucdp.uu.se/downloads/ged/ged201.pdf) for [display on Resource Watch](http://resourcewatch.org/data/explore/9b6e6bce-efce-49a5-b603-385b8dae29e0).
+This file describes the data pre-processing that was done to [UCDP Georeferenced Event Dataset (GED) Global version 21.1](https://ucdp.uu.se/downloads/ged/ged211.pdf) for [display on Resource Watch](http://resourcewatch.org/data/explore/9b6e6bce-efce-49a5-b603-385b8dae29e0).
 
 The source provided the data as a CSV file. This data file was not modified from the original version for display on Resource Watch.
 
