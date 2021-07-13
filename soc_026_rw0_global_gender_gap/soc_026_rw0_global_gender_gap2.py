@@ -19,6 +19,9 @@ dotenv.load_dotenv('C:\\Users\\Jason.Winik\\OneDrive - World Resources Institute
 utils_path = os.path.join(os.path.abspath(os.getenv('PROCESSING_DIR')),'utils')
 if utils_path not in sys.path:
     sys.path.append(utils_path)
+gdal_path = os.getenv('GDAL_DIR')
+if gdal_path not in sys.path:
+    sys.path.append(gdal_path)
 import util_files
 import util_cloud
 import util_carto
@@ -60,12 +63,25 @@ df_carto = pd.DataFrame(df_dict['rows'])
 '''
 Process Data
 '''
-# year, link to pdf, main index page number, subindex page number
-data = {'year':[2020, 2021],'link': ['http://www3.weforum.org/docs/WEF_GGGR_2020.pdf', 'http://www3.weforum.org/docs/WEF_GGGR_2021.pdf'], 'page_GGGR': [9,10], 'page_subindexes': [[12,13], [18,19]]}
+# Tabula .read_pdf() requirements
+data = {'year':[2020, 2021],
+        'link': ['http://www3.weforum.org/docs/WEF_GGGR_2020.pdf', 'http://www3.weforum.org/docs/WEF_GGGR_2021.pdf'],
+        'page_GGGR': [9,10],
+        'page_area_GGGR': [[59.9,59.9,713.215,548.026],[59.007,56.0,724.972,538.918]],
+        'page_subindexes': [[12,13], [18,19]]}
+#df_pdf20 = tabula.read_pdf('http://www3.weforum.org/docs/WEF_GGGR_2020.pdf', pages='9',  stream=True)
 
+    
+#pull the tables
+df_list = []
 for i in range(len(data['year'])):
-    df_GGGR = tabula.read_pdf(data['link'][i], pages=data['page_GGGR'][i], stream=True)
-    df_sub = tabula.read_pdf(data['link'][i], pages=data['page_subindexes'][i], stream=True)
+    df_list.append(tabula.read_pdf(data['link'][i], pages=data['page_GGGR'][i], area = [data['page_area_GGGR'][i]], stream=True))    
+    df_list.append(tabula.read_pdf(data['link'][i], pages=data['page_subindexes'][i], stream=True))
+        
+#unpack the nested lists
+df_all = [x for l in df_list for x in l]
+for j in df_all:
+    df_all[j].dropna(subset = ['Country'])
 
 
 

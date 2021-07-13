@@ -59,7 +59,7 @@ Process data
 # https://pypi.org/project/tabula-py/
 # https://nbviewer.jupyter.org/github/chezou/tabula-py/blob/master/examples/tabula_example.ipynb
 
-df_pdf21 = tabula.read_pdf('http://www3.weforum.org/docs/WEF_GGGR_2021.pdf', pages=['10','18','19'], stream=True)
+df_pdf21 = tabula.read_pdf('http://www3.weforum.org/docs/WEF_GGGR_2021.pdf', pages=['10','18','19'], lattice=True)
 
 #remove first dataframe in list with titles
 df = df_pdf21[1]
@@ -95,7 +95,7 @@ df_concat['year'] = np.where(df_concat['overall_index_score'], 2021, 0)
 df_concat = df_concat[['country', 'overall_index_rank','overall_index_score','year']]
 
 #Four subindexes
-df_pdf21_2 = tabula.read_pdf('http://www3.weforum.org/docs/WEF_GGGR_2021.pdf', pages=['10','18','19'], stream=True)
+df_pdf21_2 = tabula.read_pdf('http://www3.weforum.org/docs/WEF_GGGR_2021.pdf', pages=['10','18','19'], Lattice=True)
 
 #1. Economic Information and Opportunity 
 df2 = df_pdf21[2]
@@ -171,7 +171,7 @@ df21_final = df21_final.merge(df_concat5,how='outer', left_on=['year','country']
 '''
 
 # read in data to tabulas/ pandas dataframe
-df_pdf20 = tabula.read_pdf('http://www3.weforum.org/docs/WEF_GGGR_2020.pdf', pages=['9','12','13'], stream=True)
+df_pdf20 = tabula.read_pdf('http://www3.weforum.org/docs/WEF_GGGR_2020.pdf', pages=['9','12','13'], multiple_tables=True, stream=True, encoding="utf-8")
 
 #remove first dataframe in list with titles
 df20 = df_pdf20[1]
