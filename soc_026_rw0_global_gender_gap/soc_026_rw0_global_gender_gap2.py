@@ -68,7 +68,9 @@ data = {'year':[2020, 2021],
         'link': ['http://www3.weforum.org/docs/WEF_GGGR_2020.pdf', 'http://www3.weforum.org/docs/WEF_GGGR_2021.pdf'],
         'page_GGGR': [9,10],
         'page_area_GGGR': [[59.9,59.9,713.215,548.026],[59.007,56.0,724.972,538.918]],
-        'page_subindexes': [[12,13], [18,19]]}
+        'page_subindexes': [[12,13], [18,19]],
+        'main index df': [],
+        'subindex df':[]}
 #df_pdf20 = tabula.read_pdf('http://www3.weforum.org/docs/WEF_GGGR_2020.pdf', pages='9',  stream=True)
 
     
@@ -80,9 +82,19 @@ for i in range(len(data['year'])):
         
 #unpack the nested lists
 df_all = [x for l in df_list for x in l]
-for j in df_all:
-    df_all[j].dropna(subset = ['Country'])
+
+#create a dictionary that splits up dataframes by year. (first three are 2020, next 2021)
+years_list = {'year':[2020, 2021], 'dataframes': [df_all[0:3], df_all[3:]]}
 
 
+#datacleaning by year
+data_clean = []
+for i in range(len(years_list['year'])):
+    df_list_a = years_list['dataframes'][i][0].iloc[:, 0:3]
+    df_list_b = years_list['dataframes'][i][0].iloc[:,5:8]
+    df_list_b.columns = ['Rank', 'Country', 'Score']
+    df_list_c = pd.concat([df_list_a, df_list_b]).reset_index(drop=True)
+    data_clean.append(df_list_c)
+    
 
 
