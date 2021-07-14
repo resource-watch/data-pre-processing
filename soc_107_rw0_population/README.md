@@ -25,7 +25,7 @@ for (var i = yearStart; i <= yearEnd; i++) {
     yearStack = yearStack.addBands(yearImage, null, true);
 }
 
-//Save the boundaries.
+//Save the boundaries. The dataset does not extend below -60 degrees. Clip the extent to avoid unwanted zeros below this boundary.
 var rect = [-180, -60, 180, 89.9];
 var bounds = ee.Geometry.Rectangle(rect,null,false);
 
