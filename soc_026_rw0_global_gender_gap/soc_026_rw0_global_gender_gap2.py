@@ -87,14 +87,59 @@ df_all = [x for l in df_list for x in l]
 years_list = {'year':[2020, 2021], 'dataframes': [df_all[0:3], df_all[3:]]}
 
 
-#datacleaning by year
+#main index
 data_clean = []
 for i in range(len(years_list['year'])):
-    df_list_a = years_list['dataframes'][i][0].iloc[:, 0:3]
-    df_list_b = years_list['dataframes'][i][0].iloc[:,5:8]
+    df_list_a = years_list['dataframes'][i][0].iloc[:, 0:3] #first half
+    df_list_a.columns = ['Rank', 'Country', 'Score']
+    df_list_b = years_list['dataframes'][i][0].iloc[:,5:8] #second half
     df_list_b.columns = ['Rank', 'Country', 'Score']
-    df_list_c = pd.concat([df_list_a, df_list_b]).reset_index(drop=True)
+    df_list_c = pd.concat([df_list_a, df_list_b]).reset_index(drop=True) #concat
+    df_list_c['year'] = years_list['year'][i] #create a column for year
+    df_list_c = df_list_c.dropna(subset = ['Country']) #drop NA
+    df_list_c = df_list_c.replace(',','.', regex=True) #need to drop the commas?
     data_clean.append(df_list_c)
+    data_main_index = pd.concat(data_clean).reset_index(drop=True)
+    data_main_index.columns = ['overall_index_rank', 'country', 'overall_index_score', 'year' ]
+
+#subindex
+data_clean_subindex = []
+for i in range(len(years_list['year'])):
+    econ_a = years_list['dataframes'][i][1].iloc[:, 0:3] #first half
+    econ_a.columns = ['economic_participation_and_opportunity_rank', 'country', 'economic_participation_and_opportunity_score']
+    econ_b = years_list['dataframes'][i][1].iloc[:,3:6] #second half
+    econ_b.columns = ['economic_participation_and_opportunity_rank', 'country', 'economic_participation_and_opportunity_score']
+    econ_c = pd.concat([econ_a, econ_b]).reset_index(drop=True) #concat
+    econ_c['year'] = years_list['year'][i] #create a column for year
+    econ_c = econ_c.dropna(subset = ['country']) #drop NA
+    data_clean_subindex.append(econ_c) 
     
+    edu_a = years_list['dataframes'][i][1].iloc[:, 6:9] #first half
+    edu_a.columns = ['educational_attainment_subindex_rank', 'country', 'educational_attainment_subindex_score']
+    edu_b = years_list['dataframes'][i][1].iloc[:,9:12] #second half
+    edu_b.columns = ['educational_attainment_subindex_rank', 'country', 'educational_attainment_subindex_score']
+    edu_c = pd.concat([edu_a, edu_b]).reset_index(drop=True) #concat
+    edu_c['year'] = years_list['year'][i] #create a column for year
+    edu_c = edu_c.dropna(subset = ['country']) #drop NA
+    #data_clean_subindex = pd.merge(data_clean_subindex, edu_c['educational_attainment_subindex_rank', 'educational_attainment_subindex__score'], how='outer', on=['year','country'])
+    #data_clean_subindex.append(edu_c)
+    #data_sub_index = pd.concat(data_clean_subindex).reset_index(drop=True)
+    
+    health_a = years_list['dataframes'][i][1].iloc[:, 0:3] #first half
+    health_a.columns = ['health_and_survival_subindex_rank', 'country', 'health_and_survival_subindex_score']
+    health_b = years_list['dataframes'][i][1].iloc[:,3:6] #second half
+    health_b.columns = ['health_and_survival_subindex_rank', 'country', 'health_and_survival_subindex_score']
+    health_c = pd.concat([health_a, health_b]).reset_index(drop=True) #concat
+    health_c['year'] = years_list['year'][i] #create a column for year
+    health_c = health_c.dropna(subset = ['country']) #drop NA
+    data_clean_subindex.append(health_c) 
+    
+    political_a = years_list['dataframes'][i][1].iloc[:, 6:9] #first half
+    political_a.columns = ['political_empowerment_subindex_rank', 'country', 'political_empowerment_subindex_score']
+    political_b = years_list['dataframes'][i][1].iloc[:,9:12] #second half
+    political_b.columns = ['political_empowerment_subindex_rank', 'country', 'political_empowerment_subindex_score']
+    political_c = pd.concat([political_a, political_b]).reset_index(drop=True) #concat
+    political_c['year'] = years_list['year'][i] #create a column for year
+    political_c = political_c.dropna(subset = ['country']) #drop NA
 
-
+        
