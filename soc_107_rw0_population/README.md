@@ -5,7 +5,7 @@ The source provided the data as a [Google Earth Engine image collection](https:/
 
 ```javascript
 // Purpose: Mosaic all images for all years within an image collection and export it to an asset
-
+with each year of data as a band
 //Load in an image collection
 var worldpop = ee.ImageCollection('WorldPop/GP/100m/pop');
 
