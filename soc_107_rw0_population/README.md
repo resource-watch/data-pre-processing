@@ -4,18 +4,18 @@ This file describes the data pre-processing that was done to [Population Count -
 The source provided the data as a [Google Earth Engine image collection](https://developers.google.com/earth-engine/datasets/catalog/WorldPop_GP_100m_pop). The images in the image collection were mosaiced together for display on Resource Watch using the following code.
 
 ```javascript
-// Purpose: Mosaic an image collection of tif files and export them to an asset
+// Purpose: Mosaic all images within an image collection and export it to an asset
 
 
 // Mosaic an image collection
 
-//Load in a batch of image collection
+//Load in an image collection
 var ic = ee.ImageCollection('WorldPop/GP/100m/pop');
 
-//Mosaic image collection
+//Mosaic all images in the image collection to a single image
 var mosaic = ic.mosaic();
 
-//Get projection
+//Get the projection info of the image collection
 var projection = ic.first().projection();
 var crs = projection.getInfo().crs;
 var transform = projection.getInfo().transform;
@@ -24,7 +24,7 @@ var transform = projection.getInfo().transform;
 var rect = [-180, -89.9, 180, 89.9];
 var bounds = ee.Geometry.Rectangle(rect,null,false);
 
-//Export mosaiced image to an asset
+//Export mosaicked image to an asset with the projection and boundaries obtained in the previous steps
 Export.image.toAsset({
   image: mosaic,
   description: 'Population_grid_100m',
