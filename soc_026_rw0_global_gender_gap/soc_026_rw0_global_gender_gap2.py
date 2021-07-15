@@ -8,6 +8,7 @@ Created on Thu Jul  1 14:22:50 2021
 import pandas as pd
 from pandas import DataFrame
 import numpy as np
+from functools import reduce
 import io
 import requests
 import json
@@ -97,18 +98,20 @@ for i in range(len(years_list['year'])):
     df_list_c = pd.concat([df_list_a, df_list_b]).reset_index(drop=True) #concat
     df_list_c['year'] = years_list['year'][i] #create a column for year
     df_list_c = df_list_c.dropna(subset = ['Country']) #drop NA
-    df_list_c = df_list_c.replace(',','.', regex=True) #need to drop the commas?
+    df_list_c = df_list_c.replace(',','.', regex=True)
     data_clean.append(df_list_c)
     data_main_index = pd.concat(data_clean).reset_index(drop=True)
     data_main_index.columns = ['overall_index_rank', 'country', 'overall_index_score', 'year' ]
+    data_main_index['overall_index_score'] = data_main_index['overall_index_score'].str.split(' ').str[0]
 
 #subindex
 data_clean_subindex = []
+df_subindex_merged = []
 for i in range(len(years_list['year'])):
     econ_a = years_list['dataframes'][i][1].iloc[:, 0:3] #first half
-    econ_a.columns = ['economic_participation_and_opportunity_rank', 'country', 'economic_participation_and_opportunity_score']
+    econ_a.columns = ['economic_participation_and_opportunity_subindex_rank', 'country', 'economic_participation_and_opportunity_subindex_score']
     econ_b = years_list['dataframes'][i][1].iloc[:,3:6] #second half
-    econ_b.columns = ['economic_participation_and_opportunity_rank', 'country', 'economic_participation_and_opportunity_score']
+    econ_b.columns = ['economic_participation_and_opportunity_subindex_rank', 'country', 'economic_participation_and_opportunity_subindex_score']
     econ_c = pd.concat([econ_a, econ_b]).reset_index(drop=True) #concat
     econ_c['year'] = years_list['year'][i] #create a column for year
     econ_c = econ_c.dropna(subset = ['country']) #drop NA
@@ -121,9 +124,7 @@ for i in range(len(years_list['year'])):
     edu_c = pd.concat([edu_a, edu_b]).reset_index(drop=True) #concat
     edu_c['year'] = years_list['year'][i] #create a column for year
     edu_c = edu_c.dropna(subset = ['country']) #drop NA
-    #data_clean_subindex = pd.merge(data_clean_subindex, edu_c['educational_attainment_subindex_rank', 'educational_attainment_subindex__score'], how='outer', on=['year','country'])
-    #data_clean_subindex.append(edu_c)
-    #data_sub_index = pd.concat(data_clean_subindex).reset_index(drop=True)
+    data_clean_subindex.append(edu_c)
     
     health_a = years_list['dataframes'][i][1].iloc[:, 0:3] #first half
     health_a.columns = ['health_and_survival_subindex_rank', 'country', 'health_and_survival_subindex_score']
@@ -141,5 +142,57 @@ for i in range(len(years_list['year'])):
     political_c = pd.concat([political_a, political_b]).reset_index(drop=True) #concat
     political_c['year'] = years_list['year'][i] #create a column for year
     political_c = political_c.dropna(subset = ['country']) #drop NA
+    data_clean_subindex.append(political_c)
+    
+#    for item in range(len(data_clean_subindex)):
+#        print(item)
+#        while len(data_clean_subindex) > 4:
+#            df_subindex_merged.append(data_clean_subindex.pop(:4))
 
+#Merging all the subindicies for each year. Need to come up with a better way to do this... Tried in the comments above    
+df_subindex_2020 = reduce(lambda left,right: pd.merge(left, right, on=['year', 'country'], how = 'outer'), data_clean_subindex[0:4])
+df_subindex_2021 = reduce(lambda left,right: pd.merge(left, right, on=['year', 'country'], how = 'outer'), data_clean_subindex[4:])
+df_subindex_final = pd.concat([df_subindex_2020, df_subindex_2021])
+
+# Merge main index and subindex
+df_processed = pd.merge(data_main_index, df_subindex_final, on = ['year', 'country'], how = 'outer')
+df_processed = df_processed.replace(',','.', regex=True)
         
+# Merge new years with old
+frames_carto_upload = [df_carto, df_processed]
+df_carto_upload = pd.concat(frames_carto_upload).reset_index(drop=True)
+
+#save processed dataset to csv
+processed_data_file = os.path.join(data_dir, dataset_name+'_edit.csv')
+df_carto_upload.to_csv(processed_data_file, index=False)
+
+'''
+Upload processed data to Carto
+'''
+logger.info('Uploading processed data to Carto.')
+util_carto.upload_to_carto(processed_data_file, 'LINK')
+
+'''
+Upload original data and processed data to Amazon S3 storage
+'''
+# initialize AWS variables
+aws_bucket = 'wri-public-data'
+s3_prefix = 'resourcewatch/'
+
+logger.info('Uploading original data to S3.')
+# Upload raw data file to S3
+
+# Copy the raw data into a zipped file to upload to S3
+raw_data_dir = os.path.join(data_dir, dataset_name+'.zip')
+with ZipFile(raw_data_dir,'w') as zip:
+    zip.write(raw_data_file, os.path.basename(raw_data_file))
+Upload raw data file to S3
+uploaded = util_cloud.aws_upload(raw_data_dir, aws_bucket, s3_prefix+os.path.basename(raw_data_dir))
+
+logger.info('Uploading processed data to S3.')
+# Copy the processed data into a zipped file to upload to S3
+processed_data_dir = os.path.join(data_dir, dataset_name+'_edit.zip')
+with ZipFile(processed_data_dir,'w') as zip:
+    zip.write(processed_data_file, os.path.basename(processed_data_file))
+# Upload processed data file to S3
+uploaded = util_cloud.aws_upload(processed_data_dir, aws_bucket, s3_prefix+os.path.basename(processed_data_dir))

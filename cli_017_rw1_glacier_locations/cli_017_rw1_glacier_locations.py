@@ -49,6 +49,7 @@ logger.info('Downloading raw data')
 url = "https://www.glims.org/download/latest"
 raw_data_file = os.path.join(data_dir,os.path.basename(url)+'.zip')
 r = urllib.request.urlretrieve(url, raw_data_file)
+
 # unzip source data
 raw_data_file_unzipped = raw_data_file.split('.')[0]
 zip_ref = ZipFile(raw_data_file, 'r')
