@@ -73,29 +73,51 @@ for file in raw_data_file_unzipped:
     # rename the UN Code column in the country code list to match the column in the dataset
     countries_df.rename(columns={'UN_Code':'COUNTRY.UN_CODE'}, inplace=True)
 
-    # join the dataframes so each country code in the dataset is matched with an ISO code and its full name
+    # merge the dataframes so each country code in the dataset is matched with an ISO code and its full name
     df = pd.merge(df_data,countries_df[['COUNTRY.UN_CODE','ISO3_Code','Name_En']], on='COUNTRY.UN_CODE', how='left')
-    
-    # turn all column names to lowercase
-    df.columns = [x.lower() for x in df.columns]
-    # replace periods with underscores in the column headers
-    df.columns = df.columns.str.replace('.', '_')
-
-    # rename the period column to year
-    df.rename(columns={'period':'year'}, inplace=True)
    
-    # add a column to reflect the type of production measured by the value column for the dataset (ex GlobalProduction, Aquaculture, or Capture)
-    df['type'] = os.path.basename(file).split('_')[0]
-    
+    # add a column to reflect the type of production measured by the value column for the dataset (ex GlobalProduction, Aquaculture, or Capture) and the variable (quantity)
+    type = os.path.basename(file).split('_')[0]
+    df['type'] = type + '_quantity'
+
+    # convert the value column to a float
+    df['VALUE'] = df['VALUE'].astype(float) 
+
     # store the processed df
     processed_df.append(df)
 
-# C
+    # There is additional data in the Aquaculture dataset on value 
+    # Process this data following the procedure above  
+    if type == 'Aquaculture':
+        # read the dataset as a pandas dataframe
+        csv_aqua_value = glob.glob(os.path.join(file,'*VALUE.csv'))[0] 
+        df_aqua_value = pd.read_csv(csv_aqua_value,encoding='latin-1')
+        
+        # merge the dataframes so each country code in the dataset is matched with an ISO code and its full name
+        df = pd.merge(df_aqua_value,countries_df[['COUNTRY.UN_CODE','ISO3_Code','Name_En']], on='COUNTRY.UN_CODE', how='left')
+   
+        # add a column to reflect the type of production measured by the value column for the dataset (ex GlobalProduction, Aquaculture, or Capture) and the variable (value)
+        type = os.path.basename(file).split('_')[0]
+        df['type'] = type + '_value'
+
+        # convert the value column to a float
+        df['VALUE'] = df['VALUE'].astype(float)
+
+        # store the processed df
+        processed_df.append(df)
+    
+
+# join the three datasets
 df = pd.concat(processed_df)
 
-# pivot the table from long to short to create entires for each country and year with columns based on the 'type' of production and values which are the sum of the values for each type in a given year
-table = pd.pivot_table(df, values='value', index=['iso3_code', 'year','measure'], columns=['type'], aggfunc=np.sum)
+# rename the period column to year
+df.rename(columns={'PERIOD':'year'}, inplace=True)
 
+# pivot the table from long to short to create entires for each country and year with columns based on the 'type' of production and values which are the sum of the values for each type in a given year
+table = pd.pivot_table(df, values='VALUE', index=['ISO3_Code', 'year','MEASURE'], columns=['type'], aggfunc=np.sum)
+
+# turn all column names to lowercase
+table.columns = [x.lower() for x in table.columns]
 
 # save processed dataset to csv
 processed_data_file = os.path.join(data_dir, dataset_name+'_edit.csv')
