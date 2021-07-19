@@ -15,14 +15,6 @@ import json
 import os
 import sys
 import tabula
-import dotenv
-dotenv.load_dotenv('C:\\Users\\Jason.Winik\\OneDrive - World Resources Institute\\Documents\\GitHub\\cred\\.env')
-utils_path = os.path.join(os.path.abspath(os.getenv('PROCESSING_DIR')),'utils')
-if utils_path not in sys.path:
-    sys.path.append(utils_path)
-gdal_path = os.getenv('GDAL_DIR')
-if gdal_path not in sys.path:
-    sys.path.append(gdal_path)
 import util_files
 import util_cloud
 import util_carto
@@ -41,7 +33,7 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 
 # name of table on Carto where you want to upload data
 # this should be a table name that is not currently in use
-dataset_name = 'soc_026_gender_inequality_index' #check
+dataset_name = 'soc_026_rw1_gender_gap_index' #check
 
 logger.info('Executing script for dataset: ' + dataset_name)
 # create a new sub-directory within your specified dir called 'data'
@@ -52,8 +44,8 @@ data_dir = util_files.prep_dirs(dataset_name)
 Import table from Carto
 '''
 #https://carto.com/developers/sql-api/guides/copy-queries/
-api_key = 'b246a1a3d6adcd53ef1e057c149a17ed8b7c3edb'
-username = 'wri-rw'
+api_key = 'CARTO_WRI_RW_KEY'
+username = 'CARTO_WRI_RW_USER'
 
 q = 'SELECT * FROM soc_026_gender_gap_index_1'
 url = 'https://wri-rw.carto.com/api/v2/sql'
