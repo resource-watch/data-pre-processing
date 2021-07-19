@@ -52,7 +52,6 @@ data_dir = util_files.prep_dirs(dataset_name)
 Import table from Carto
 '''
 #https://carto.com/developers/sql-api/guides/copy-queries/
-api_key = 'b246a1a3d6adcd53ef1e057c149a17ed8b7c3edb'
 username = 'wri-rw'
 
 q = 'SELECT * FROM soc_026_gender_gap_index_1'
