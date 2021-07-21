@@ -105,7 +105,6 @@ for file in raw_data_file_unzipped:
 
         # store the processed df
         processed_df.append(df)
-    
 
 # join the three datasets
 df = pd.concat(processed_df)
@@ -113,11 +112,15 @@ df = pd.concat(processed_df)
 # rename the period column to year
 df.rename(columns={'PERIOD':'year'}, inplace=True)
 
+
 # pivot the table from long to short to create entires for each country and year with columns based on the 'type' of production and values which are the sum of the values for each type in a given year
 table = pd.pivot_table(df, values='VALUE', index=['ISO3_Code', 'year','MEASURE'], columns=['type'], aggfunc=np.sum)
 
 # turn all column names to lowercase
 table.columns = [x.lower() for x in table.columns]
+
+# convert Year column to date time object
+df['datetime'] = pd.to_datetime(df.year, format='%Y')
 
 # save processed dataset to csv
 processed_data_file = os.path.join(data_dir, dataset_name+'_edit.csv')
