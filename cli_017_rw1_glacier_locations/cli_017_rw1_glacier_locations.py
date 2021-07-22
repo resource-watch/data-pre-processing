@@ -9,7 +9,6 @@ import requests
 import json
 import os
 import sys
-import tabula
 import dotenv
 dotenv.load_dotenv('C:\\Users\\Jason.Winik\\OneDrive - World Resources Institute\\Documents\\GitHub\\cred\\.env')
 utils_path = os.path.join(os.path.abspath(os.getenv('PROCESSING_DIR')),'utils')
@@ -46,7 +45,6 @@ data_dir = util_files.prep_dirs(dataset_name)
 '''
 Download data and save to your data directory
 '''
-
 # download the data from the source
 url = "https://www.glims.org/download/latest"
 raw_data_file = os.path.join(data_dir,os.path.basename(url)+'.zip')
@@ -63,30 +61,40 @@ Process Data
 #need polygon and point
 
 # load in the polygon shapefile
-shapefile = glob.glob(os.path.join(raw_data_file_unzipped, 'glims_points.shp', 'glims_polygon.shp'))
-gdf = gpd.read_file(shapefile)
+#points = os.path.abspath('glims_points.shp')
+#polygon = os.path.abspath('glims_polygon.shp')
+shapefile = glob.glob(os.path.join(raw_data_file_unzipped,'glims_download_82381', 'glims_p*.shp'))
+gdf_points = gpd.read_file(shapefile[0])
+gdf_extent = gpd.read_file(shapefile[1])
 
-# convert the data type of column 'PROTECT', 'PROTECT_FE', and 'METADATA_I' to integer
-gdf['PROTECT'] = gdf['PROTECT'].astype(int)
-gdf['PROTECT_FE'] = gdf['PROTECT_FE'].astype(int)
-gdf['METADATA_I'] = gdf['METADATA_I'].astype(int)
+#rename columns points
+gdf_points.columns = ['the_geom' if x == 'geometry' else x for x in gdf_points.columns]
 
-# create a path to save the processed shapefile later
-processed_data_file = os.path.join(data_dir, dataset_name+'_edit.shp')
-# create an index column to use as cartodb_id
-gdf['cartodb_id'] = gdf.index
+#rename columns extent
+extent_col_change = {'length': 'glacier_length', 'geometry': 'the_geom'}
+gdf_extent.columns = [extent_col_change.get(x,x) for x in gdf_extent.columns]
 
-# reorder the columns
-gdf = gdf[['cartodb_id'] + list(gdf)[:-1]]
+#remove excess extent columns
+columns_to_remove = ['loc_unc_x', 'loc_unc_y', 'glob_unc_x', 'glob_unc_y']
+gdf_extent = gdf_extent.drop(columns_to_remove,axis = 1)
+
+#create new field 
+
 
 # save processed dataset to shapefile
-gdf.to_file(processed_data_file,driver='ESRI Shapefile')
+processed_data_points = os.path.join(data_dir, dataset_name +'_locations.shp')
+gdf_points.to_file(processed_data_points,driver='ESRI Shapefile')
+
+processed_data_extent = os.path.join(data_dir, dataset_name +'_extent.shp')
+gdf_extent.to_file(processed_data_extent,driver='ESRI Shapefile')
+
+processed_files = [processed_data_extent, processed_data_points]
 
 '''
 Upload processed data to Carto
 '''
 logger.info('Uploading processed data to Carto.')
-util_carto.upload_to_carto(processed_data_file, 'LINK')
+util_carto.upload_to_carto(processed_files, 'LINK')
 
 '''
 Upload original data and processed data to Amazon S3 storage
