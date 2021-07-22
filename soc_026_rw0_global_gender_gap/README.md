@@ -15,6 +15,6 @@ Please see the [Python script](https://github.com/resource-watch/data-pre-proces
 
 You can view the processed Gender Gap Index dataset [on Resource Watch](https://resourcewatch.org/data/explore/Gender-Gap-Index-2?section=All+data&selectedCollection=&zoom=4.644176750750855&lat=6.019854545136706&lng=-21.499869732141935&pitch=0&bearing=0&basemap=dark&labels=light&layers=%255B%257B%2522dataset%2522%253A%25220be2ce12-79b3-434b-b557-d6ea92d787fe%2522%252C%2522opacity%2522%253A1%252C%2522layer%2522%253A%2522c50a39b7-c72e-4e41-a92d-e49ec28e441c%2522%257D%255D&aoi=&page=1&sort=relevance&sortDirection=-1&search=wef).
 
-You can also download the original dataset [directly through Resource Watch](s3 link if available), or [from the source website]({download from source link).
+You can also download the original dataset [from the source website](https://www.weforum.org/reports/the-global-gender-gap-report-2021).
 
-###### Note: This dataset processing was done by [{Jason Winik}]({link to WRI bio page}), and QC'd by [{name}]({link to WRI bio page}).
+###### Note: This dataset processing was done by [{Jason Winik}](https://www.wri.org/profile/jason-winik), and QC'd by [{name}]({link to WRI bio page}).
