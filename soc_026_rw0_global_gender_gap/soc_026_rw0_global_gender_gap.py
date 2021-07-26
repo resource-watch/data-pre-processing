@@ -9,12 +9,13 @@ import pandas as pd
 from pandas import DataFrame
 import numpy as np
 from functools import reduce
-import io
 import requests
 import json
 import os
-import sys
 import tabula
+utils_path = os.path.join(os.getenv('PROCESSING_DIR'),'utils')
+if utils_path not in sys.path:
+    sys.path.append(utils_path)
 import util_files
 import util_cloud
 import util_carto
@@ -41,20 +42,7 @@ logger.info('Executing script for dataset: ' + dataset_name)
 data_dir = util_files.prep_dirs(dataset_name)
 
 '''
-Import table from Carto
-'''
-#https://carto.com/developers/sql-api/guides/copy-queries/
-api_key = 'CARTO_WRI_RW_KEY'
-username = 'CARTO_WRI_RW_USER'
-
-q = 'SELECT * FROM soc_026_gender_gap_index_1'
-url = 'https://wri-rw.carto.com/api/v2/sql'
-r = requests.get(url, params={'api_key': api_key, 'q': q}).text
-df_dict = json.loads(r)
-df_carto = pd.DataFrame(df_dict['rows'])
-
-'''
-Process Data
+Download data
 '''
 # Tabula .read_pdf() requirements
 # If table does not pull correctly, use "area = " within tabula.
@@ -63,94 +51,115 @@ data = {'year':[2020, 2021],
         'link': ['http://www3.weforum.org/docs/WEF_GGGR_2020.pdf', 'http://www3.weforum.org/docs/WEF_GGGR_2021.pdf'],
         'page_GGGR': [9,10],
         'page_area_GGGR': [[59.9,59.9,713.215,548.026],[59.007,56.0,724.972,538.918]],
-        'page_subindexes': [[12,13], [18,19]],
-        'main index df': [],
-        'subindex df':[]}
+        'page_subindexes': [[12,13], [18,19]]}
 
     
 #pull the tables
-df_list = []
-for i in range(len(data['year'])):
-    df_list.append(tabula.read_pdf(data['link'][i], pages=data['page_GGGR'][i], area = [data['page_area_GGGR'][i]], stream=True))    
-    df_list.append(tabula.read_pdf(data['link'][i], pages=data['page_subindexes'][i], stream=True))
+df_main_index_dict = {}
+df_subindex_dict = {}
+for year in data['year']:
+    i = data['year'].index(year)
+    df_main_index_dict[year] = tabula.read_pdf(data['link'][i], pages=data['page_GGGR'][i], area = [data['page_area_GGGR'][i]], stream=True)    
+    df_subindex_dict[year] = tabula.read_pdf(data['link'][i], pages=data['page_subindexes'][i], stream=True)
+
+'''
+Process Data
+'''
+
+# the source has inconsistently named some countries
+# define a mapping to correct country names
+name_mapping = {'Bosnia  Herzegovina':'Bosnia and Herzegovina',
+                'Bosnia Herzegovina':'Bosnia and Herzegovina',
+                'Congo Dem Rep': 'Congo, Dem. Rep.',
+                'Gambia':'Gambia, The',
+                'Iran': 'Iran, Islamic Rep.',
+                'Korea':'Korea, Rep.',
+                'Macedonia':'North Macedonia',
+                'Swaziland':'Eswatini',
+                'Timor-leste':'Timor-Leste',
+                'Viet Nam':'Vietnam'
+}
+
+# define column names of source data and for final dataframe after processing
+source_cols = ['Rank', 'Country', 'Score']
+processed_cols = ['overall_index_rank', 'country', 'overall_index_score', 'year']
+
+# process main index
+data_main_index = pd.DataFrame(columns=processed_cols)
+for year, df_list in df_main_index_dict.items():
+    # data tables are split in half with first and second half side by side
+    # first we need to concatenate the left and right sides
+    df_a = df_list[0].iloc[:, 0:3] #first half
+    df_a.columns = source_cols
+    df_b = df_list[0].iloc[:,5:8] #second half
+    df_b.columns = source_cols
+    df_concat = pd.concat([df_a, df_b]).reset_index(drop=True) #concat
+    df_concat['year'] = year #create a column for year
+    df_concat = df_concat.dropna(subset = ['Country']) #drop NA
+    # replace inconsistent country names
+    for country in name_mapping.keys():
+        df_concat['Country'] = np.where(df_concat['Country']==country, name_mapping[country], df_concat['Country'])
+    # drop asterisks from new countries in country column
+    df_concat[['Country']] = df_concat[['Country']].replace('\*','', regex=True)
+    # replace , with . to properly format decimals in Score column
+    df_concat[['Score']] = df_concat[['Score']].replace(',','.', regex=True)
+    # drop duplicate entry of score
+    df_concat['Score'] = df_concat['Score'].str.split(' ').str[0]
+    # rename columns
+    df_concat.columns = processed_cols
+    # add clean data to overall dataframe for main index
+    data_main_index = pd.concat([data_main_index, df_concat]).reset_index(drop=True)
+
+
+def process_subindex(subindex, l_r, page):
+    if l_r=='left':
+        start_i = 0
+    else:
+        start_i = 6
+    cols_sub = [f'{subindex}_subindex_rank', 'country', f'{subindex}_subindex_score']
+    df_subindex = pd.DataFrame(columns=cols_sub)
+    for year, df_list in df_subindex_dict.items():
+        df_a = df_list[page].iloc[:, start_i:start_i+3] #first half
+        df_a.columns = cols_sub
+        df_b = df_list[page].iloc[:, start_i+3:start_i+6] #second half
+        df_b.columns = cols_sub
+        df_concat = pd.concat([df_a, df_b]).reset_index(drop=True) #concat
+        df_concat['year'] = year #create a column for year
+        # replace , with . to properly format decimals in Score column
+        df_concat[[cols_sub[2]]] = df_concat[[cols_sub[2]]].replace(',','.', regex=True)
+        df_concat = df_concat.dropna(subset = ['country']) #drop NA
+        # the source data has mistakenly replaced , with . in some country names
+        # if there is a . after the first word of a country name, replace it with a comma
+        df_concat['country'] = df_concat['country'].apply(lambda x: x.replace(str(x).split(' ')[0], str(x).split(' ')[0].replace('.', ',')))
+        # replace inconsistent country names
+        for country in name_mapping.keys():
+            df_concat['country'] = np.where(df_concat['country']==country, name_mapping[country], df_concat['country'])
+        # drop asterisks from new countries in country column
+        df_concat[['country']] = df_concat[['country']].replace('\*','', regex=True)
+        df_subindex = pd.concat([df_subindex, df_concat]).reset_index(drop=True)
+    return df_subindex
+
+
+econ_df = process_subindex('economic_participation_and_opportunity', l_r='left', page=0)
+edu_df = process_subindex('educational_attainment', l_r='right', page=0)
+health_df = process_subindex('health_and_survival', l_r='left', page=1)
+political_df = process_subindex('political_empowerment', l_r='right', page=1)
+
+# define the list of dataframes to merge
+merge_list = [econ_df, edu_df, health_df, political_df]
+df_processed = data_main_index.copy()
+for df in merge_list:
+    df_processed = pd.merge(df_processed, df, on = ['year', 'country'], how = 'outer')
         
-#unpack the nested lists
-df_all = [x for l in df_list for x in l]
+# read in existing dataframe so we can merge the new data with the old data
+api_key = os.getenv('CARTO_WRI_RW_KEY')
+username = os.getenv('CARTO_WRI_RW_USER')
+q = 'SELECT * FROM soc_026_gender_gap_index_1'
+url = 'https://wri-rw.carto.com/api/v2/sql'
+r = requests.get(url, params={'api_key': api_key, 'q': q}).text
+df_dict = json.loads(r)
+df_carto = pd.DataFrame(df_dict['rows'])
 
-#create a dictionary that splits up dataframes by year. (first three are 2020, next 2021)
-years_list = {'year':[2020, 2021], 'dataframes': [df_all[0:3], df_all[3:]]}
-
-
-#main index
-data_clean = []
-for i in range(len(years_list['year'])):
-    df_list_a = years_list['dataframes'][i][0].iloc[:, 0:3] #first half
-    df_list_a.columns = ['Rank', 'Country', 'Score']
-    df_list_b = years_list['dataframes'][i][0].iloc[:,5:8] #second half
-    df_list_b.columns = ['Rank', 'Country', 'Score']
-    df_list_c = pd.concat([df_list_a, df_list_b]).reset_index(drop=True) #concat
-    df_list_c['year'] = years_list['year'][i] #create a column for year
-    df_list_c = df_list_c.dropna(subset = ['Country']) #drop NA
-    df_list_c = df_list_c.replace(',','.', regex=True)
-    data_clean.append(df_list_c)
-    data_main_index = pd.concat(data_clean).reset_index(drop=True)
-    data_main_index.columns = ['overall_index_rank', 'country', 'overall_index_score', 'year' ]
-    data_main_index['overall_index_score'] = data_main_index['overall_index_score'].str.split(' ').str[0]
-
-#subindex
-data_clean_subindex = []
-df_subindex_merged = []
-for i in range(len(years_list['year'])):
-    econ_a = years_list['dataframes'][i][1].iloc[:, 0:3] #first half
-    econ_a.columns = ['economic_participation_and_opportunity_subindex_rank', 'country', 'economic_participation_and_opportunity_subindex_score']
-    econ_b = years_list['dataframes'][i][1].iloc[:,3:6] #second half
-    econ_b.columns = ['economic_participation_and_opportunity_subindex_rank', 'country', 'economic_participation_and_opportunity_subindex_score']
-    econ_c = pd.concat([econ_a, econ_b]).reset_index(drop=True) #concat
-    econ_c['year'] = years_list['year'][i] #create a column for year
-    econ_c = econ_c.dropna(subset = ['country']) #drop NA
-    data_clean_subindex.append(econ_c) 
-    
-    edu_a = years_list['dataframes'][i][1].iloc[:, 6:9] #first half
-    edu_a.columns = ['educational_attainment_subindex_rank', 'country', 'educational_attainment_subindex_score']
-    edu_b = years_list['dataframes'][i][1].iloc[:,9:12] #second half
-    edu_b.columns = ['educational_attainment_subindex_rank', 'country', 'educational_attainment_subindex_score']
-    edu_c = pd.concat([edu_a, edu_b]).reset_index(drop=True) #concat
-    edu_c['year'] = years_list['year'][i] #create a column for year
-    edu_c = edu_c.dropna(subset = ['country']) #drop NA
-    data_clean_subindex.append(edu_c)
-    
-    health_a = years_list['dataframes'][i][1].iloc[:, 0:3] #first half
-    health_a.columns = ['health_and_survival_subindex_rank', 'country', 'health_and_survival_subindex_score']
-    health_b = years_list['dataframes'][i][1].iloc[:,3:6] #second half
-    health_b.columns = ['health_and_survival_subindex_rank', 'country', 'health_and_survival_subindex_score']
-    health_c = pd.concat([health_a, health_b]).reset_index(drop=True) #concat
-    health_c['year'] = years_list['year'][i] #create a column for year
-    health_c = health_c.dropna(subset = ['country']) #drop NA
-    data_clean_subindex.append(health_c) 
-    
-    political_a = years_list['dataframes'][i][1].iloc[:, 6:9] #first half
-    political_a.columns = ['political_empowerment_subindex_rank', 'country', 'political_empowerment_subindex_score']
-    political_b = years_list['dataframes'][i][1].iloc[:,9:12] #second half
-    political_b.columns = ['political_empowerment_subindex_rank', 'country', 'political_empowerment_subindex_score']
-    political_c = pd.concat([political_a, political_b]).reset_index(drop=True) #concat
-    political_c['year'] = years_list['year'][i] #create a column for year
-    political_c = political_c.dropna(subset = ['country']) #drop NA
-    data_clean_subindex.append(political_c)
-    
-#    for item in range(len(data_clean_subindex)):
-#        print(item)
-#        while len(data_clean_subindex) > 4:
-#            df_subindex_merged.append(data_clean_subindex.pop(:4))
-
-#Merging all the subindicies for each year. Need to come up with a better way to do this... Tried in the comments above    
-df_subindex_2020 = reduce(lambda left,right: pd.merge(left, right, on=['year', 'country'], how = 'outer'), data_clean_subindex[0:4])
-df_subindex_2021 = reduce(lambda left,right: pd.merge(left, right, on=['year', 'country'], how = 'outer'), data_clean_subindex[4:])
-df_subindex_final = pd.concat([df_subindex_2020, df_subindex_2021])
-
-# Merge main index and subindex
-df_processed = pd.merge(data_main_index, df_subindex_final, on = ['year', 'country'], how = 'outer')
-df_processed = df_processed.replace(',','.', regex=True)
-        
 # Merge new years with old
 frames_carto_upload = [df_carto, df_processed]
 df_carto_upload = pd.concat(frames_carto_upload).reset_index(drop=True)
