@@ -7,4 +7,4 @@ You can view the processed Tree Cover Loss dataset [on Resource Watch](https://r
 
 You can also download the original dataset [from the source website](https://storage.googleapis.com/earthenginepartners-hansen/GFC-2020-v1.8/download.html).
 
-###### Note: This dataset processing was done by [Yujing Wu](https://www.wri.org/profile/yujing-wu), and QC'd by [Yujing Wu](https://www.wri.org/profile/yujing-wu).
+###### Note: This dataset processing was done by [Kristine Lister](https://www.wri.org/profile/kristine-lister), and QC'd by [Kristine Lister](https://www.wri.org/profile/kristine-lister).
