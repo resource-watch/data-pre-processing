@@ -224,7 +224,7 @@ df['datetime'] = pd.to_datetime(df.year, format='%Y')
 df= df.sort_values(by=['area','year','sex'])
 
 # reorder the columns
-df = df[['area', 'year', 'sex', 'indicator_fish', 'classif1_fish', 'source_fish',
+df = df[['area', 'year', 'sex', 'rev', 'indicator_fish', 'classif1_fish', 'source_fish',
        'obs_value_fish', 'obs_status_fish', 'note_indicator_fish',
        'note_source_fish','indicator_natural', 'classif1_natural', 'source_natural',
        'obs_value_natural', 'obs_status_natural', 'note_classif_natural',
