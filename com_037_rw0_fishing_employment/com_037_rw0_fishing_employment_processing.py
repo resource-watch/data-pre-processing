@@ -35,12 +35,12 @@ logger.info('Executing script for dataset: ' + dataset_name)
 data_dir = util_files.prep_dirs(dataset_name)
 
 '''
-Download data and save to your data directory
+Download data, unzip, and save to your data directory
 
 The data was downloaded manually from https://ilostat.ilo.org/data/# 
 Scroll to the bottom of the page and click the ".gz" button for 
-- Level 1: "Employment by sex and economic activity (thousands) | Annual" [Code: EMP_TEMP_SEX_ECO_NB_A] and
-- Level 2: "Employment by sex and economic activity - ISIC level 2 (thousands) | Annual" [Code: EMP_TEMP_SEX_EC2_NB_A]
+- ISIC Level 1: "Employment by sex and economic activity (thousands) | Annual" [Code: EMP_TEMP_SEX_ECO_NB_A] and
+- ISIC Level 2: "Employment by sex and economic activity - ISIC level 2 (thousands) | Annual" [Code: EMP_TEMP_SEX_EC2_NB_A]
 '''
 
 # Create a data dictionary to store the relevant information about each file 
@@ -52,116 +52,43 @@ data_dict= {
     'processed_dfs': []
   } 
 
-# move the data from 'Downloads' into the data directory
-source = os.path.join(os.getenv("DOWNLOAD_DIR"),'EMP_TEMP_SEX_*.csv.gz')
+# Unzip the data and move the data from 'Downloads' into the data directory
 
-dest_dir = os.path.abspath(data_dir)
+# Grab each file with the corresponding names from the Downloads folder
+source = os.path.join(os.getenv("DOWNLOAD_DIR"),'EMP_TEMP_SEX_*.csv.gz')
 for gz_file in glob.glob(source):
     logger.info(gz_file)
+    
+    # create a path to the unzipped, raw data file 
     raw_data_file = os.path.join(data_dir, os.path.basename(gz_file)[:-3])
+    
+    # unzip the .gz file
     with gzip.open(gz_file, 'rb') as f_in:
+        # open the raw data file
         with open(raw_data_file, 'wb') as f_out:
+            # move the file from downloads to the data directory
             shutil.copyfileobj(f_in, f_out)
+
+    # add the file to the data dictionary        
     data_dict['raw_data_file'].append(raw_data_file)
 
 '''
 Process the data 
 
-Each dataset contains data categorized by both ISIC Revisions 3 (>2007) and 4 (>2007)
+Each dataset (ISIC Level 1 and Level 2) contains data categorized by both ISIC Revisions 3.1 (before 2007) and 4 (after 2007)
 https://archive.unescwa.org/sites/www.unescwa.org/files/events/files/event_detail_id_681_tablesbtwnisicrev.pdf
 
-Level 1:
-- Rev 3 
-    - Natural Sector: ECO_ISIC3_A - Economic activity (ISIC-Rev.3.1): A. Agriculture, hunting and forestry
-        "01","Agriculture, hunting and related service activities"
-        "011","Growing of crops; market gardening; horticulture"
-        "0111","Growing of cereals and other crops n.e.c."
-        "0112","Growing of vegetables, horticultural specialties and nursery products"
-        "0113","Growing of fruit, nuts, beverage and spice crops"
-        "012","Farming of animals"
-        "0121","Farming of cattle, sheep, goats, horses, asses, mules and hinnies; dairy farming"
-        "0122","Other animal farming; production of animal products n.e.c."
-        "013","Growing of crops combined with farming of animals (mixed farming)"
-        "0130","Growing of crops combined with farming of animals (mixed farming)"
-        "014","Agricultural and animal husbandry service activities, except veterinary activities"
-        "0140","Agricultural and animal husbandry service activities, except veterinary activities"
-        "015","Hunting, trapping and game propagation including related service activities"
-        "0150","Hunting, trapping and game propagation including related service activities"
-        "02","Forestry, logging and related service activities"
-        "020","Forestry, logging and related service activities"
-        "0200","Forestry, logging and related service activities"
-    - Natural Sector: ECO_ISIC3_B - Economic activity (ISIC-Rev.3.1): B. Fishing
-        "B","Fishing"
-        "05","Fishing, aquaculture and service activities incidental to fishing"
-        "050","Fishing, aquaculture and service activities incidental to fishing"
-        "0501","Fishing"
-        "0502","Aquaculture"
-- Rev 4
-    - Natural Sector Total: ECO_ISIC4_A - Economic activity (ISIC-Rev.4): A. Agriculture; forestry and fishing
-        "01","Crop and animal production, hunting and related service activities"
-        "011","Growing of non-perennial crops"
-        "0111","Growing of cereals (except rice), leguminous crops and oil seeds"
-        "0112","Growing of rice"
-        "0113","Growing of vegetables and melons, roots and tubers"
-        "0114","Growing of sugar cane"
-        "0115","Growing of tobacco"
-        "0116","Growing of fibre crops"
-        "0119","Growing of other non-perennial crops"
-        "012","Growing of perennial crops"
-        "0121","Growing of grapes"
-        "0122","Growing of tropical and subtropical fruits"
-        "0123","Growing of citrus fruits"
-        "0124","Growing of pome fruits and stone fruits"
-        "0125","Growing of other tree and bush fruits and nuts"
-        "0126","Growing of oleaginous fruits"
-        "0127","Growing of beverage crops"
-        "0128","Growing of spices, aromatic, drug and pharmaceutical crops"
-        "0129","Growing of other perennial crops"
-        "013","Plant propagation"
-        "0130","Plant propagation"
-        "014","Animal production"
-        "0141","Raising of cattle and buffaloes"
-        "0142","Raising of horses and other equines"
-        "0143","Raising of camels and camelids"
-        "0144","Raising of sheep and goats"
-        "0145","Raising of swine/pigs"
-        "0146","Raising of poultry"
-        "0149","Raising of other animals"
-        "015","Mixed farming"
-        "0150","Mixed farming"
-        "016","Support activities to agriculture and post-harvest crop activities"
-        "0161","Support activities for crop production"
-        "0162","Support activities for animal production"
-        "0163","Post-harvest crop activities"
-        "0164","Seed processing for propagation"
-        "017","Hunting, trapping and related service activities"
-        "0170","Hunting, trapping and related service activities"
-        "02","Forestry and logging"
-        "021","Silviculture and other forestry activities"
-        "0210","Silviculture and other forestry activities"
-        "022","Logging"
-        "0220","Logging"
-        "023","Gathering of non-wood forest products"
-        "0230","Gathering of non-wood forest products"
-        "024","Support services to forestry"
-        "0240","Support services to forestry"
-        "03","Fishing and aquaculture"
-        "031","Fishing"
-        "0311","Marine fishing"
-        "0312","Freshwater fishing"
-        "032","Aquaculture"
-        "0321","Marine aquaculture"
-        "0322","Freshwater aquaculture"
+At classfiication Level 1, in the 3rd revolution of the classifciation system (Rev 3.1) the Natural Sector Economic Activity was split into two classifications
+    - A. Agriculture, hunting and forestry [ECO_ISIC3_A]
+    - B. Fishing [ECO_ISIC3_B]
+In the 4th revolition of the classifcation system (Rev 4) the Natural Sector Economic Activity is aggregated into one classification
+    - A. Agriculture; forestry and fishing [ECO_ISIC4_A]
 
-Level 2:
-- ISIC Rev 3
-    - Fishing: EC2_ISIC3_B05 - Economic activity (ISIC-Rev.3.1), 2 digit level: 05 - Fishing, aquaculture and service activities incidental to fishing
-- ISIC Rev 4
-    - Fishing: EC2_ISIC4_A03 - Economic activity (ISIC-Rev.4), 2 digit level: 03 - Fishing and aquaculture
-
+At classification Level 2, in Rev 3.1 Fishing Economic Activity is classified as 
+    - 05 - Fishing, aquaculture and service activities incidental to fishing [EC2_ISIC3_B05]
+In Rev 4 Fishing Economic Activity is Classified as 
+    - 03 - Fishing and aquaculture [EC2_ISIC4_A03]
 '''
-
-
 def classify_rev(row):
     if row['classif1'][9] == 3:
       return '3'
@@ -177,48 +104,67 @@ for file in data_dict['raw_data_file']:
     df.rename(columns={'time':'year'}, inplace=True)
     df.rename(columns={'ref_area':'area'}, inplace=True)
     
+    # create a list of columns that will be duplicated when the tables are merged
     column_list= ['source', 'indicator', 'level', 'type','classif1', 'obs_value', 'obs_status', 'note_indicator', 'note_source','note_classif']
 
-    print(file[18:21])
+    # process the level 1 table
     if file[18:21] == 'ECO':
-        # Group natural sector totals for Rev 3
+        # Group natural sector totals for Rev 3 rows and sum the observed values to get total employment in the natural sector
+        # Filter the data to Rev 3 rows
         code_list = ['ECO_ISIC3_A','ECO_ISIC3_B']
         df_3 = df[df['classif1'].isin(code_list)]
+        # Sum the observed values for a given area, year, and sex 
         df_3 = df_3.groupby(['area','year','sex']).agg({'indicator':'first','source':'first', 'obs_value':'sum', 'obs_status': 'first', 'note_indicator': 'first', 'note_source': 'first'}).reset_index()
+        # Change the classification to reflect the aggregation
         df_3['classif1'] = 'ECO_ISIC3_A, ECO_ISIC3_B'
         
-        
-        # append rev 4 data
+        # Append Rev 4 data (already an aggregated total)
         df_4 = df[df['classif1'] == 'ECO_ISIC4_A']
         df= pd.concat([df_3, df_4])
+
+        # Add a column to reflect the level of the data (ISIC Level 1)
         df['level'] = '1'
+
+        # Add a column to reflect the type of observed value (Natural Sector Total Employment)
         df['type'] = 'Natural Sector Total'
+
+        # Add a column to reflect the classification system (Rev 3 or Rev 4)
         df['rev'] = df.classif1.str[8]
+
+        # Add a suffix to columns that will be duplicated in the merge
         for column in column_list:
             df.rename(columns={column: column+'_natural'}, inplace=True)
 
         # store the processed df
         data_dict['processed_dfs'].append(df)
 
+    # process the level 2 data
     elif file[18:21] == 'EC2':
+        # Filter the data to data on fishing employment
         code_list = ['EC2_ISIC3_B05','EC2_ISIC4_A03']
         df = df[df['classif1'].isin(code_list)]
+        
+        # Add a column to reflect the level of the data (ISIC Level 2)
         df['level'] = '2'
+
+        # Add a column to reflect the type of observed value (Fishing Employment)
         df['type'] = 'Fishing'
+
+        # Add a column to reflect the classification system (Rev 3 or Rev 4)
         df['rev'] = df.classif1.str[8]
 
+        # Add a suffix to columns that will be duplicated in the merge
         for column in column_list:
             df.rename(columns={column: column+'_fish'}, inplace=True)
         
-        # store the processed df 
+        # store the processed data frames
         data_dict['processed_dfs'].append(df)
 
+# Merge the processed data frames
 df= pd.merge(data_dict['processed_dfs'][0], data_dict['processed_dfs'][1], how= 'outer', on=['area','year','sex','rev'])
-
 
 # convert Year column to date time object
 df['datetime'] = pd.to_datetime(df.year, format='%Y')
-
 
 # sort the new data frame by country and year
 df= df.sort_values(by=['area','year','sex'])
@@ -230,9 +176,7 @@ df = df[['area', 'year', 'sex', 'rev', 'indicator_fish', 'classif1_fish', 'sourc
        'obs_value_natural', 'obs_status_natural', 'note_classif_natural',
        'note_indicator_natural', 'note_source_natural', 'datetime']]
 
-complete_data= df[~df['indicator_fish'].isnull()]
-countries= complete_data.area.unique()
-print(countries)
+
 # save processed dataset to csv
 processed_data_file = os.path.join(data_dir, dataset_name+'_edit.csv')
 df.to_csv(processed_data_file, index=False)
