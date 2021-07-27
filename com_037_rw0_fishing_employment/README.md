@@ -1,5 +1,5 @@
 # FISHING EMPLOYMENT
-This file describes the data pre-processing that was done to the [Labor Forece Statistics on Employment by Sex and Economic Activity (ISIC Level 1 and 2)](https://ilostat.ilo.org/data/#) for displaying the Fishing Employment dataset [on Resource Watch](LINK).
+This file describes the data pre-processing that was done to the [Labor Force Statistics on Employment by Sex and Economic Activity (ISIC Level 1 and 2)](https://ilostat.ilo.org/data/#) for displaying the Fishing Employment dataset [on Resource Watch](LINK).
 
 The source provided two datasets, one for ISIC Level 1 classificaltions and one for ISIC Level 2 classifications, as two zipped CSV files (csv.gz) files.
 
