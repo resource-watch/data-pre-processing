@@ -154,7 +154,7 @@ for df in merge_list:
 # read in existing dataframe so we can merge the new data with the old data
 api_key = os.getenv('CARTO_WRI_RW_KEY')
 username = os.getenv('CARTO_WRI_RW_USER')
-q = 'SELECT * FROM soc_026_gender_gap_index_1'
+q = 'SELECT * FROM soc_026_gender_gap_index_combined'
 url = 'https://wri-rw.carto.com/api/v2/sql'
 r = requests.get(url, params={'api_key': api_key, 'q': q}).text
 df_dict = json.loads(r)
