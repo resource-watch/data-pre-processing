@@ -12,7 +12,9 @@ from functools import reduce
 import requests
 import json
 import os
+import glob
 import tabula
+import urllib.request
 utils_path = os.path.join(os.getenv('PROCESSING_DIR'),'utils')
 if utils_path not in sys.path:
     sys.path.append(utils_path)
@@ -40,6 +42,17 @@ logger.info('Executing script for dataset: ' + dataset_name)
 # create a new sub-directory within your specified dir called 'data'
 # within this directory, create files to store raw and processed data
 data_dir = util_files.prep_dirs(dataset_name)
+
+#download the latest pdf report
+
+def download_file(download_url, filename):
+    response = urllib.request.urlopen(download_url)    
+    file = open(filename + ".pdf", 'wb')
+    file.write(response.read())
+    file.close()
+ 
+download_file('http://www3.weforum.org/docs/WEF_GGGR_2021.pdf', "global_gender_gap_2021")
+download_file('http://www3.weforum.org/docs/WEF_GGGR_2020.pdf', "global_gender_gap_2020")
 
 '''
 Download data
@@ -190,6 +203,12 @@ logger.info('Uploading original data to S3.')
 
 # Copy the raw data into a zipped file to upload to S3
 raw_data_dir = os.path.join(data_dir, dataset_name+'.zip')
+raw_data_pdfs = ['global_gender_gap_2021.pdf', "global_gender_gap_2020.pdf"]
+
+pdf_path_2021 = os.path.abspath("global_gender_gap_2021")
+pdf_path_2020 = os.path.abspath("global_gender_gap_2020")
+
+raw_data_file = [pdf_path_2020, pdf_path_2021]
 with ZipFile(raw_data_dir,'w') as zip:
     zip.write(raw_data_file, os.path.basename(raw_data_file))
 #Upload raw data file to S3
