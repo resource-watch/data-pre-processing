@@ -34,7 +34,7 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 
 # name of table on Carto where you want to upload data
 # this should be a table name that is not currently in use
-dataset_name = 'soc_026_rw1_gender_gap_index' #check
+dataset_name = 'soc_026_gender_gap_index_combined' #check
 
 logger.info('Executing script for dataset: ' + dataset_name)
 # create a new sub-directory within your specified dir called 'data'
@@ -163,6 +163,9 @@ df_carto = pd.DataFrame(df_dict['rows'])
 # Merge new years with old
 frames_carto_upload = [df_carto, df_processed]
 df_carto_upload = pd.concat(frames_carto_upload).reset_index(drop=True)
+
+#drop cartodb_id so that it can be reassigned during upload
+df_carto_upload = df_carto_upload.drop('cartodb_id', axis=1)
 
 #save processed dataset to csv
 processed_data_file = os.path.join(data_dir, dataset_name+'_edit.csv')
