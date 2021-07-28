@@ -75,26 +75,20 @@ for gz_file in glob.glob(source):
 '''
 Process the data 
 
-Each dataset (ISIC Level 1 and Level 2) contains data categorized by both ISIC Revisions 3.1 (before 2007) and 4 (after 2007)
-https://archive.unescwa.org/sites/www.unescwa.org/files/events/files/event_detail_id_681_tablesbtwnisicrev.pdf
+Each dataset (ISIC Level 1 and Level 2) contains both ISIC Revisions 3.1 (before 2007) and 4 (after 2007) categotizations (more info here: 
+https://archive.unescwa.org/sites/www.unescwa.org/files/events/files/event_detail_id_681_tablesbtwnisicrev.pdf). These two classifications systems 
+require different processing depending on the level of the data.
 
-At classfiication Level 1, in the 3rd revolution of the classifciation system (Rev 3.1) the Natural Sector Economic Activity was split into two classifications
-    - A. Agriculture, hunting and forestry [ECO_ISIC3_A]
-    - B. Fishing [ECO_ISIC3_B]
-In the 4th revolition of the classifcation system (Rev 4) the Natural Sector Economic Activity is aggregated into one classification
-    - A. Agriculture; forestry and fishing [ECO_ISIC4_A]
+At classfiication Level 1, in the 3rd revolution of the classifciation system (Rev 3.1) the Natural Sector Economic Activity was split into two classifications:
+'A. Agriculture, hunting and forestry' [ECO_ISIC3_A] & 'B. Fishing' [ECO_ISIC3_B]. These will need to be combined. In the 4th revolition of the classifcation system 
+(Rev 4) the Natural Sector Economic Activity is aggregated into one classification: A. Agriculture; forestry and fishing [ECO_ISIC4_A]
 
-At classification Level 2, in Rev 3.1 Fishing Economic Activity is classified as 
-    - 05 - Fishing, aquaculture and service activities incidental to fishing [EC2_ISIC3_B05]
-In Rev 4 Fishing Economic Activity is Classified as 
-    - 03 - Fishing and aquaculture [EC2_ISIC4_A03]
+At classification Level 2, in Rev 3.1 Fishing Economic Activity is classified as '05 - Fishing, aquaculture and service activities incidental to fishing' 
+[EC2_ISIC3_B05]. In Rev 4 Fishing Economic Activity is classified as '03 - Fishing and aquaculture' [EC2_ISIC4_A03].
+
 '''
-def classify_rev(row):
-    if row['classif1'][9] == 3:
-      return '3'
-    elif row['classif1'][9] == 4:
-      return '4'
 
+# Process each classification level
 for file in data_dict['raw_data_file']:
     
     # read in the data as a pandas dataframe 
@@ -163,7 +157,7 @@ for file in data_dict['raw_data_file']:
 # Merge the processed data frames
 df= pd.merge(data_dict['processed_dfs'][0], data_dict['processed_dfs'][1], how= 'outer', on=['area','year','sex','rev'])
 
-# convert Year column to date time object
+# convert year column to date time object
 df['datetime'] = pd.to_datetime(df.year, format='%Y')
 
 # sort the new data frame by country and year
