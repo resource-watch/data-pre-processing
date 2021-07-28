@@ -1,5 +1,5 @@
 # FISHERY PRODUCTION
-This file describes the data pre-processing that was done to [Fishery Production](http://www.fao.org/fishery/statistics/global-production/en) for [display on Resource Watch]().
+This file describes the data pre-processing that was done to [Fishery Production](http://www.fao.org/fishery/statistics/global-production/en) for [display on Resource Watch](ac9c2f07-9f23-4a33-9958-e02c571ec009).
 
 The source provided this data in three datasets, global (total) fishery production as well as disaggregated data for aquaculture and capture production. The data on global production and capture each provide a CSV providing the quanity of production (tonnes). The data on aquaculture provides two CSVs, on for the quanity of production (tonnes) and the value of production (1000 USD). The data was provided within three zip folders. 
 
@@ -17,8 +17,8 @@ Below we describe the main steps taken to process the data so that it is formatt
 
 Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/foo_062_rw0_fishery_production/foo_062_rw0_fishery_production_processing.py) for more details on this processing.
 
-You can view the processed dataset for [display on Resource Watch]().
+You can view the processed dataset for [display on Resource Watch](ac9c2f07-9f23-4a33-9958-e02c571ec009).
 
 You can also download the original dataset [directly through Resource Watch](https://wri-public-data.s3.amazonaws.com/resourcewatch/foo_062_rw0_fishery_production.zip), or [from the source website](http://www.fao.org/fishery/statistics/global-production/en).
 
-###### Note: This dataset processing was done by [Rachel Thoms](https://www.wri.org/profile/rachel-thoms), and QC'd by [Yujing Wu](https://www.wri.org/profile/yujing-wu).
+###### Note: This dataset processing was done by [Rachel Thoms](https://www.wri.org/profile/rachel-thoms), and QC'd by [ ]().
