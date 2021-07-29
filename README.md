@@ -29,4 +29,7 @@ If a script was used to process the dataset, the code should be uploaded to this
 
 All codes should be written using open-source tools and programming languages. Tools and modules that require a subscription should be avoided (e.g., ArcGIS).
 
+An example of a basic raster pre-processing script can be found [here](https://github.com/resource-watch/data-pre-processing/blob/wat_070/wat_070_rw0_soil_erosion/wat_070_rw0_soil_erosion_processing.py).
+
+An example of a basic vector pre-processing script can be found [here](https://github.com/resource-watch/data-pre-processing/tree/wat_070/com_017_rw2_major_ports).
 
