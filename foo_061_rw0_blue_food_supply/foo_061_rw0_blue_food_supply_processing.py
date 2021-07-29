@@ -99,8 +99,8 @@ for file in data_dict['raw_data_file']:
     
     df['Type']= np.where(df['Item'].isin(food_list),'Ocean-Sourced Food', 'Grand Total')
 
-    # filter data to the variables of interest "Food supply (kcal/capita/day)" and "Protein supply quantity (g/capita/day)"
-    elements = ['664','674']
+    # filter data to the variables of interest: "Production", "Import", "Export", "Food supply (kcal/capita/day)", "Protein supply quantity (g/capita/day)"
+    elements = ['664','674', '5511', '5611', '5911']
     df= df[df['Element Code'].isin(elements)]
 
     # filter out excluded areas 
