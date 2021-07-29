@@ -15,6 +15,7 @@ import os
 import glob
 import tabula
 import urllib.request
+import sys
 utils_path = os.path.join(os.getenv('PROCESSING_DIR'),'utils')
 if utils_path not in sys.path:
     sys.path.append(utils_path)
@@ -22,6 +23,7 @@ import util_files
 import util_cloud
 import util_carto
 import logging
+import zipfile
 from zipfile import ZipFile
 
 # Set up logging
@@ -43,20 +45,7 @@ logger.info('Executing script for dataset: ' + dataset_name)
 # within this directory, create files to store raw and processed data
 data_dir = util_files.prep_dirs(dataset_name)
 
-#download the latest pdf report
-
-def download_file(download_url, filename):
-    response = urllib.request.urlopen(download_url)    
-    file = open(filename + ".pdf", 'wb')
-    file.write(response.read())
-    file.close()
- 
-download_file('http://www3.weforum.org/docs/WEF_GGGR_2021.pdf', "global_gender_gap_2021")
-download_file('http://www3.weforum.org/docs/WEF_GGGR_2020.pdf', "global_gender_gap_2020")
-
-'''
-Download data
-'''
+# Setup
 # Tabula .read_pdf() requirements
 # If table does not pull correctly, use "area = " within tabula.
 # https://tabula.technology/ is what I used to determine area of the table
@@ -66,7 +55,16 @@ data = {'year':[2020, 2021],
         'page_area_GGGR': [[59.9,59.9,713.215,548.026],[59.007,56.0,724.972,538.918]],
         'page_subindexes': [[12,13], [18,19]]}
 
-    
+#download the latest pdf report
+raw_data_files = []
+for url in data['link']:
+    raw_data_file = os.path.join(data_dir, os.path.split(url)[-1])
+    urllib.request.urlretrieve(url, raw_data_file)
+    raw_data_files.append(raw_data_file)
+
+'''
+Download data
+'''    
 #pull the tables
 df_main_index_dict = {}
 df_subindex_dict = {}
@@ -168,7 +166,7 @@ for df in merge_list:
 # read in existing dataframe so we can merge the new data with the old data
 api_key = os.getenv('CARTO_WRI_RW_KEY')
 username = os.getenv('CARTO_WRI_RW_USER')
-q = 'SELECT * FROM soc_026_gender_gap_index_combined'
+q = 'SELECT * FROM soc_026_gender_gap_index_combined_edit'
 url = 'https://wri-rw.carto.com/api/v2/sql'
 r = requests.get(url, params={'api_key': api_key, 'q': q}).text
 df_dict = json.loads(r)
@@ -203,16 +201,12 @@ logger.info('Uploading original data to S3.')
 
 # Copy the raw data into a zipped file to upload to S3
 raw_data_dir = os.path.join(data_dir, dataset_name+'.zip')
-raw_data_pdfs = ['global_gender_gap_2021.pdf', "global_gender_gap_2020.pdf"]
-
-pdf_path_2021 = os.path.abspath("global_gender_gap_2021")
-pdf_path_2020 = os.path.abspath("global_gender_gap_2020")
-
-raw_data_file = [pdf_path_2020, pdf_path_2021]
 with ZipFile(raw_data_dir,'w') as zip:
-    zip.write(raw_data_file, os.path.basename(raw_data_file))
+    for file in raw_data_files:
+        zip.write(file, os.path.basename(file), compress_type= zipfile.ZIP_DEFLATED)
 #Upload raw data file to S3
 uploaded = util_cloud.aws_upload(raw_data_dir, aws_bucket, s3_prefix+os.path.basename(raw_data_dir))
+
 
 logger.info('Uploading processed data to S3.')
 # Copy the processed data into a zipped file to upload to S3
