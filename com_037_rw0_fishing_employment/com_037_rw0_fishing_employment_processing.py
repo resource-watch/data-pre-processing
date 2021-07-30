@@ -98,9 +98,6 @@ for file in data_dict['raw_data_file']:
     df.rename(columns={'time':'year'}, inplace=True)
     df.rename(columns={'ref_area':'area'}, inplace=True)
     
-    # create a list of columns that will be duplicated when the tables are merged
-    column_list= ['source', 'indicator', 'level', 'type','classif1', 'obs_value', 'obs_status', 'note_indicator', 'note_source','note_classif']
-
     # process the level 1 table
     if file[18:21] == 'ECO':
         # Group natural sector totals for Rev 3 rows and sum the observed values to get total employment in the natural sector
@@ -125,10 +122,6 @@ for file in data_dict['raw_data_file']:
         # Add a column to reflect the classification system (Rev 3 or Rev 4)
         df['rev'] = df.classif1.str[8]
 
-        # Add a suffix to columns that will be duplicated in the merge
-        for column in column_list:
-            df.rename(columns={column: column+'_natural'}, inplace=True)
-
         # store the processed df
         data_dict['processed_dfs'].append(df)
 
@@ -146,16 +139,12 @@ for file in data_dict['raw_data_file']:
 
         # Add a column to reflect the classification system (Rev 3 or Rev 4)
         df['rev'] = df.classif1.str[8]
-
-        # Add a suffix to columns that will be duplicated in the merge
-        for column in column_list:
-            df.rename(columns={column: column+'_fish'}, inplace=True)
         
         # store the processed data frames
         data_dict['processed_dfs'].append(df)
 
 # Merge the processed data frames
-df= pd.merge(data_dict['processed_dfs'][0], data_dict['processed_dfs'][1], how= 'outer', on=['area','year','sex','rev'])
+df = pd.concat(data_dict['processed_dfs'])
 
 # convert year column to date time object
 df['datetime'] = pd.to_datetime(df.year, format='%Y')
@@ -164,11 +153,9 @@ df['datetime'] = pd.to_datetime(df.year, format='%Y')
 df= df.sort_values(by=['area','year','sex'])
 
 # reorder the columns
-df = df[['area', 'year', 'sex', 'rev', 'indicator_fish', 'classif1_fish', 'source_fish',
-       'obs_value_fish', 'obs_status_fish', 'note_indicator_fish',
-       'note_source_fish','indicator_natural', 'classif1_natural', 'source_natural',
-       'obs_value_natural', 'obs_status_natural', 'note_classif_natural',
-       'note_indicator_natural', 'note_source_natural', 'datetime']]
+df = df[['area', 'year', 'sex', 'rev', 'indicator', 'classif1', 'source',
+       'obs_value', 'obs_status', 'note_indicator',
+       'note_source', 'datetime']]
 
 
 # save processed dataset to csv
