@@ -153,7 +153,7 @@ df['datetime'] = pd.to_datetime(df.year, format='%Y')
 df= df.sort_values(by=['area','year','sex'])
 
 # reorder the columns
-df = df[['area', 'year', 'sex', 'rev', 'indicator', 'classif1', 'source',
+df = df[['area', 'year', 'sex', 'rev', 'indicator', 'classif1', 'type', 'level', 'source',
        'obs_value', 'obs_status', 'note_indicator',
        'note_source', 'datetime']]
 
