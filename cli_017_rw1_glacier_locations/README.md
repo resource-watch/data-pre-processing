@@ -19,4 +19,4 @@ You can view the processed Glacier Locations dataset [on Resource Watch](https:/
 
 You can also download the original dataset [directly through Resource Watch](https://wri-public-data.s3.amazonaws.com/resourcewatch/cli_017_glacier_extent.zip), or [from the source website](http://www.glims.org/download/).
 
-###### Note: This dataset processing was done by [Jason Winik](https://www.wri.org/profile/jason-winik), and QC'd by [{name}]({link to WRI bio page}).
+###### Note: This dataset processing was done by [Jason Winik](https://www.wri.org/profile/jason-winik), and QC'd by [Amelia Snyder](https://www.wri.org/profile/amelia-snyder).
