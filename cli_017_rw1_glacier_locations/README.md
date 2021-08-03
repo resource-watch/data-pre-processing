@@ -6,6 +6,9 @@ The source provided the two shapefiles in zipped folder.
 Below, we describe the steps used to download the shapefiles and format them to upload to Carto.
 
 1. Download the zipped folder
+2. Rename columns to match Carto table and delete unnecessary columns
+3. Reuplod to Carto and Resource Watch
+
 ```
 Include any SQL or GEE code you used in a code snippet.
 ```
