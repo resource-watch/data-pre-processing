@@ -1,22 +1,13 @@
-
 import pandas as pd
 import geopandas as gpd
-import numpy as np
 import urllib
 import glob
-import io
 import requests
-import json
 import os
 import sys
-import dotenv
-dotenv.load_dotenv('C:\\Users\\Jason.Winik\\OneDrive - World Resources Institute\\Documents\\GitHub\\cred\\.env')
 utils_path = os.path.join(os.path.abspath(os.getenv('PROCESSING_DIR')),'utils')
 if utils_path not in sys.path:
     sys.path.append(utils_path)
-gdal_path = os.getenv('GDAL_DIR')
-if gdal_path not in sys.path:
-    sys.path.append(gdal_path)
 import util_files
 import util_cloud
 import util_carto
@@ -58,11 +49,7 @@ zip_ref.close()
 '''
 Process Data
 '''
-#need polygon and point
-
 # load in the polygon shapefile
-#points = os.path.abspath('glims_points.shp')
-#polygon = os.path.abspath('glims_polygon.shp')
 shapefile = glob.glob(os.path.join(raw_data_file_unzipped,'glims_download_82381', 'glims_p*.shp'))
 gdf_points = gpd.read_file(shapefile[0])
 gdf_extent = gpd.read_file(shapefile[1])
@@ -78,8 +65,9 @@ gdf_extent.columns = [extent_col_change.get(x,x) for x in gdf_extent.columns]
 columns_to_remove = ['loc_unc_x', 'loc_unc_y', 'glob_unc_x', 'glob_unc_y']
 gdf_extent = gdf_extent.drop(columns_to_remove,axis = 1)
 
-#create new field 
-
+#set the geometry of gdf_points and gdf_extent
+gdf_points = gdf_points.set_geometry('the_geom')
+gdf_extent = gdf_extent.set_geometry('the_geom')
 
 # save processed dataset to shapefile
 processed_data_points = os.path.join(data_dir, dataset_name +'_locations.shp')
@@ -94,7 +82,8 @@ processed_files = [processed_data_extent, processed_data_points]
 Upload processed data to Carto
 '''
 logger.info('Uploading processed data to Carto.')
-util_carto.upload_to_carto(processed_files, 'LINK')
+util_carto.upload_to_carto(processed_data_points, 'LINK')
+util_carto.upload_to_carto(processed_data_extent, 'LINK')
 
 '''
 Upload original data and processed data to Amazon S3 storage
@@ -117,6 +106,6 @@ logger.info('Uploading processed data to S3.')
 # Copy the processed data into a zipped file to upload to S3
 processed_data_dir = os.path.join(data_dir, dataset_name+'_edit.zip')
 with ZipFile(processed_data_dir,'w') as zip:
-    zip.write(processed_data_file, os.path.basename(processed_data_file))
+    zip.write(processed_files, os.path.basename(processed_files))
 # Upload processed data file to S3
 uploaded = util_cloud.aws_upload(processed_data_dir, aws_bucket, s3_prefix+os.path.basename(processed_data_dir))
