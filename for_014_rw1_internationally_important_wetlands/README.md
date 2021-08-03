@@ -17,4 +17,4 @@ You can view the processed Ramsar Internationally Important Wetlands dataset [on
 
 You can also download the original dataset [directly through Resource Watch](https://wri-public-data.s3.amazonaws.com/resourcewatch/for_014_rw1_internationally_important_wetlands.zip), or [from the source website](https://rsis.ramsar.org/?pagetab=3).
 
-###### Note: This dataset processing was done by [Weiqi Zhou](https://www.wri.org/profile/weiqi-zhou), and QC'd by [Yujing Wu](https://www.wri.org/profile/yujing-wu).
+###### Note: This dataset processing was done by [Weiqi Zhou](https://www.wri.org/profile/weiqi-zhou), and QC'd by [Amelia Snyder](https://www.wri.org/profile/amelia-snyder).
