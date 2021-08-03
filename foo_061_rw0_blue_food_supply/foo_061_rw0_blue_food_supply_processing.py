@@ -75,7 +75,8 @@ total = ['Grand Total']
 item_list = food_list + total 
 
 # list of areas we want to exclude from our dataframe
-# so that we only have countries and not aggregated regions
+# so that we only have current countries and not aggregated regions or former countries
+# note: 'China' is aggregated to include Tiawan, Hong Kong, and mainland China
 areas_list = ['Africa', 'Eastern Africa',
     'Middle Africa', 'Northern Africa', 'Southern Africa',
     'Western Africa', 'Americas', 'Northern America',
@@ -88,7 +89,10 @@ areas_list = ['Africa', 'Eastern Africa',
     'Least Developed Countries', 'Land Locked Developing Countries',
     'Small Island Developing States',
     'Low Income Food Deficit Countries',
-    'Net Food Importing Developing Countries']
+    'Net Food Importing Developing Countries','Australia & New Zealand', 
+    'Belgium-Luxembourg', 'China', 'Czechoslovakia','Ethiopia PDR', 
+    'European Union', 'Netherlands Antilles (former)', 'Serbia and Montenegro', 
+    'South-Eastern Asia', 'Sudan (former)', 'USSR', 'Yugoslav SFR' ]
 
 for file in data_dict['raw_data_file']:
     # read in the data as a pandas dataframe 
