@@ -13,7 +13,7 @@ Below we describe the main steps taken to process the data so that it is formatt
 6. Concatenate the three dataframes for Global Production, Aquaculture, and Capture. 
 7. Rename the 'PERIOD' column to 'year.'
 8. Pivot the dataframe from long to short to with country and year as the index, the 'type' of production as the columns, and summed values for each type of production in a given year.
-9. Covert all column names to lowercase.
+9. Convert all column names to lowercase to match Carto column name requirements.
 
 Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/foo_062_rw0_fishery_production/foo_062_rw0_fishery_production_processing.py) for more details on this processing.
 
