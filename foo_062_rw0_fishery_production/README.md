@@ -1,5 +1,5 @@
 # FISHERY PRODUCTION
-This file describes the data pre-processing that was done to [Fishery Production](http://www.fao.org/fishery/statistics/global-production/en) for [display on Resource Watch](ac9c2f07-9f23-4a33-9958-e02c571ec009).
+This file describes the data pre-processing that was done to [Fishery Production](http://www.fao.org/fishery/statistics/global-production/en) for [display on Resource Watch](https://resourcewatch.org/data/explore/ac9c2f07-9f23-4a33-9958-e02c571ec009).
 
 The source provided this data in three datasets, global (total) fishery production as well as disaggregated data for aquaculture and capture production. The data on global production and capture each provide a CSV providing the quanity of production (tonnes). The data on aquaculture provides two CSVs, on for the quanity of production (tonnes) and the value of production (1000 USD). The data was provided within three zip folders. 
 
