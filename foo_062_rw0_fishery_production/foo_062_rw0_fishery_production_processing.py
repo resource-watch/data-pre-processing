@@ -60,7 +60,8 @@ for file, unzipped in zip(raw_data_file, raw_data_file_unzipped):
 '''
 Process the data 
 '''
-
+# create a list to store the processed dataframes
+processed_df = []
 for file in raw_data_file_unzipped:
     # read the dataset as a pandas dataframe
     csv_data = glob.glob(os.path.join(file,'*QUANTITY.csv'))[0] 
@@ -80,10 +81,10 @@ for file in raw_data_file_unzipped:
     type = os.path.basename(file).split('_')[0]
     df['type'] = type + '_quantity'
 
-    # convert the value column to a float
+    # convert the data type of the value column to float
     df['VALUE'] = df['VALUE'].astype(float) 
 
-    # store the processed df
+    # add the processed dataframe to the list
     processed_df.append(df)
 
     # There is additional data in the Aquaculture dataset on value 
@@ -100,10 +101,10 @@ for file in raw_data_file_unzipped:
         type = os.path.basename(file).split('_')[0]
         df['type'] = type + '_value'
 
-        # convert the value column to a float
+        # convert the data type of the value column to float
         df['VALUE'] = df['VALUE'].astype(float)
 
-        # store the processed df
+        # add the processed dataframe to the list 
         processed_df.append(df)
 
 # join the three datasets
@@ -112,7 +113,6 @@ df = pd.concat(processed_df)
 # rename the period column to year
 df.rename(columns={'PERIOD':'year'}, inplace=True)
 
-
 # pivot the table from long to wide form 
 # to sum the values for each type of production of a country in a given year
 table = pd.pivot_table(df, values='VALUE', index=['ISO3_Code', 'year','MEASURE'], columns=['type'], aggfunc=np.sum)
@@ -120,7 +120,7 @@ table = pd.pivot_table(df, values='VALUE', index=['ISO3_Code', 'year','MEASURE']
 # turn all column names to lowercase
 table.columns = [x.lower() for x in table.columns]
 
-# convert Year column to date time object
+# convert Year column to datetime object
 df['datetime'] = pd.to_datetime(df.year, format='%Y')
 
 # save processed dataset to csv
