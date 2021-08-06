@@ -21,4 +21,4 @@ You can view the processed dataset for [display on Resource Watch](ac9c2f07-9f23
 
 You can also download the original dataset [directly through Resource Watch](https://wri-public-data.s3.amazonaws.com/resourcewatch/foo_062_rw0_fishery_production.zip), or [from the source website](http://www.fao.org/fishery/statistics/global-production/en).
 
-###### Note: This dataset processing was done by [Rachel Thoms](https://www.wri.org/profile/rachel-thoms), and QC'd by [ ]().
+###### Note: This dataset processing was done by [Rachel Thoms](https://www.wri.org/profile/rachel-thoms), and QC'd by [ Yujing Wu](https://www.wri.org/profile/yujing-wu).
