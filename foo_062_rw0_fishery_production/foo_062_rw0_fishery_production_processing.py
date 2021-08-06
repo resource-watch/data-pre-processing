@@ -113,7 +113,8 @@ df = pd.concat(processed_df)
 df.rename(columns={'PERIOD':'year'}, inplace=True)
 
 
-# pivot the table from long to short to create entires for each country and year with columns based on the 'type' of production and values which are the sum of the values for each type in a given year
+# pivot the table from long to wide form 
+# to sum the values for each type of production of a country in a given year
 table = pd.pivot_table(df, values='VALUE', index=['ISO3_Code', 'year','MEASURE'], columns=['type'], aggfunc=np.sum)
 
 # turn all column names to lowercase
