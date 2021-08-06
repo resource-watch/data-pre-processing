@@ -41,9 +41,9 @@ Download data and save to your data directory
 # insert the url used to download the data from the source website
 url_list = ['http://www.fao.org/fishery/static/Data/GlobalProduction_2021.1.2.zip', 'http://www.fao.org/fishery/static/Data/Aquaculture_2021.1.2.zip', 'http://www.fao.org/fishery/static/Data/Capture_2021.1.2.zip'] #check
 
+# construct the file paths to raw data files
 raw_data_file = [os.path.join(data_dir,os.path.basename(url)) for url in url_list]
 raw_data_file_unzipped = [file.split('.')[0] for file in raw_data_file]
-processed_df = []
 
 for url, file in zip(url_list, raw_data_file):
     # download the data from the source
