@@ -12,7 +12,7 @@ Below we describe the main steps taken to process the data and for upload to Car
 5. Select the columns with values for the indicator, which is caluclated for 3-year averages (2014-2016, 2015-2017, 2016-2018, 20172019, 2018-2020)
 
 
-Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/foo_064_rw0_food_insecurity/foo_061_rw0_marine_food_supply_processing.py) for more details on this processing.
+Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/foo_064_rw0_food_insecurity/foo_064_rw0_food_insecurity_processing.py) for more details on this processing.
 
 You can view the processed dataset for [display on Resource Watch](https://resourcewatch.org/data/explore/).
 
