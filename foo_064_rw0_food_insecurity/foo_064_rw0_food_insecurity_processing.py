@@ -12,7 +12,6 @@ import util_cloud
 import util_carto
 import requests
 from zipfile import ZipFile
-import re
 
 # Set up logging
 # Get the top-level logger object
