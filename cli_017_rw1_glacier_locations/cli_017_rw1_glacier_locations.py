@@ -49,31 +49,24 @@ zip_ref.close()
 '''
 Process Data
 '''
-# load in the polygon shapefile
+# find the file paths to the shapefiles
 shapefile = glob.glob(os.path.join(raw_data_file_unzipped,'glims_download_82381', 'glims_p*.shp'))
+# read in the point shapefile as a geopandas dataframe
 gdf_points = gpd.read_file(shapefile[0])
+# read in the extent shapefile as a geopandas dataframe
 gdf_extent = gpd.read_file(shapefile[1])
 
-#rename columns points
-gdf_points.columns = ['the_geom' if x == 'geometry' else x for x in gdf_points.columns]
 
-#rename columns extent
-extent_col_change = {'length': 'glacier_length', 'geometry': 'the_geom'}
-gdf_extent.columns = [extent_col_change.get(x,x) for x in gdf_extent.columns]
+#rename the columns of the polygon shapefile
+gdf_extent.columns = ['glacier_length' if x == 'length' else x for x in gdf_extent.columns]
 
-#remove excess extent columns
-columns_to_remove = ['loc_unc_x', 'loc_unc_y', 'glob_unc_x', 'glob_unc_y']
-gdf_extent = gdf_extent.drop(columns_to_remove,axis = 1)
 
-#set the geometry of gdf_points and gdf_extent
-gdf_points = gdf_points.set_geometry('the_geom')
-gdf_extent = gdf_extent.set_geometry('the_geom')
 
 # save processed dataset to shapefile
-processed_data_points = os.path.join(data_dir, dataset_name +'_locations.shp')
+processed_data_points = os.path.join(data_dir, dataset_name +'_locations_edit.shp')
 gdf_points.to_file(processed_data_points,driver='ESRI Shapefile')
 
-processed_data_extent = os.path.join(data_dir, dataset_name +'_extent.shp')
+processed_data_extent = os.path.join(data_dir, dataset_name +'_extent_edit.shp')
 gdf_extent.to_file(processed_data_extent,driver='ESRI Shapefile')
 
 processed_files = [processed_data_extent, processed_data_points]
@@ -81,10 +74,20 @@ processed_files = [processed_data_extent, processed_data_points]
 '''
 Upload processed data to Carto
 '''
-logger.info('Uploading processed data to Carto.')
-util_carto.upload_to_carto(processed_data_points, 'LINK')
-util_carto.upload_to_carto(processed_data_extent, 'LINK')
+# create schema for the point dataset on Carto
+CARTO_SCHEMA_pt= util_carto.create_carto_schema(gdf_points)
+# create empty table for point locations on Carto
+util_carto.checkCreateTable(os.path.basename(processed_data_points).split('.')[0], CARTO_SCHEMA_pt)
 
+# create schema for the extent shapefile on Carto
+CARTO_SCHEMA_extent = util_carto.create_carto_schema(gdf_extent)
+# create empty table for the extent on Carto
+util_carto.checkCreateTable(os.path.basename(processed_data_extent).split('.')[0], CARTO_SCHEMA_extent)
+
+# upload the dataset to Carto and set the privacy to be 'Public with Link'
+util_carto.shapefile_to_carto(os.path.basename(processed_data_points).split('.')[0], CARTO_SCHEMA_pt, gdf_points, 'LINK')
+# upload the mask to Carto and set the privacy to be 'Public with Link'
+util_carto.shapefile_to_carto(os.path.basename(processed_data_extent).split('.')[0], CARTO_SCHEMA_extent, gdf_extent, 'LINK')
 '''
 Upload original data and processed data to Amazon S3 storage
 '''
@@ -105,7 +108,11 @@ uploaded = util_cloud.aws_upload(raw_data_dir, aws_bucket, s3_prefix+os.path.bas
 logger.info('Uploading processed data to S3.')
 # Copy the processed data into a zipped file to upload to S3
 processed_data_dir = os.path.join(data_dir, dataset_name+'_edit.zip')
+# find all the necessary components of the two shapefiles
+processed_pt_files = glob.glob(os.path.join(data_dir, dataset_name + '_points_edit.*'))
+processed_extent_files = glob.glob(os.path.join(data_dir, dataset_name +'_extent_edit.*'))
 with ZipFile(processed_data_dir,'w') as zip:
-    zip.write(processed_files, os.path.basename(processed_files))
+    for file in processed_pt_files + processed_extent_files:
+        zip.write(file, os.path.basename(file))
 # Upload processed data file to S3
 uploaded = util_cloud.aws_upload(processed_data_dir, aws_bucket, s3_prefix+os.path.basename(processed_data_dir))
