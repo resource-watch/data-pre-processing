@@ -10,4 +10,6 @@ You can view the processed dataset for [display on Resource Watch](https://resou
 You can also download original dataset [directly through Resource Watch](https://wri-public-data.s3.amazonaws.com/resourcewatch/ene_034_electricity_consumption.zip), or [from the source website](https://www.eia.gov/international/data/world/electricity/electricity-consumption?pd=2&p=0000002&u=0&f=A&v=mapbubble&a=-&i=none&vo=value&&t=C&g=00000000000000000000000000000000000000000000000001&l=249-ruvvvvvfvtvnvv1vrvvvvfvvvvvvfvvvou20evvvvvvvvvvvvvvs&s=315532800000&e=1514764800000
 ).
 
+This script has been archived since we are managing all the EIA datasets on Resource Watch together using [upload_eia_data](https://github.com/resource-watch/nrt-scripts/tree/master/upload_eia_data).
+
 ###### Note: This dataset processing was done by [Amelia Snyder](https://www.wri.org/profile/amelia-snyder).
