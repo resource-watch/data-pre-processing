@@ -2,8 +2,7 @@ This file describes the data pre-processing that was done to [Cities with Bus Ra
 
 The Global Bus Rapid Transit (BRT) dataset includes the name of the BRT system, the year it commenced, the location of the BRT (city and region), and the source. Each of these values are provided for BRT systems launched between 1968 and 2020.
 
-While this dataset be viewed on the source website, it is not directly downloadable there. In order to display the BRT data on Resource Watch, the dataset was scraped from the source website and joined with the city centroid coordinates from Natural Earth's Populated Places dataset for mapping purposes. Part of the scraping process was adapted from Kiprono Elijah Koech article:
-https://towardsdatascience.com/web-scraping-scraping-table-data-1665b6b2271c
+While this dataset be viewed on the source website, it is not directly downloadable there. In order to display the BRT data on Resource Watch, the dataset was scraped from the source website and joined with the city centroid coordinates from Natural Earth's Populated Places dataset for mapping purposes. Part of the scraping process was adapted from [Kiprono Elijah Koech article](https://towardsdatascience.com/web-scraping-scraping-table-data-1665b6b2271c).
 
 Below, we describe the main actions performed to process the scraped html table:
 1. Import the data as a pandas dataframe.
