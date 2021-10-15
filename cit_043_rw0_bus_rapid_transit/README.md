@@ -25,7 +25,7 @@ Please see the [Python script](https://github.com/resource-watch/data-pre-proces
 
 You can view the processed dataset for [display on Resource Watch](https://bit.ly/3FGqorD).
 
-You can also download [from the source website](https://brtdata.org/indicators/systems/year_system_commenced).
+You can also download the data [from the source website](https://brtdata.org/indicators/systems/year_system_commenced).
 
 ###### ###### Note: This dataset processing and QC was done by [Eduardo Castillero Reyes](https://wrimexico.org/profile/eduardo-castillero-reyes).
 
