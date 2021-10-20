@@ -9,16 +9,16 @@ Below, we describe the main actions performed to process the scraped html table:
 2. Drop the 'year' column and rename the 'value' column as 'year'.
 3. Convert years in the new 'year' column to datetime objects and store them in a new column 'datetime'.
 4. Change to lowercase the column headers and remove special characters from them.
-5. Join the Global Bus Rapid Transit data (“cit_043_bus_rapid_transit”) with the Populated Places dataset ("city_centroid"), which had previously been uploaded to the Resource Watch Carto account. These tables should be joined on the “city_centroid.name” and "cit_043_rw0_bus_rapid_transit_edit.city" columns from the respective table, using the following SQL statement:
+5. Join the Global Bus Rapid Transit data (“cit_043_rw0_bus_rapid_transit”) with the Populated Places dataset ("ne_10m_populated_places_simple"), which had previously been uploaded to the Resource Watch Carto account. These tables should be joined on the “ne_10m_populated_places_simple.name” and "cit_043_rw0_bus_rapid_transit_edit.city" columns from the respective table, using the following SQL statement:
 
 ```
-SELECT city_centroid.name, cit_043_rw0_bus_rapid_transit_edit.city, 
-ST_Transform(city_centroid.the_geom, 3857) AS the_geom_webmercator, cit_043_rw0_bus_rapid_transit_edit.source,
+SELECT ne_10m_populated_places_simple.name, cit_043_rw0_bus_rapid_transit_edit.city,
+ST_Transform(ne_10m_populated_places_simple.the_geom, 3857) AS the_geom_webmercator, cit_043_rw0_bus_rapid_transit_edit.source,
 cit_043_rw0_bus_rapid_transit_edit.year, cit_043_rw0_bus_rapid_transit_edit.country 
 
-FROM city_centroid 
+FROM ne_10m_populated_places_simple
 
-INNER JOIN cit_043_rw0_bus_rapid_transit_edit ON city_centroid.name = cit_043_rw0_bus_rapid_transit_edit.city
+INNER JOIN cit_043_rw0_bus_rapid_transit_edit ON ne_10m_populated_places_simple.name = cit_043_rw0_bus_rapid_transit_edit.city
 ```
 
 Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/cit_043_rw0_bus_rapid_transit/cit_043_rw0_bus_rapid_transit.py) for more details on this processing.
