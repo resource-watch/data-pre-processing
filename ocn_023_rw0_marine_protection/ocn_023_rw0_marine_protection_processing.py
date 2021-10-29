@@ -26,7 +26,7 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 
 # name of table on Carto where you want to upload data
 # using preexisting table for this dataset
-dataset_name = 'ocn_023_rw0_marine_protection' #check
+dataset_name = 'ocn_023_rw1_marine_protection' #check
 
 logger.info('Executing script for dataset: ' + dataset_name)
 # create a new sub-directory within your specified dir called 'data'
