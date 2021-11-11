@@ -11,4 +11,6 @@ You can view the processed Electricity Installed Capacity dataset [on Resource W
 
 You can also download the original dataset [directly through Resource Watch](http://wri-public-data.s3.amazonaws.com/resourcewatch/ene_035_rw0_electricity_installed_capacity.zip), or [from the source website](https://www.eia.gov/international/data/world/electricity/electricity-capacity).
 
+This script has been archived since we are managing all the EIA datasets on Resource Watch together using [upload_eia_data](https://github.com/resource-watch/nrt-scripts/tree/master/upload_eia_data).
+
 ###### Note: This dataset processing was done by [Yujing Wu](https://www.wri.org/profile/yujing-wu), and QC'd by [Yujing Wu](https://www.wri.org/profile/yujing-wu).
