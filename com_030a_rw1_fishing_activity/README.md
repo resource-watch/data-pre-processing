@@ -1,7 +1,7 @@
 ## Fishing Activity Dataset Pre-processing
 This file describes the data pre-processing that was done to [Global Fishing Activity](https://globalfishingwatch.org/?utm_source=wri_map&utm_medium=api_integration&utm_campaign=ocean_watch) for [display on Resource Watch](https://resourcewatch.org/data/explore/11f16cb9-def0-4bd5-a60e-50c542b837e3).
 
-The data was retrieved using a Global Fishing Watch (GFW)  API. To get tiled PNGs of fishing effort for each year (from 2012 to 2020), eight `GET` requests were sent to teh GFW API. The request filters data for the desired `date-range` and `geartype`. For the Fishing Activity dataset, we requested all gear types except `dredge_fishing` and `trawlers`. The API response includes a url template for retrieving individual image "tiles" according to the location and zoom level, which Resource Watch uses to display the map of fishing activity (of certain types).<br>
+The data was retrieved using a Global Fishing Watch (GFW)  API. To get tiled PNGs of fishing effort for each year (from 2012 to 2020), eight `GET` requests were sent to the GFW API. The request filters data for the desired `date-range` and `geartype`. For the Fishing Activity dataset, we requested all gear types except `dredge_fishing` and `trawlers`. The API response includes a url template for retrieving individual image "tiles" according to the location and zoom level, which Resource Watch uses to display the map of fishing activity (of certain types).<br>
 
 #### Example: Request for fishing activity from 2012-2013
 ```
