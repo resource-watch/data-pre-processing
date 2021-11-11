@@ -75,7 +75,8 @@ total = ['Grand Total']
 item_list = food_list + total 
 
 # list of areas we want to exclude from our dataframe
-# so that we only have countries and not aggregated regions
+# so that we only have current countries and not aggregated regions or former countries
+# note: 'China' is aggregated to include Tiawan, Hong Kong, and mainland China
 areas_list = ['Africa', 'Eastern Africa',
     'Middle Africa', 'Northern Africa', 'Southern Africa',
     'Western Africa', 'Americas', 'Northern America',
@@ -88,7 +89,10 @@ areas_list = ['Africa', 'Eastern Africa',
     'Least Developed Countries', 'Land Locked Developing Countries',
     'Small Island Developing States',
     'Low Income Food Deficit Countries',
-    'Net Food Importing Developing Countries']
+    'Net Food Importing Developing Countries','Australia & New Zealand', 
+    'Belgium-Luxembourg', 'China', 'Czechoslovakia','Ethiopia PDR', 
+    'European Union', 'Netherlands Antilles (former)', 'Serbia and Montenegro', 
+    'South-Eastern Asia', 'Sudan (former)', 'USSR', 'Yugoslav SFR' ]
 
 for file in data_dict['raw_data_file']:
     # read in the data as a pandas dataframe 
@@ -99,8 +103,8 @@ for file in data_dict['raw_data_file']:
     
     df['Type']= np.where(df['Item'].isin(food_list),'Ocean-Sourced Food', 'Grand Total')
 
-    # filter data to the variables of interest "Food supply (kcal/capita/day)" and "Protein supply quantity (g/capita/day)"
-    elements = ['664','674']
+    # filter data to the variables of interest: "Production", "Import", "Export", "Food supply (kcal/capita/day)", "Protein supply quantity (g/capita/day)"
+    elements = ['664','674', '5511', '5611', '5911']
     df= df[df['Element Code'].isin(elements)]
 
     # filter out excluded areas 
