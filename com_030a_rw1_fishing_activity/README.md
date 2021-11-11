@@ -13,6 +13,6 @@ https://gateway.api.globalfishingwatch.org/v1/4wings/generate-png?interval=10day
 
 <br>You can view the processed Fishing Activity dataset [on Resource Watch](https://resourcewatch.org/data/explore/11f16cb9-def0-4bd5-a60e-50c542b837e3).
 
-You can also download the original dataset [from the source website](https://globalfishingwatch.org/data-download/datasets/public-fishing-effort ).
+You can also download the original dataset [from the source website](https://globalfishingwatch.org/data-download/datasets/public-fishing-effort).
 
 ###### Note: This dataset processing was done by [Rachel Thoms](https://www.wri.org/profile/rachel-thoms), and QC'd by [Weiqi Zhou](https://www.wri.org/profile/Weiqi-Zhou).
