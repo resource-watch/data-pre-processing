@@ -7,7 +7,7 @@ The data was retrieved using a Global Fishing Watch (GFW)  API. To get tiled PNG
 ```
 https://gateway.api.globalfishingwatch.org/v1/4wings/generate-png?interval=10days&datasets[0]=public-global-fishing-effort:latest&color=%23f20089&date-range=2012-01-01T00:00:00.000Z,2013-01-01T00:00:00.000Z&filters[0]=geartype in ('tuna_purse_seines','driftnets','trollers','set_longlines','purse_seines','pots_and_traps','other_fishing','set_gillnets','fixed_gear','fishing','seiners','other_purse_seines','other_seines','squid_jigger','pole_and_line','drifting_longlines')
 ```
-###### The request must contain the authorization header and a token as value. Otherwise the request will return an authorization error. GFW has provided WRI Ocean Watch with a token for our use.
+###### The request must contain the authorization header and a token as the value. Otherwise the request will return an authorization error. GFW has provided WRI Ocean Watch with a token for our use.
 
 
 <br>You can view the processed Fishing Activity dataset [on Resource Watch](https://resourcewatch.org/data/explore/11f16cb9-def0-4bd5-a60e-50c542b837e3).
