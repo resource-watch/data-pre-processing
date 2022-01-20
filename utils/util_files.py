@@ -4,7 +4,7 @@ import dotenv
 dotenv.load_dotenv(os.getenv('RW_ENV'))
 import subprocess
 import requests
-import gdal
+from osgeo import gdal
 import numpy as np
 import logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
