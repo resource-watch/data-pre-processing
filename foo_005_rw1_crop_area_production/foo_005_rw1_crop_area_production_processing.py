@@ -10,9 +10,6 @@ from zipfile import ZipFile
 import ee
 import subprocess
 from google.cloud import storage
-import rasterio
-import xarray
-import rioxarray
 import logging
 import requests
 import json
