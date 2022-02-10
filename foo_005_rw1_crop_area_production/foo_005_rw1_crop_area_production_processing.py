@@ -13,7 +13,6 @@ from google.cloud import storage
 import logging
 import requests
 import json
-from bs4 import BeautifulSoup
 
 # Set up logging
 # Get the top-level logger object
