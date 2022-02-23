@@ -65,7 +65,7 @@ zip_ref.close()
 '''
 Process shdi shapefile data
 '''
-
+#
 # load in the polygon shapefile of sub-national human development index boundaries
 shapefile= glob.glob(os.path.join(raw_data_file_unzipped, '*.shp' ))[0]
 gdf_shapefile = gpd.read_file(shapefile)
