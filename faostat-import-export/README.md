@@ -3,7 +3,7 @@ This file describes the data pre-processing that was done to [the {dataset forma
 
 The data source provided the dataset as one CSV file.
 
-Below, we describe the steps used to to reformat the table so that it is formatted correctly to upload to Carto.
+Below, we describe the steps used to reformat the table so that it is formatted correctly for upload to Carto.
 
 1. Import the data as a pandas dataframe.
 2. Convert column headers to lower case.
