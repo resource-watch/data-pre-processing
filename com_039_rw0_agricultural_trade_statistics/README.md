@@ -1,5 +1,5 @@
 ## Agriculture Trade Statistics Dataset Pre-processing
-This file describes the data pre-processing that was done to [the {dataset formal name}]({learn more link}) for [display on Resource Watch]({link to dataset's metadata page on Resource Watch}).
+This file describes the data pre-processing that was done to [the Agricultural Trade Statistics]({learn more link}) for [display on Resource Watch]({link to dataset's metadata page on Resource Watch}).
 
 The data source provided the dataset as one CSV file.
 
