@@ -1,7 +1,7 @@
 ## Crop Suitability Class Dataset Pre-processing
-This file describes the data pre-processing that was done to [the Crop Suitability Class]({learn more link}) for [display on Resource Watch]({link to dataset's metadata page on Resource Watch}).
+This file describes the data pre-processing that was done to the [Crop Suitability Class]({learn more link}) for [display on Resource Watch]({link to dataset's metadata page on Resource Watch}).
 
-The source provided the data in multiple TIFF files available for download via a URL. The TIFFs show crop suitability 
+The source provided the data in multiple TIFF files available for download via URL. The TIFFs show crop suitability 
 index in classes for multiple timeframes and input technologies. Only files encompassing cotton, coffee, and rice were 
 downloaded.
 
