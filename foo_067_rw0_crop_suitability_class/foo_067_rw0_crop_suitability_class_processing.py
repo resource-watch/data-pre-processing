@@ -10,6 +10,7 @@ if utils_path not in sys.path:
    sys.path.append(utils_path)
 import util_files
 
+# name of asset on GEE where you want to upload data
 # this should be an asset name that is not currently in use
 dataset_name = 'foo_067_rw0_crop_suitability_class'
 
@@ -62,15 +63,15 @@ url_list = [
             'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/CRUTS32/Hist/8110H/scHr_rcd.tif'
         ]
 
-# download tifs and rename as they are downloaded because some have the same name
-# tifs are renamed based on their unique path information that is contained in the urls
+# download tifs and rename as they are downloaded because some have the same name when downloaded
+# files are renamed based on their unique path information that is contained in the urls
 raw_data_files = []
 for url in url_list:
     # split URL to access path info
     s = urlsplit(url)
     # swap "/" for "-" in the path
     r = re.sub("/", "-", s.path)
-    # remove the beginning portion of path which is common among all urls
+    # remove the beginning portion of path which is common to all urls
     p = r.replace("-data.gaezdev.aws.fao.org-res05-", "")
     # create a new path and filename
     filename = os.path.join(data_dir, p)
@@ -81,4 +82,4 @@ for url in url_list:
 '''
 Process data
 '''
-# no processing needed, tis are in correct format
+# no processing needed, tifs are in correct format
