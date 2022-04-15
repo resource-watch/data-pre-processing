@@ -2,6 +2,7 @@ import os
 import urllib.request
 from urllib.parse import urlsplit
 import re
+import sys
 from dotenv import load_dotenv
 load_dotenv()
 utils_path = os.path.join(os.path.abspath(os.getenv('PROCESSING_DIR')), 'utils')
