@@ -62,7 +62,8 @@ url_list = [
             'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/CRUTS32/Hist/8110H/scHr_rcd.tif'
         ]
 
-# download tifs and rename files as they are downloaded, using the unique path information contained in their urls
+# download tifs and rename as they are downloaded because some have the same name
+# tifs are renamed based on their unique path information that is contained in the urls
 raw_data_files = []
 for url in url_list:
     # split URL to access path info
@@ -70,16 +71,14 @@ for url in url_list:
     # swap "/" for "-" in the path
     r = re.sub("/", "-", s.path)
     # remove the beginning portion of path which is common among all urls
-    p = r.replace("-data.gaezdev.aws.fao.org-res05-", "")  # a way to not hard code this?
+    p = r.replace("-data.gaezdev.aws.fao.org-res05-", "")
     # create a new path and filename
     filename = os.path.join(data_dir, p)
-    print(filename)  # leave out of final code
-    # get the url and save new filename in specified directory
+    # get the url and save new filename in data_dir
     d = urllib.request.urlretrieve(url, filename)
-    print(d)  # leave out of final code
     raw_data_files.append(d)
 
 '''
 Process data
 '''
-# no processing needed, in correct format
+# no processing needed, tis are in correct format
