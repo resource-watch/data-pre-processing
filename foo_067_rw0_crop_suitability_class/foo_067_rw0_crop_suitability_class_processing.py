@@ -74,7 +74,7 @@ for url in url_list:
     p = r.replace("-data.gaezdev.aws.fao.org-res05-", "")
     # create a new path and filename
     filename = os.path.join(data_dir, p)
-    # get the url and save new filename in data_dir
+    # download data and save with new filename in data_dir
     d = urllib.request.urlretrieve(url, filename)
     raw_data_files.append(d)
 
