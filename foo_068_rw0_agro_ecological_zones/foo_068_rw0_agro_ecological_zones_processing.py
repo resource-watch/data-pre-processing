@@ -1,7 +1,5 @@
 import os
 import urllib.request
-from urllib.parse import urlsplit
-import re
 import sys
 from dotenv import load_dotenv
 load_dotenv()
