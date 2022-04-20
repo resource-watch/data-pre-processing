@@ -1,5 +1,5 @@
 ## Agro-Ecological Zones Dataset Pre-processing
-This file describes the data pre-processing that was done to [the GAEZv4 Theme 1 Land and Water Resources Agro-Ecological Zones]({learn more link}) for [display on Resource Watch]({link to dataset's metadata page on Resource Watch}).
+This file describes the data pre-processing that was done to [the GAEZv4 AEZ Classification by climate, soil, terrain, LC (57 classes)]({learn more link}) for [display on Resource Watch]({link to dataset's metadata page on Resource Watch}).
 
 The source provided the data in multiple TIFF files available for download via URL. The TIFFs show Agro-Ecological Zone
 classification for the world.
