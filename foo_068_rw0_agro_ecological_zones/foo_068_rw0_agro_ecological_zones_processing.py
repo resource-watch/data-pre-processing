@@ -18,6 +18,29 @@ dataset_name = 'foo_068_rw0_agro_ecological_zones'
 # within this directory, create files to store raw and processed data
 data_dir = util_files.prep_dirs(dataset_name)
 
-# list of urls from data source
-# urls downloaded from https://gaez-data-portal-hqfao.hub.arcgis.com/pages/data-viewer
-# under Theme 1: Land and Water Resources
+'''
+Download data and save to your data directory
+
+URLs obtained from https://gaez-data-portal-hqfao.hub.arcgis.com/pages/data-viewer 
+   Under Theme 1: Land and Water Resources
+'''
+
+url_list = ['https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/LR/aez/aez_v9v2_CRUTS32_Hist_8110_100_avg.tif',
+            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/LR/aez/aez_v9v2_ENSEMBLE_rcp4p5_2020s.tif',
+            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/LR/aez/aez_v9v2_ENSEMBLE_rcp4p5_2050s.tif',
+            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/LR/aez/aez_v9v2_ENSEMBLE_rcp8p5_2020s.tif',
+            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/LR/aez/aez_v9v2_ENSEMBLE_rcp8p5_2050s.tif'
+            ]
+
+# download the data from the source
+raw_data_file = []
+for url in url_list:
+    filename = os.path.join(data_dir, os.path.basename(url))
+    # download data and save with new filename in data_dir
+    d = urllib.request.urlretrieve(url, filename)
+    raw_data_file.append(d)
+
+'''
+Process data
+'''
+# no processing needed, tifs are in correct format
