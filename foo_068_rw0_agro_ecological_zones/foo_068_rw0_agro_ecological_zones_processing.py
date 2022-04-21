@@ -27,8 +27,7 @@ url_list = ['https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/LR/aez/
             'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/LR/aez/aez_v9v2_ENSEMBLE_rcp4p5_2020s.tif',
             'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/LR/aez/aez_v9v2_ENSEMBLE_rcp4p5_2050s.tif',
             'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/LR/aez/aez_v9v2_ENSEMBLE_rcp8p5_2020s.tif',
-            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/LR/aez/aez_v9v2_ENSEMBLE_rcp8p5_2050s.tif'
-            ]
+            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/LR/aez/aez_v9v2_ENSEMBLE_rcp8p5_2050s.tif']
 
 # download the data from the source
 raw_data_file = []
