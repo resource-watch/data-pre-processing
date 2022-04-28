@@ -3,7 +3,7 @@ This file describes the data pre-processing that was done to [the GAEZ v4 AEZ Cl
 
 The source provided the data in multiple TIFF files available for download via URL. The TIFFs show Agro-Ecological Zone classification for the world.
 
-Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/soc_068b_rw2_global_land_cover/foo_068_rw_agro_ecological_zones_processing.py) for more details on this processing.
+Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/foo_068_rw_agro_ecological_zones/foo_068_rw_agro_ecological_zones_processing.py) for more details on this processing.
 
 You can view the processed {Resource Watch public title} dataset [on Resource Watch]({link to dataset's metadata page on Resource Watch}).
 
