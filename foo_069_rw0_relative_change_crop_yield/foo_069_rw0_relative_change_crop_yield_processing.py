@@ -82,3 +82,114 @@ def get_data(iso3_code, province_code):
         return open(os.path.join(data_dir, filename), 'wb').write(r.content)
     except:
         print('API returned NULL data, so no file downloaded for:', province_code)
+
+
+'''
+Download data
+'''
+
+# create country list for download
+iso_list = get_iso3_list()
+
+# create province list for download
+admin1_list = [
+    {
+        'iso': 'IND',
+        'admins': get_province_list('IND')
+    },
+    {
+        'iso': 'COL',
+        'admins': get_province_list('COL')
+    }
+]
+
+# get data for admin0 (country) level data
+for iso in iso_list:
+    prov_code = iso
+    get_data(iso, prov_code)
+
+# get data for admin1 (provincial) level data
+for admin1 in admin1_list:
+    iso = admin1['iso']
+    for admin in admin1['admins']:
+        get_data(iso, admin)
+
+
+'''
+Process data
+'''
+
+# create a list of paths to raw csvs in data directory
+file_paths = [os.path.abspath(os.path.join(data_dir, p)) for p in os.listdir(data_dir)]
+
+# save raw data file names as a list
+raw_data_files_list = [os.path.basename(f) for f in file_paths]
+
+
+# define add country
+def add_country(csv_file):
+    """ Utility to obtain the ISO code from the CSV header and add it as a value to the new column "country" """
+    # access the first rows of raw CSV to obtain the country (ISO3 code)
+    header_info = pd.read_csv(csv_file, nrows=2)
+    country = header_info['Rice Yield'].values[1]
+    # add ISO3 codes to new column "country"
+    df['country'] = country
+
+
+# loop through CSVs and append country and provincial codes to new columns
+unioned_data = []
+for file in sorted(file_paths):
+    if file.endswith('.csv'):
+        # use fnmatch to find provincial CSVs
+        if fnmatch.fnmatch(file, '*.*.csv'):
+            # processing for provincial level CSVs
+            df = pd.read_csv(file, header=3)
+            # add country ISO3 code to df
+            add_country(file)
+            # next, get the admin1 code from the filename
+            s = os.path.basename(file).split('_')
+            admin1_code = s[4]
+            # add admin1 code to new column "admin1_code"
+            df['admin1_code'] = admin1_code
+            unioned_data.append(df)
+        else:
+            # processing for national level CSVs
+            df = pd.read_csv(file, header=3)
+            # add country ISO3 code to df
+            add_country(file)
+            # add admin1 info to new column "admin1_code"; inserting None since it's a national level (admin0) data
+            df['admin1_code'] = None
+            unioned_data.append(df)
+    else:
+        print('File is not a CSV')
+
+# union all the new dataframes together into a global dataframe
+unioned_data = pd.concat(unioned_data)
+
+# continue further processing of the newly concatenated, global dataframe
+# create a new column 'datetime' to store years as datetime objects
+unioned_data['datetime'] = [datetime(x, 1, 1) for x in unioned_data.year]
+
+# drop unnamed column
+unioned_data = unioned_data.drop(unioned_data.columns[[0]], axis=1)
+
+# filter out CAT emissions scenario columns
+unioned_data = unioned_data.loc[:, ~unioned_data.columns.str.contains('CAT')]
+
+# filter out NGFS emissions scenario columns
+unioned_data = unioned_data.loc[:, ~unioned_data.columns.str.contains('NGFS')]
+
+# replace periods in column headers with underscores
+unioned_data.columns = unioned_data.columns.str.replace('[.]', '_', regex=True)
+
+# add underscores between words in column headers
+unioned_data.columns = unioned_data.columns.str.replace(' ', '_')
+
+# replace all NaN with None
+unioned_data = unioned_data.where((pd.notnull(unioned_data)), None)
+
+# save processed dataset to CSV
+processed_data_file = os.path.join(data_dir, dataset_name+'_edit.csv')
+unioned_data.to_csv(processed_data_file, date_format='%m%d%Y', index=False)
+
+# Note: in the data_dir at this point there should be 188 files: 187 raw CSVs and 1 edited global CSV
