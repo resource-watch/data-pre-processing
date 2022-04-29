@@ -120,10 +120,10 @@ Process data
 '''
 
 # create a list of paths to raw csvs in data directory
-file_paths = [os.path.abspath(os.path.join(data_dir, p)) for p in os.listdir(data_dir)]
+raw_data_file = [os.path.abspath(os.path.join(data_dir, p)) for p in os.listdir(data_dir)]
 
 # save raw data file names as a list
-raw_data_files_list = [os.path.basename(f) for f in file_paths]
+raw_data_files_list = [os.path.basename(f) for f in raw_data_file]
 
 
 # define add country
@@ -138,7 +138,7 @@ def add_country(csv_file):
 
 # loop through CSVs and append country and provincial codes to new columns
 unioned_data = []
-for file in sorted(file_paths):
+for file in sorted(raw_data_file):
     if file.endswith('.csv'):
         # use fnmatch to find provincial CSVs
         if fnmatch.fnmatch(file, '*.*.csv'):
