@@ -190,6 +190,6 @@ unioned_data = unioned_data.where((pd.notnull(unioned_data)), None)
 
 # save processed dataset to CSV
 processed_data_file = os.path.join(data_dir, dataset_name+'_edit.csv')
-unioned_data.to_csv(processed_data_file, date_format='%m%d%Y', index=False)
+unioned_data.to_csv(processed_data_file, index=False)
 
 # Note: in the data_dir at this point there should be 187 files: 186 raw CSVs and 1 edited global CSV
