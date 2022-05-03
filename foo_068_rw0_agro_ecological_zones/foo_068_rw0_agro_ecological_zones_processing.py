@@ -1,7 +1,6 @@
 import os
 import urllib.request
 import sys
-import dotenv
 from google.cloud import storage
 import ee
 import logging  
