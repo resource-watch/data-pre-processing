@@ -12,9 +12,22 @@ utils_path = os.path.join(os.path.abspath(os.getenv('PROCESSING_DIR')), 'utils')
 if utils_path not in sys.path:
    sys.path.append(utils_path)
 import util_files
+import logging
+
+# Set up logging
+# Get the top-level logger object
+logger = logging.getLogger()
+for handler in logger.handlers: logger.removeHandler(handler)
+logger.setLevel(logging.INFO)
+# make it print to the console
+console = logging.StreamHandler()
+logger.addHandler(console)
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
 # dataset name
 dataset_name = 'foo_069_rw0_relative_change_crop_yield'
+
+logger.info('Executing script for dataset: ' + dataset_name)
 
 # create a new sub-directory within your specified dir called 'data'
 # within this directory, create files to store raw and processed data
