@@ -78,7 +78,7 @@ url_list = [
 
 # download tifs and rename as they are downloaded because some have the same name when downloaded
 # files are renamed based on their unique path information that is contained in the urls
-raw_data_files = []
+raw_data_file = []
 for url in url_list:
     # split URL to access path info
     s = urlsplit(url)
@@ -90,9 +90,11 @@ for url in url_list:
     filename = os.path.join(data_dir, p)
     # download data and save with new filename in data_dir
     d = urllib.request.urlretrieve(url, filename)
-    raw_data_files.append(d)
+    raw_data_file.append(d)
 
 '''
 Process data
 '''
 # no processing needed, tifs are in correct format
+# generate names for tif files
+processed_data_files = [x[0] for x in raw_data_file]
