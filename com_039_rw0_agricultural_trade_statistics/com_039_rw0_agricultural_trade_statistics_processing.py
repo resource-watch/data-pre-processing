@@ -50,8 +50,8 @@ raw_data = requests.get(url).content
 # read the raw data into a pandas dataframe
 df = pd.read_csv(io.StringIO(raw_data.decode(encoding='utf-8')))
 
-# create a path to the data file, then save to csv
-raw_data_file = os.path.join(data_dir, dataset_name+'.csv')
+# create a path to the raw data file, then save to csv
+raw_data_file = os.path.join(data_dir, 'TCL.csv')
 df.to_csv(raw_data_file, index=False)
 
 '''
