@@ -13,7 +13,7 @@ Below, we describe the steps used to combine CSVs for each country/province into
 6. Drop the unnamed column.
 7. Filter out CAT emissions scenario columns.
 8. Filter out NGFS emissions scenario columns.
-9. Remove periods in column headers with underscores.
+9. Replace periods in column headers with underscores.
 10. Replace whitespaces with underscores in column headers.
 11. Replace NaN with None.
 12. Save Processed dataframe as a CSV.
