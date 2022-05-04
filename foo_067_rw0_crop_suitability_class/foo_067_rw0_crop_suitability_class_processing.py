@@ -97,4 +97,4 @@ Process data
 '''
 # no processing needed, tifs are in correct format
 # generate names for tif files
-processed_data_files = [x[0] for x in raw_data_file]
+processed_data_file = [x[0] for x in raw_data_file]
