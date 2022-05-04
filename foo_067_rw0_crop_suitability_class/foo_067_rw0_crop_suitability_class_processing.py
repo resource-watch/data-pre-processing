@@ -9,10 +9,23 @@ utils_path = os.path.join(os.path.abspath(os.getenv('PROCESSING_DIR')), 'utils')
 if utils_path not in sys.path:
    sys.path.append(utils_path)
 import util_files
+import logging
+
+# Set up logging
+# Get the top-level logger object
+logger = logging.getLogger()
+for handler in logger.handlers: logger.removeHandler(handler)
+logger.setLevel(logging.INFO)
+# make it print to the console.
+console = logging.StreamHandler()
+logger.addHandler(console)
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
 # name of asset on GEE where you want to upload data
 # this should be an asset name that is not currently in use
 dataset_name = 'foo_067_rw0_crop_suitability_class'
+
+logger.info('Executing script for dataset: ' + dataset_name)
 
 '''
 Download data and save to your data directory
