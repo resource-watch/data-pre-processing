@@ -10,6 +10,7 @@ if utils_path not in sys.path:
    sys.path.append(utils_path)
 import util_files
 import logging
+import subprocess
 
 # Set up logging
 # Get the top-level logger object
@@ -90,11 +91,16 @@ for url in url_list:
     filename = os.path.join(data_dir, p)
     # download data and save with new filename in data_dir
     d = urllib.request.urlretrieve(url, filename)
-    raw_data_file.append(d)
+    raw_data_file.append(d[0])
 
 '''
 Process data
 '''
-# no processing needed, tifs are in correct format
-# generate names for tif files
-processed_data_file = [x[0] for x in raw_data_file]
+
+# generate names for processed tif files
+processed_data_file = [x[:-4]+'_edit'+x[-4:] for x in raw_data_file]
+
+# rename the tif file
+for raw, processed in zip(raw_data_file, processed_data_file):
+    cmd = ['gdalwarp', raw, processed]
+    subprocess.call(cmd)
