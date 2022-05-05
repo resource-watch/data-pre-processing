@@ -1,5 +1,5 @@
 ## Relative Change in Crop Yield Dataset Pre-processing
-This file describes the data pre-processing that was done to [Relative change in crop yield]({learn more link}) for [display on Resource Watch]({link to dataset's metadata page on Resource Watch}).
+This file describes the data pre-processing that was done to [Relative change in crop yield](http://climate-impact-explorer.climateanalytics.org/).
 
 The data was retrieved from the Climate Analytics' Impact Data Explorer API, which provides a CSV file for each administrative unit (e.g, country or province).
 
@@ -20,8 +20,6 @@ Below, we describe the steps used to combine CSVs for each country/province into
 
 Please see the [Python script]({link to Python script on Github}) for more details on this processing.
 
-You can view the processed Relative Change in Crop Yield dataset [on Resource Watch](https://cie-api.climateanalytics.org/api/).
-
-You can also download the original dataset [directly through Resource Watch]({s3 link if available}), or [from the source website]({download from source link}).
+You can also download the original dataset [directly through Resource Watch]({s3 link if available}), or [from the source website](https://cie-api.climateanalytics.org/api/).
 
 ###### Note: This dataset processing was done by Alex Sweeney, and QC'd by [{name}]({link to WRI bio page}).
