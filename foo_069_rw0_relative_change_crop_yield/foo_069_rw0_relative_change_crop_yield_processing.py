@@ -12,7 +12,11 @@ utils_path = os.path.join(os.path.abspath(os.getenv('PROCESSING_DIR')), 'utils')
 if utils_path not in sys.path:
    sys.path.append(utils_path)
 import util_files
+import util_carto
+import util_cloud
 import logging
+import zipfile
+from zipfile import ZipFile
 
 # Set up logging
 # Get the top-level logger object
@@ -55,13 +59,11 @@ def get_iso3_list():
             None
     return iso3_list
 
-
 # define get_province_list
 def get_province_list(iso_code):
     """
     Utility for getting a list of provinces (admin1 boundaries) for the input ISO3 country code. Gets list from Climate
     Analytics' Impact Data Explorer API
-
     Returns:
         List of provinces
     """
@@ -72,12 +74,10 @@ def get_province_list(iso_code):
         province_list.append(key)
     return province_list
 
-
 # define get data
 def get_data(iso3_code, province_code):
     """
     Creates API requests for Change in Rice Yield data from Climate Analytics' Impact Data Explorer API
-
     Returns:
         CSV downloads to your specified data directory
     """
@@ -100,7 +100,6 @@ def get_data(iso3_code, province_code):
 '''
 Download data
 '''
-
 # create country list for download
 iso_list = get_iso3_list()
 
@@ -131,13 +130,8 @@ for admin1 in admin1_list:
 '''
 Process data
 '''
-
 # create a list of paths to raw csvs in data directory
 raw_data_file = [os.path.abspath(os.path.join(data_dir, p)) for p in os.listdir(data_dir)]
-
-# save raw data file names as a list
-raw_data_files_list = [os.path.basename(f) for f in raw_data_file]
-
 
 # define add country
 def add_country(csv_file):
@@ -147,7 +141,6 @@ def add_country(csv_file):
     country = header_info['Rice Yield'].values[1]
     # add ISO3 codes to new column "country"
     df['country'] = country
-
 
 # loop through CSVs and append country and provincial codes to new columns
 unioned_data = []
@@ -206,3 +199,36 @@ processed_data_file = os.path.join(data_dir, dataset_name+'_edit.csv')
 unioned_data.to_csv(processed_data_file, index=False)
 
 # Note: in the data_dir at this point there should be 187 files: 186 raw CSVs and 1 edited global CSV
+
+
+'''
+Upload processed data to Carto
+'''
+logger.info('Uploading processed data to Carto.')
+util_carto.upload_to_carto(processed_data_file, 'LINK')
+
+
+'''
+Upload original data and processed data to Amazon S3 storage
+'''
+# initialize AWS variables
+aws_bucket = 'wri-public-data'
+s3_prefix = 'resourcewatch/'
+
+logger.info('Uploading original data to S3.')
+
+# Copy the raw data into a zipped file to upload to S3
+raw_data_dir = os.path.join(data_dir, dataset_name+'.zip')
+with ZipFile(raw_data_dir,'w') as zip:
+    for file in raw_data_file:
+        zip.write(file, os.path.basename(file), compress_type=zipfile.ZIP_DEFLATED)
+# Upload raw data file to S3
+uploaded = util_cloud.aws_upload(raw_data_dir, aws_bucket, s3_prefix+os.path.basename(raw_data_dir))
+
+logger.info('Uploading processed data to S3.')
+# Copy the processed data into a zipped file to upload to S3
+processed_data_dir = os.path.join(data_dir, dataset_name+'_edit.zip')
+with ZipFile(processed_data_dir,'w') as zip:
+    zip.write(processed_data_file, os.path.basename(processed_data_file), compress_type=zipfile.ZIP_DEFLATED)
+# Upload processed data file to S3
+uploaded = util_cloud.aws_upload(processed_data_dir, aws_bucket, s3_prefix+os.path.basename(processed_data_dir))
