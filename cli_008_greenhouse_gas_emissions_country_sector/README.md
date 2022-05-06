@@ -1,3 +1,4 @@
+## Greenhouse Gas Emissions by Country and Economic Sector Dataset Pre-processing
 This file describes the data pre-processing that was done to [Greenhouse Gas Emissions by Country and Economic Sector](https://www.climatewatchdata.org/data-explorer) for [display on Resource Watch](https://bit.ly/39sQ4ds).
 
 The source provided this dataset as a csv file accessed through its [data explorer](https://www.climatewatchdata.org/data-explorer). The following options were selected from the dropdown menu:

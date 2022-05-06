@@ -1,4 +1,5 @@
-This file describes the data pre-processing that was done to [the Storm Events in the US dataset)](https://www.ncdc.noaa.gov/stormevents/ftp.jsp) for display on Resource Watch as the following datasets:
+## Storm Events in the US Data Pre-procecssing
+This file describes the data pre-processing that was done to [the Storm Events in the US dataset](https://www.ncdc.noaa.gov/stormevents/ftp.jsp) for display on Resource Watch as the following datasets:
 - [Tornadoes in the U.S.](https://resourcewatch.org/embed/widget/8a0f738e-4fb9-4a4c-8b9a-6363f619cdd5).
 - [Hail in the U.S.](https://resourcewatch.org/embed/widget/355f550b-ea6d-418d-b89d-5fbd58f3ba1b)
 
