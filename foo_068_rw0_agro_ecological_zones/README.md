@@ -7,6 +7,6 @@ Please see the [Python script](https://github.com/resource-watch/data-pre-proces
 
 You can view the processed {Resource Watch public title} dataset [on Resource Watch]({link to dataset's metadata page on Resource Watch}).
 
-You can also download the original dataset [directly through Resource Watch]({s3 link if available}), or [from the source website]({https://gaez-data-portal-hqfao.hub.arcgis.com/pages/data-viewer}).
+You can also download the original dataset [from the source website](https://gaez-data-portal-hqfao.hub.arcgis.com/pages/data-viewer).
 
 ###### Note: This dataset processing was done by Alex Sweeney and [Chris Rowe](https://www.wri.org/profile/chris-rowe), and QC'd by [Weiqi Zhou](https://www.wri.org/profile/weiqi-zhou).
