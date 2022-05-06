@@ -1,4 +1,4 @@
-## Soil Erosion
+## Soil Erosion Dataset Pre-processing
 This file describes the data pre-processing that was done to the [Soil Erosion Prevalence](http://landscapeportal.org/blog/30/) for [display on Resource Watch](https://resourcewatch.org/data/explore/719c3024-9f06-47c8-b646-9c2f26dd9737).
 
 This dataset is provided as a series of GeoTIFF files from the data provider to the Resource Watch data team.

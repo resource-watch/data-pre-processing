@@ -1,4 +1,4 @@
-## Refugees and internally displaced persons preprocessing
+## Refugees and Internally Displaced Persons Dataset Pre-processing
 This file describes the data pre-processing that was done to [IDMC data on Internally Displaced Persons and the demographic data for the population and solutions datasets](https://www.unhcr.org/refugee-statistics/download) for display on Resource Watch as the following datasets:
 
 - [Host Countries of Refugees and Internally Displaced Persons](https://resourcewatch.org/data/explore/c856396d-d0f2-4aae-9671-4903b2ebed4d)

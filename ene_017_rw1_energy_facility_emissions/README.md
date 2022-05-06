@@ -1,3 +1,4 @@
+## Energy Facility Emissions Dataset Pre-processing
 This file describes the data pre-processing that was done to [Energy Facility Emissions (US)](https://ghgdata.epa.gov/ghgp/main.do#) for [display on Resource Watch](https://bit.ly/3kNAD3i).
 
 The source provided this dataset as an xls file accessed through its [website](https://ghgdata.epa.gov/ghgp/main.do#). To access the file select the "Export Data" option and then select "All Reporting Years". 

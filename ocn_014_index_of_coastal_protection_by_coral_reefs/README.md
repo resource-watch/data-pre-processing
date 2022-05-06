@@ -1,4 +1,4 @@
-## Index of Coastal Protection by Coral Reefs Pre-processing
+## Index of Coastal Protection by Coral Reefs Dataset Pre-processing
 This file describes the data pre-processing that was done to the [Global Coral Protection Index](http://maps.oceanwealth.org/) for [display on Resource Watch](https://resourcewatch.org/data/explore/).
 
 The dataset is contained within a GeoDataBase, containing many vector layers, many of which are available for viewing on the Mapping Ocean Wealth platform. The following variable is shown on Resource Watch:
