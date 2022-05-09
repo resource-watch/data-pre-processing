@@ -18,4 +18,4 @@ You can view the processed {Resource Watch public title} dataset [on Resource Wa
 
 You can also download the original dataset [directly through Resource Watch]({s3 link if available}), or [from the source website](https://www.fao.org/faostat/en/#data/TCL).
 
-###### Note: This dataset processing was done by Alex Sweeney, and QC'd by [{name}]({link to WRI bio page}).
+###### Note: This dataset processing was done by [Alex Sweeney](https://github.com/alxswny), and QC'd by [Weiqi Zhou](https://www.wri.org/profile/weiqi-zhou).
