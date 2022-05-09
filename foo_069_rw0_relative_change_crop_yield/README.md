@@ -22,4 +22,4 @@ Please see the [Python script](https://github.com/resource-watch/data-pre-proces
 
 You can also download the original dataset [directly through Resource Watch](https://wri-public-data.s3.amazonaws.com/resourcewatch/foo_069_rw0_relative_change_crop_yield.zip), or [from the source website](https://cie-api.climateanalytics.org/api/).
 
-###### Note: This dataset processing was done by Alex Sweeney and [Weiqi Zhou](https://www.wri.org/profile/weiqi-zhou), and QC'd by [Chris Rowe](https://www.wri.org/profile/chris-rowe).
+###### Note: This dataset processing was done by [Alex Sweeney](https://github.com/alxswny) and [Weiqi Zhou](https://www.wri.org/profile/weiqi-zhou), and QC'd by [Chris Rowe](https://www.wri.org/profile/chris-rowe).

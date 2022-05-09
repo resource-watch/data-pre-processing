@@ -7,4 +7,4 @@ Please see the [Python script](https://github.com/resource-watch/data-pre-proces
 
 You can also download the original dataset [from the source website](https://gaez-data-portal-hqfao.hub.arcgis.com/pages/data-viewer).
 
-###### Note: This dataset processing was done by Alex Sweeney and [Weiqi Zhou](https://www.wri.org/profile/weiqi-zhou), and QC'd by [Chris Rowe](https://www.wri.org/profile/chris-rowe).
+###### Note: This dataset processing was done by [Alex Sweeney](https://github.com/alxswny) and [Weiqi Zhou](https://www.wri.org/profile/weiqi-zhou), and QC'd by [Chris Rowe](https://www.wri.org/profile/chris-rowe).
