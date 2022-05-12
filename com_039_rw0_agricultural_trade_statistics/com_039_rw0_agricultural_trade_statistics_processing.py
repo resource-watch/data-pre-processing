@@ -11,6 +11,11 @@ if utils_path not in sys.path:
    sys.path.append(utils_path)
 import util_files
 import logging
+from cartoframes.auth import set_default_credentials
+from cartoframes import read_carto, to_carto, update_privacy_table
+import util_cloud
+import zipfile
+from zipfile import ZipFile
 
 # Set up logging
 # Get the top-level logger object
@@ -78,3 +83,44 @@ df = df.where((pd.notnull(df)), None)
 # save processed dataset to CSV
 processed_data_file = os.path.join(data_dir, dataset_name+'_edit.csv')
 df.to_csv(processed_data_file, index=False)
+
+'''
+Upload processed data to Carto
+'''
+logger.info('Uploading processed data to Carto.')
+
+# authenticate carto account
+CARTO_USER = os.getenv('CARTO_WRI_RW_USER')
+CARTO_KEY = os.getenv('CARTO_WRI_RW_KEY')
+set_default_credentials(username=CARTO_USER, base_url="https://{user}.carto.com/".format(user=CARTO_USER),api_key=CARTO_KEY)
+
+# upload data frame to Carto
+to_carto(df, dataset_name + '_edit', if_exists='replace', privacy="link")
+
+# set privacy to 'link' so table is accessible but not published
+update_privacy_table(dataset_name + '_edit', 'link')
+
+'''
+Upload original data and processed data to Amazon S3 storage
+'''
+# initialize AWS variables
+aws_bucket = 'wri-public-data'
+s3_prefix = 'resourcewatch/'
+
+logger.info('Uploading original data to S3.')
+
+# Copy the raw data into a zipped file to upload to S3
+raw_data_dir = os.path.join(data_dir, dataset_name+'.zip')
+with ZipFile(raw_data_dir,'w') as zip:
+       zip.write(raw_data_file, os.path.basename(raw_data_file), compress_type=zipfile.ZIP_DEFLATED)
+
+# Upload raw data file to S3
+uploaded = util_cloud.aws_upload(raw_data_dir, aws_bucket, s3_prefix+os.path.basename(raw_data_dir))
+
+logger.info('Uploading processed data to S3.')
+# Copy the processed data into a zipped file to upload to S3
+processed_data_dir = os.path.join(data_dir, dataset_name+'_edit.zip')
+with ZipFile(processed_data_dir,'w') as zip:
+    zip.write(processed_data_file, os.path.basename(processed_data_file), compress_type=zipfile.ZIP_DEFLATED)
+# Upload processed data file to S3
+uploaded = util_cloud.aws_upload(processed_data_dir, aws_bucket, s3_prefix+os.path.basename(processed_data_dir))
