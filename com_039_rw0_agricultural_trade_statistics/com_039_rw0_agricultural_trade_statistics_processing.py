@@ -95,7 +95,7 @@ CARTO_KEY = os.getenv('CARTO_WRI_RW_KEY')
 set_default_credentials(username=CARTO_USER, base_url="https://{user}.carto.com/".format(user=CARTO_USER),api_key=CARTO_KEY)
 
 # upload data frame to Carto
-to_carto(df, dataset_name + '_edit', if_exists='replace', privacy="link")
+to_carto(df, dataset_name + '_edit', if_exists='replace')
 
 # set privacy to 'link' so table is accessible but not published
 update_privacy_table(dataset_name + '_edit', 'link')
