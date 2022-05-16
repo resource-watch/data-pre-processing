@@ -18,7 +18,7 @@ import rioxarray as rio
 
 
 # dataset name
-dataset_name = 'cli_xxx_utci'
+dataset_name = 'cli_079_rw0_universal_thermal_climate_index'
 
 # Processing steps
    # loop through bands and convert kelvin to celsius
