@@ -59,7 +59,7 @@ c.retrieve(
         ],
         'format': 'zip',
     },
-    data_dir+'download.zip')  # change to data_dir for PR
+    data_dir+'download.zip')
 
 # unzip source data
 with ZipFile('/Users/alexsweeney/Desktop/data-dir/utci/download.zip', 'r') as zip_obj:
