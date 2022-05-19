@@ -9,11 +9,11 @@ utils_path = os.path.join(os.path.abspath(os.getenv('PROCESSING_DIR')), 'utils')
 if utils_path not in sys.path:
    sys.path.append(utils_path)
 import util_files
-import util_cloud
+# import util_cloud
 import logging
 import subprocess
-from google.cloud import storage
-import ee
+# from google.cloud import storage
+# import ee
 import zipfile
 from zipfile import ZipFile
 
@@ -109,7 +109,10 @@ for raw, processed in zip(raw_data_file, processed_data_file):
     subprocess.check_output(cmd, shell=True)
 
 '''
-Upload processed data to Google Earth Engine
+Commenting out block of code for script testing
+
+'''
+# Upload processed data to Google Earth Engine  # remove comment for PR
 '''
 # set up uploading chunk size
 # the default setting requires an uploading speed at 10MB/min. Reduce the chunk size, if the network condition is not good.
@@ -164,7 +167,7 @@ util_cloud.gcs_remove(gcs_uris, gcs_bucket=gcsBucket)
 logger.info('Files deleted from Google Cloud Storage.')
 
 '''
-Upload original data and processed data to Amazon S3 storage
+# Upload original data and processed data to Amazon S3 storage  # remove comment for PR
 '''
 # initialize AWS variables
 aws_bucket = 'wri-projects'
@@ -189,3 +192,5 @@ with ZipFile(processed_data_dir,'w') as zipped:
 
 # Upload processed data file to S3
 uploaded = util_cloud.aws_upload(processed_data_dir, aws_bucket, s3_prefix + os.path.basename(processed_data_dir))
+
+'''
