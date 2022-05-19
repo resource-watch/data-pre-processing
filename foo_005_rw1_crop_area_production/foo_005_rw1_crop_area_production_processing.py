@@ -1,15 +1,18 @@
 import os
 import sys
+from dotenv import load_dotenv
+load_dotenv()
 utils_path = os.path.join(os.path.abspath(os.getenv('PROCESSING_DIR')),'utils')
 if utils_path not in sys.path:
     sys.path.append(utils_path)
 import util_files
-import util_cloud
+# import util_cloud
 import urllib
+from urllib.request import Request, urlopen
 from zipfile import ZipFile
-import ee
+# import ee
 import subprocess
-from google.cloud import storage
+# from google.cloud import storage
 import logging
 import requests
 import json
@@ -50,12 +53,12 @@ url_list = ['https://dataverse.harvard.edu/api/access/datafile/:persistentId/?pe
             'https://dataverse.harvard.edu/api/access/datafile/:persistentId/?persistentId=doi:10.7910/DVN/PRFF8V/33PNTG']
 
 # download the data from the source
-raw_data_file = [os.path.join(data_dir,os.path.basename(url)) for url in url_list]
+raw_data_file = [os.path.join(data_dir, os.path.basename(url)) for url in url_list]
 for url, file in zip(url_list, raw_data_file):
      urllib.request.urlretrieve(url, file)
 
 # Unzip raw data
-# Only using four crops: maize,rice, wheat and soybean
+# Only using four crops: maize, rice, wheat and soybean
 # Only extracting the tif files that encompass all technologies (check source metadata)
 
 # Create a list with files of interest
@@ -72,14 +75,14 @@ tif_list = [
 # Create list to append location of files of interest
 unzipped_list = []
 # Extract files in data directory
-for index,element in enumerate(raw_data_file):
+for index, element in enumerate(raw_data_file):
     with ZipFile(raw_data_file[index], 'r') as zf:
         for file in zf.namelist():
             if file in tif_list:
                 unzipped_list.append(file)
-                zf.extract(file,data_dir)
+                zf.extract(file, data_dir)
 # Create path to unzipped files
-raw_data_file_unzipped = [os.path.join(data_dir,os.path.basename(file)) for file in unzipped_list]
+raw_data_file_unzipped = [os.path.join(data_dir, os.path.basename(file)) for file in unzipped_list]
 
 '''
 Process data
@@ -91,9 +94,10 @@ for raw, processed  in zip(raw_data_file_unzipped, processed_data_files):
     cmd = ['gdalwarp', raw, processed]
     subprocess.call(cmd)
 
+''' # remove for PR
 
 '''
-Upload processed data to Google Earth Engine
+# Upload processed data to Google Earth Engine  # remove comment before PR
 '''
 logger.info('Uploading processed data to Google Cloud Storage.')
 # set up Google Cloud Storage project and bucket objects
@@ -143,7 +147,7 @@ util_cloud.gcs_remove(gcs_uris, gcs_bucket=gcsBucket)
 logger.info('Files deleted from Google Cloud Storage.')
 
 '''
-Upload original data and processed data to Amazon S3 storage
+# Upload original data and processed data to Amazon S3 storage  # remove comment before PR
 '''
 # initialize AWS variables
 aws_bucket = 'wri-projects'
@@ -171,3 +175,4 @@ with ZipFile(processed_data_dir,'w') as zipped:
 
 # Upload processed data file to S3
 uploaded = util_cloud.aws_upload(processed_data_dir, aws_bucket, s3_prefix + os.path.basename(processed_data_dir))
+''' # remove for PR
