@@ -46,39 +46,38 @@ data_dir = util_files.prep_dirs(dataset_name)
 url_list = [
         # cotton tifs
             # irrigation
-            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/CRUTS32/Hist/8110H/scHi_cot.tif',
-            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/ENSEMBLE/rcp4p5/2020sH/scHi_cot.tif',
-            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/ENSEMBLE/rcp8p5/2020sH/scHi_cot.tif',
-            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/ENSEMBLE/rcp4p5/2050sH/scHi_cot.tif',
-            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/ENSEMBLE/rcp8p5/2050sH/scHi_cot.tif',
+            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/CRUTS32/Hist/8110H/suHi_cot.tif',
+            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/ENSEMBLE/rcp4p5/2020sH/suHi_cot.tif',
+            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/ENSEMBLE/rcp8p5/2020sH/suHi_cot.tif',
+            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/ENSEMBLE/rcp4p5/2050sH/suHi_cot.tif',
+            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/ENSEMBLE/rcp8p5/2050sH/suHi_cot.tif',
             # rainfed
-            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/CRUTS32/Hist/8110H/scHr_cot.tif',
-            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/ENSEMBLE/rcp4p5/2020sH/scHr_cot.tif',
-            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/ENSEMBLE/rcp8p5/2020sH/scHr_cot.tif',
-            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/ENSEMBLE/rcp8p5/2050sH/scHr_cot.tif',
-            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/ENSEMBLE/rcp4p5/2050sH/scHr_cot.tif',
+            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/CRUTS32/Hist/8110H/suHr_cot.tif',
+            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/ENSEMBLE/rcp4p5/2020sH/suHr_cot.tif',
+            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/ENSEMBLE/rcp8p5/2020sH/suHr_cot.tif',
+            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/ENSEMBLE/rcp4p5/2050sH/suHr_cot.tif',
+            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/ENSEMBLE/rcp8p5/2050sH/suHr_cot.tif',
         # coffee tifs
             # irrigation
-            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/CRUTS32/Hist/8110H/scHi_cof.tif',
-            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/ENSEMBLE/rcp4p5/2020sH/scHi_cof.tif',
-            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/ENSEMBLE/rcp8p5/2020sH/scHi_cof.tif',
-            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/ENSEMBLE/rcp4p5/2050sH/scHi_cof.tif',
-            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/ENSEMBLE/rcp8p5/2050sH/scHi_cof.tif',
+            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/CRUTS32/Hist/8110H/suHi_cof.tif',
+            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/ENSEMBLE/rcp4p5/2020sH/suHi_cof.tif',
+            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/ENSEMBLE/rcp8p5/2020sH/suHi_cof.tif',
+            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/ENSEMBLE/rcp4p5/2050sH/suHi_cof.tif',
+            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/ENSEMBLE/rcp8p5/2050sH/suHi_cof.tif',
             # rainfed
-            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/CRUTS32/Hist/8110H/scHr_cof.tif',
-            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/ENSEMBLE/rcp4p5/2020sH/scHr_cof.tif',
-            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/ENSEMBLE/rcp8p5/2020sH/scHr_cof.tif',
-            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/ENSEMBLE/rcp4p5/2050sH/scHr_cof.tif',
-            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/ENSEMBLE/rcp8p5/2050sH/scHr_cof.tif',
+            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/CRUTS32/Hist/8110H/suHr_cof.tif',
+            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/ENSEMBLE/rcp4p5/2020sH/suHr_cof.tif',
+            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/ENSEMBLE/rcp8p5/2020sH/suHr_cof.tif',
+            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/ENSEMBLE/rcp4p5/2050sH/suHr_cof.tif',
+            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/ENSEMBLE/rcp8p5/2050sH/suHr_cof.tif',
         # rice tifs
-            # NOTE - only have historical tifs for wetland/dryland rice - contacting GAEZ team to see if they can
-            # deliver ENSEMBLE tifs for future time periods.
+            # NOTE - historical tifs for wetland/dryland rice; have to manually compute ENSEMBLEs
             # wetland rice - gravity irrigation
-            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/CRUTS32/Hist/8110H/scHg_rcw.tif',
+            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/CRUTS32/Hist/8110H/suHg_rcw.tif',
             # wetland rice - rainfed
-            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/CRUTS32/Hist/8110H/scHr_rcw.tif',
+            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/CRUTS32/Hist/8110H/suHr_rcw.tif'',
             # dryland rice - rainfed
-            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/CRUTS32/Hist/8110H/scHr_rcd.tif'
+            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/CRUTS32/Hist/8110H/suHr_rcd.tif'
         ]
 
 # download tifs and rename as they are downloaded because some have the same name when downloaded
