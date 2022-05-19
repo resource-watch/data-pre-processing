@@ -75,7 +75,7 @@ url_list = [
             # wetland rice - gravity irrigation
             'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/CRUTS32/Hist/8110H/suHg_rcw.tif',
             # wetland rice - rainfed
-            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/CRUTS32/Hist/8110H/suHr_rcw.tif'',
+            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/CRUTS32/Hist/8110H/suHr_rcw.tif',
             # dryland rice - rainfed
             'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/CRUTS32/Hist/8110H/suHr_rcd.tif'
         ]
