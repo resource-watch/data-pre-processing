@@ -6,13 +6,13 @@ utils_path = os.path.join(os.path.abspath(os.getenv('PROCESSING_DIR')),'utils')
 if utils_path not in sys.path:
     sys.path.append(utils_path)
 import util_files
-# import util_cloud
+import util_cloud
 import urllib
 from urllib.request import Request, urlopen
 from zipfile import ZipFile
-# import ee
+import ee
 import subprocess
-# from google.cloud import storage
+from google.cloud import storage
 import logging
 import requests
 import json
@@ -41,22 +41,19 @@ Download data and save to your data directory
 
 Dataset files can be downloaded at the following link:
 https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/PRFF8V&version=4.0
-Two zipfiles were downloaded belonging to harvest and production areas were downloaded through the source's API:
+Three zipfiles were downloaded belonging to harvested area, production, and yield were downloaded through the source's API:
 
 Global production area: 
 https://dataverse.harvard.edu/api/access/datafile/:persistentId/?persistentId=doi:10.7910/DVN/PRFF8V/NTMZGU
 Global harvest area: 
 https://dataverse.harvard.edu/api/access/datafile/:persistentId/?persistentId=doi:10.7910/DVN/PRFF8V/33PNTG
+Global yield:
+https://dataverse.harvard.edu/api/access/datafile/:persistentId/?persistentId=doi:10.7910/DVN/PRFF8V/Y1OQRN
 '''
 
 url_list = ['https://dataverse.harvard.edu/api/access/datafile/:persistentId/?persistentId=doi:10.7910/DVN/PRFF8V/NTMZGU',
             'https://dataverse.harvard.edu/api/access/datafile/:persistentId/?persistentId=doi:10.7910/DVN/PRFF8V/33PNTG',
             'https://dataverse.harvard.edu/api/access/datafile/:persistentId/?persistentId=doi:10.7910/DVN/PRFF8V/Y1OQRN']
-
-## Get around Harvard Dataverse blocking downloads with no User agent set.  # TODO remove for PR
-opener = urllib.request.build_opener()
-opener.addheaders = [('User-agent', 'Mozilla/5.0')]
-urllib.request.install_opener(opener)
 
 # download the data from the source
 raw_data_file = [os.path.join(data_dir, os.path.basename(url)) for url in url_list]
@@ -113,10 +110,8 @@ for raw, processed  in zip(raw_data_file_unzipped, processed_data_files):
     cmd = ['gdalwarp', raw, processed]
     subprocess.call(cmd)
 
-''' # TODO remove for PR 
-
 '''
-# Upload processed data to Google Earth Engine  # TODO remove comment before PR
+Upload processed data to Google Earth Engine
 '''
 logger.info('Uploading processed data to Google Cloud Storage.')
 # set up Google Cloud Storage project and bucket objects
@@ -166,7 +161,7 @@ util_cloud.gcs_remove(gcs_uris, gcs_bucket=gcsBucket)
 logger.info('Files deleted from Google Cloud Storage.')
 
 '''
-# TODO Upload original data and processed data to Amazon S3 storage  # remove comment before PR
+Upload original data and processed data to Amazon S3 storage
 '''
 # initialize AWS variables
 aws_bucket = 'wri-projects'
@@ -194,4 +189,3 @@ with ZipFile(processed_data_dir,'w') as zipped:
 
 # Upload processed data file to S3
 uploaded = util_cloud.aws_upload(processed_data_dir, aws_bucket, s3_prefix + os.path.basename(processed_data_dir))
-''' # TODO remove for PR
