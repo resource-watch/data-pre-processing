@@ -1,6 +1,5 @@
 import os
 import sys
-import dotenv
 utils_path = os.path.join(os.path.abspath(os.getenv('PROCESSING_DIR')),'utils')
 if utils_path not in sys.path:
     sys.path.append(utils_path)
@@ -11,7 +10,7 @@ from zipfile import ZipFile
 import ee
 from google.cloud import storage
 import logging
-import urllib
+#import urllib
 from collections import OrderedDict 
 import shlex
 import subprocess
@@ -40,14 +39,14 @@ data_dict = OrderedDict()
 data_dict= {
     'url': 'https://knb.ecoinformatics.org/knb/d1/mn/v2/object/urn%3Auuid%3Aefef18ef-416e-4d4d-9190-f17485c02c15',
     'unzipped folder': 'Global_N_Coastal_Plumes_tifs',
-    'tifs': ['global_effluent_2015_open_N.tif', 'global_effluent_2015_septic_N.tif', 'global_effluent_2015_treated_N.tif', 'global_effluent_2015_tot_N.tiff'],
+    'tifs': ['global_effluent_2015_open_N.tif', 'global_effluent_2015_septic_N.tif', 'global_effluent_2015_treated_N.tif', 'global_effluent_2015_tot_N.tif'],
     'raw_data_file':[],
     'processed_data_file': [],
     'sds': [
         'classification',
     ],
     'pyramiding_policy': 'MEAN',
-    'band_ids': ['classification']
+    'band_ids': ['b1']
 }
 
 '''
@@ -64,8 +63,6 @@ raw_data_file_unzipped = raw_data_file.split('.')[0]
 zip_ref = ZipFile(raw_data_file, 'r')
 zip_ref.extractall(raw_data_file_unzipped)
 zip_ref.close()
-
-
 
 # set name of raw data files
 for tif in data_dict['tifs']:
@@ -87,12 +84,13 @@ for i in range(len(data_dict['tifs'])):
     logger.info(raw_data_path)
     
     # project the data into WGS84 (espg 4326) using the command line terminal
-    cmd = 'gdalwarp -of GTiff -t_srs EPSG:4326 {} {}'
+    cmd = 'gdalwarp {} {}'
     # format to command line and run
-    posix_cmd = shlex.split(cmd.format(raw_data_path, 'out.tif'), posix=True)
+    posix_cmd = shlex.split(cmd.format(raw_data_path, data_dict['processed_data_file'][i]), posix=True)
     logger.info(posix_cmd)     
-    completed_process= subprocess.check_output(posix_cmd)   
-    logging.debug(str(completed_process))
+    #completed_process= subprocess.check_output(posix_cmd)
+    completed_process= subprocess.call(posix_cmd)    
+    #logging.debug(str(completed_process))
 
 '''
 Upload processed data to Google Earth Engine
@@ -111,7 +109,7 @@ pyramiding_policy = data_dict['pyramiding_policy'] #check
 
 # Create an image collection where we will put the processed data files in GEE
 image_collection = f'projects/resource-watch-gee/{dataset_name}'
-#ee.data.createAsset({'type': 'ImageCollection'}, image_collection)
+ee.data.createAsset({'type': 'ImageCollection'}, image_collection)
 
 # set image collection's privacy to public
 acl = {"all_users_can_read": True}
@@ -130,10 +128,11 @@ task_id = []
 # storage.blob._MAX_MULTIPART_SIZE = 10 * 1024* 1024  # 10 MB
 
 #loop though the processed data files to upload to Google Cloud Storage and Google Earth Engine
+
 for i in range(len(data_dict['tifs'])):
     logger.info('Uploading '+ data_dict['processed_data_file'][i]+' to Google Cloud Storage.')
     # upload files to Google Cloud Storage
-    gcs_uri= util_cloud.gcs_upload(data_dict['raw_data_file'][i], dataset_name, gcs_bucket=gcsBucket)
+    gcs_uri= util_cloud.gcs_upload(data_dict['processed_data_file'][i], dataset_name, gcs_bucket=gcsBucket)
     
     logger.info('Uploading '+ data_dict['processed_data_file'][i]+ ' Google Earth Engine.')
     # generate an asset name for the current file by using the filename (minus the file type extension)
@@ -141,9 +140,9 @@ for i in range(len(data_dict['tifs'])):
     asset_name = f'projects/resource-watch-gee/{dataset_name}/{file_name}'
     
     # create the band manifest for this asset
-    tileset_id= data_dict['tifs'][i].split('.')[0]
-    mf_bands = [{'id': band_id, 'tileset_band_index': band_ids.index(band_id), 'tileset_id': tileset_id,'pyramidingPolicy': pyramiding_policy} for band_id in band_ids]
-    
+    #tileset_id= data_dict['processed_data_file'][i].split('.')[0]
+    mf_bands = [{'id': band_id, 'tileset_band_index': band_ids.index(band_id), 'tileset_id': file_name,'pyramidingPolicy': pyramiding_policy} for band_id in band_ids]
+  
     # create complete manifest for asset upload
     manifest = util_cloud.gee_manifest_complete(asset_name, gcs_uri[0], mf_bands)
     
@@ -151,9 +150,9 @@ for i in range(len(data_dict['tifs'])):
     task = util_cloud.gee_ingest(manifest)
     print(asset_name + ' uploaded to GEE')
     task_id.append(task)
-    
+
     # remove files from Google Cloud Storage
-    util_cloud.gcs_remove(gcs_uri, gcs_bucket=gcsBucket)
+    util_cloud.gcs_remove(gcs_uri[0], gcs_bucket=gcsBucket)
     logger.info('Files deleted from Google Cloud Storage.')
 
 '''
