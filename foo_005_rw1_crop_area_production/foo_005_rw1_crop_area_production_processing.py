@@ -63,7 +63,7 @@ for url, file in zip(url_list, raw_data_file):
      urllib.request.urlretrieve(url, file)
 
 # Unzip raw data
-# Only using six crops: maize, rice, wheat, soybean, coffee (arabic and robusta), and cotton
+# Only using six crops: maize, rice, wheat, soybean, coffee (arabica and robusta), and cotton
 # Only extracting the tif files that encompass all technologies (check source metadata)
 
 # Create a list with files of interest
