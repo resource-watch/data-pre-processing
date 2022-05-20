@@ -50,9 +50,10 @@ https://dataverse.harvard.edu/api/access/datafile/:persistentId/?persistentId=do
 '''
 
 url_list = ['https://dataverse.harvard.edu/api/access/datafile/:persistentId/?persistentId=doi:10.7910/DVN/PRFF8V/NTMZGU',
-            'https://dataverse.harvard.edu/api/access/datafile/:persistentId/?persistentId=doi:10.7910/DVN/PRFF8V/33PNTG']
+            'https://dataverse.harvard.edu/api/access/datafile/:persistentId/?persistentId=doi:10.7910/DVN/PRFF8V/33PNTG',
+            'https://dataverse.harvard.edu/api/access/datafile/:persistentId/?persistentId=doi:10.7910/DVN/PRFF8V/Y1OQRN']
 
-## Get around Harvard Dataverse blocking downloads with no User agent set.
+## Get around Harvard Dataverse blocking downloads with no User agent set.  # TODO remove for PR
 opener = urllib.request.build_opener()
 opener.addheaders = [('User-agent', 'Mozilla/5.0')]
 urllib.request.install_opener(opener)
@@ -82,6 +83,13 @@ tif_list = [
     'spam2010V2r0_global_P_ACOF_A.tif',
     'spam2010V2r0_global_P_RCOF_A.tif',
     'spam2010V2r0_global_P_COTT_A.tif',
+    'spam2010V2r0_global_Y_MAIZ_A.tif',
+    'spam2010V2r0_global_Y_RICE_A.tif',
+    'spam2010V2r0_global_Y_WHEA_A.tif',
+    'spam2010V2r0_global_Y_SOYB_A.tif',
+    'spam2010V2r0_global_Y_ACOF_A.tif',
+    'spam2010V2r0_global_Y_RCOF_A.tif',
+    'spam2010V2r0_global_Y_COTT_A.tif'
 ]
 # Create list to append location of files of interest
 unzipped_list = []
@@ -105,10 +113,10 @@ for raw, processed  in zip(raw_data_file_unzipped, processed_data_files):
     cmd = ['gdalwarp', raw, processed]
     subprocess.call(cmd)
 
-''' # remove for PR
+''' # TODO remove for PR 
 
 '''
-# Upload processed data to Google Earth Engine  # remove comment before PR
+# Upload processed data to Google Earth Engine  # TODO remove comment before PR
 '''
 logger.info('Uploading processed data to Google Cloud Storage.')
 # set up Google Cloud Storage project and bucket objects
@@ -158,7 +166,7 @@ util_cloud.gcs_remove(gcs_uris, gcs_bucket=gcsBucket)
 logger.info('Files deleted from Google Cloud Storage.')
 
 '''
-# Upload original data and processed data to Amazon S3 storage  # remove comment before PR
+# TODO Upload original data and processed data to Amazon S3 storage  # remove comment before PR
 '''
 # initialize AWS variables
 aws_bucket = 'wri-projects'
@@ -186,4 +194,4 @@ with ZipFile(processed_data_dir,'w') as zipped:
 
 # Upload processed data file to S3
 uploaded = util_cloud.aws_upload(processed_data_dir, aws_bucket, s3_prefix + os.path.basename(processed_data_dir))
-''' # remove for PR
+''' # TODO remove for PR
