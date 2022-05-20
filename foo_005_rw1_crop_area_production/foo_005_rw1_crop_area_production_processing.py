@@ -52,13 +52,18 @@ https://dataverse.harvard.edu/api/access/datafile/:persistentId/?persistentId=do
 url_list = ['https://dataverse.harvard.edu/api/access/datafile/:persistentId/?persistentId=doi:10.7910/DVN/PRFF8V/NTMZGU',
             'https://dataverse.harvard.edu/api/access/datafile/:persistentId/?persistentId=doi:10.7910/DVN/PRFF8V/33PNTG']
 
+## Get around Harvard Dataverse blocking downloads with no User agent set.
+opener = urllib.request.build_opener()
+opener.addheaders = [('User-agent', 'Mozilla/5.0')]
+urllib.request.install_opener(opener)
+
 # download the data from the source
 raw_data_file = [os.path.join(data_dir, os.path.basename(url)) for url in url_list]
 for url, file in zip(url_list, raw_data_file):
      urllib.request.urlretrieve(url, file)
 
 # Unzip raw data
-# Only using four crops: maize, rice, wheat and soybean
+# Only using six crops: maize, rice, wheat, soybean, coffee (arabic and robusta), and cotton
 # Only extracting the tif files that encompass all technologies (check source metadata)
 
 # Create a list with files of interest
@@ -67,10 +72,16 @@ tif_list = [
     'spam2010V2r0_global_H_RICE_A.tif',
     'spam2010V2r0_global_H_WHEA_A.tif',
     'spam2010V2r0_global_H_SOYB_A.tif',
+    'spam2010V2r0_global_H_ACOF_A.tif',
+    'spam2010V2r0_global_H_RCOF_A.tif',
+    'spam2010V2r0_global_H_COTT_A.tif',
     'spam2010V2r0_global_P_SOYB_A.tif',
     'spam2010V2r0_global_P_WHEA_A.tif',
     'spam2010V2r0_global_P_RICE_A.tif',
-    'spam2010V2r0_global_P_MAIZ_A.tif'
+    'spam2010V2r0_global_P_MAIZ_A.tif',
+    'spam2010V2r0_global_P_ACOF_A.tif',
+    'spam2010V2r0_global_P_RCOF_A.tif',
+    'spam2010V2r0_global_P_COTT_A.tif',
 ]
 # Create list to append location of files of interest
 unzipped_list = []
