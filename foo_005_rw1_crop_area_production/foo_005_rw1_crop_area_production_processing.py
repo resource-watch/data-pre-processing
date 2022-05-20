@@ -6,7 +6,6 @@ if utils_path not in sys.path:
 import util_files
 import util_cloud
 import urllib
-from urllib.request import Request, urlopen
 from zipfile import ZipFile
 import ee
 import subprocess
@@ -54,7 +53,7 @@ url_list = ['https://dataverse.harvard.edu/api/access/datafile/:persistentId/?pe
             'https://dataverse.harvard.edu/api/access/datafile/:persistentId/?persistentId=doi:10.7910/DVN/PRFF8V/Y1OQRN']
 
 # download the data from the source
-raw_data_file = [os.path.join(data_dir, os.path.basename(url)) for url in url_list]
+raw_data_file = [os.path.join(data_dir,os.path.basename(url)) for url in url_list]
 for url, file in zip(url_list, raw_data_file):
      urllib.request.urlretrieve(url, file)
 
@@ -89,14 +88,14 @@ tif_list = [
 # Create list to append location of files of interest
 unzipped_list = []
 # Extract files in data directory
-for index, element in enumerate(raw_data_file):
+for index,element in enumerate(raw_data_file):
     with ZipFile(raw_data_file[index], 'r') as zf:
         for file in zf.namelist():
             if file in tif_list:
                 unzipped_list.append(file)
-                zf.extract(file, data_dir)
+                zf.extract(file,data_dir)
 # Create path to unzipped files
-raw_data_file_unzipped = [os.path.join(data_dir, os.path.basename(file)) for file in unzipped_list]
+raw_data_file_unzipped = [os.path.join(data_dir,os.path.basename(file)) for file in unzipped_list]
 
 '''
 Process data
