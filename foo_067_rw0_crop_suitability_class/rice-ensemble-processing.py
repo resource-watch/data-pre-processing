@@ -10,49 +10,57 @@ import sys
 # script to process the individual model outputs from GAEZv4 Suitability Index tifs and compute ENSEMBLE mean tifs
 
 # rough outline of processing steps
+def calculate_ensemble_mean(tif_list):
+    '''
+    Calculate the ensemble mean from a collection of tif files
+    Return a newly created tif that is the ensemble mean of the 5 input tifs
+    '''
+    # read in tifs using rasterio
+    tif_arrays_list = []
+    profiles_list = []
+    for t in tif_list:
+        with rasterio.open(t) as src:
+            array = src.read()
+            profile = src.profile
+            tif_arrays_list.append(array)
+            profiles_list.append(profile)
 
-# tifs to process
-# 2020s wetland rice
-NorESM1_M = 'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/NorESM1-M/rcp4p5/2020sH/suHg_rcw.tif'
-MIROC_ESM_CHEM = 'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/MIROC-ESM-CHEM/rcp4p5/2020sH/suHg_rcw.tif'
-IPSL_CM5A_LR = 'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/IPSL-CM5A-LR/rcp4p5/2020sH/suHg_rcw.tif'
-HadGEM2_ES = 'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/HadGEM2-ES/rcp4p5/2020sH/suHg_rcw.tif'
-GFDL_ESM2M = 'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/GFDL-ESM2M/rcp4p5/2020sH/suHg_rcw.tif'
+    # create a nodata mask as defined in the profile info of the geotifs nodata = -9
+    # this assumes there are 5 tifs to average
+    nodata_mask = np.any((tif_arrays_list[0] == profiles_list[0].get('nodata'),
+                          tif_arrays_list[1] == profiles_list[1].get('nodata'),
+                          tif_arrays_list[2] == profiles_list[2].get('nodata'),
+                          tif_arrays_list[3] == profiles_list[3].get('nodata'),
+                          tif_arrays_list[4] == profiles_list[4].get('nodata')),
+                         axis=0)
 
-# read in tifs
-with rasterio.open(NorESM1_M) as src:
-    nor_array = src.read()
-    nor_profile = src.profile
-with rasterio.open(MIROC_ESM_CHEM) as src:
-    mir_array = src.read()
-    mir_profile = src.profile
-with rasterio.open(IPSL_CM5A_LR) as src:
-    ips_array = src.read()
-    ips_profile = src.profile
-with rasterio.open(HadGEM2_ES) as src:
-    had_array = src.read()
-    had_profile = src.profile
-with rasterio.open(GFDL_ESM2M) as src:
-    gfd_array = src.read()
-    gfd_profile = src.profile
+    # calculate the mean of all the models to create an ENSEMBLE mean
+    # this assumes there are 5 tifs to average
+    ensemble_mean = np.mean((tif_arrays_list[0], tif_arrays_list[1], tif_arrays_list[2],
+                             tif_arrays_list[3], tif_arrays_list[4]), axis=0)
 
-# create a nodata mask as defined in the profile info of the geotifs nodata = -9
-nodata_mask = np.any((nor_array == nor_profile.get('nodata'),
-                      mir_array == mir_profile.get('nodata'),
-                      ips_array == ips_profile.get('nodata'),
-                      had_array == had_profile.get('nodata'),
-                      gfd_array == gfd_profile.get('nodata')),
-                      axis=0)
+    # replace nodata pixels with np.nan
+    ensemble_mean[nodata_mask] = np.nan
 
-# calculate the mean of all the models to create an ENSEMBLE mean
-ensemble_mean = np.mean((nor_array, mir_array, ips_array, had_array, gfd_array), axis=0)
+    # save ensemble_mean to a tif file
+    # Write the ENSEMBLE mean as a geotiff file
+    profile_out = profiles_list[0].copy()
+    profile_out.update(dtype=ensemble_mean.dtype.name,
+                       nodata=np.nan)
+    # TODO change output directory
+    with rasterio.open('/Users/alexsweeney/Desktop/test/test-fnc-ensemble-mean.tif', 'w', **profile_out) as dst:
+        dst.write(ensemble_mean)
 
-# replace nodata pixels with np.nan
-ensemble_mean[nodata_mask] = np.nan
+    src.close()
 
-# write the ENSEMBLE mean array to a geotiff file
-profile_out = nor_profile.copy()
-profile_out.update(dtype=ensemble_mean.dtype.name,
-                   nodata=np.nan)
-with rasterio.open('/Users/alexsweeney/Desktop/test/test-ensemble-mean.tif', 'w', **profile_out) as dst:
-    dst.write(ensemble_mean)
+# calculate ensemble mean of wetland rice 2020s, RCP 4.5
+
+# define tifs to process
+# 2020s wetland rice, RCP4.5
+rcw_2020s_rcp45_list = ['https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/NorESM1-M/rcp4p5/2020sH/suHg_rcw.tif',
+'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/MIROC-ESM-CHEM/rcp4p5/2020sH/suHg_rcw.tif',
+'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/IPSL-CM5A-LR/rcp4p5/2020sH/suHg_rcw.tif',
+'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/HadGEM2-ES/rcp4p5/2020sH/suHg_rcw.tif',
+'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/GFDL-ESM2M/rcp4p5/2020sH/suHg_rcw.tif']
+
+calculate_ensemble_mean(rcw_2020s_rcp45_list)
