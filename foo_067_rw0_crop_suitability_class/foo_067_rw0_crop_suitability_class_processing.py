@@ -41,8 +41,9 @@ Download data and save to your data directory
 data_dir = util_files.prep_dirs(dataset_name)
 
 # list of urls from data source
-# urls downloaded from https://gaez-data-portal-hqfao.hub.arcgis.com/pages/data-viewer
+# urls downloaded from GAEZv4 data portal: https://gaez-data-portal-hqfao.hub.arcgis.com/pages/data-viewer
 # under Theme 4: Suitability and Attainable Yield
+# sub-theme: Suitability Index / Variable name: Suitability index range (0-10000); current cropland in grid cell
 url_list = [
         # cotton tifs
             # irrigation
