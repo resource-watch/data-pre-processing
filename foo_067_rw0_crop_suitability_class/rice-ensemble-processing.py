@@ -47,7 +47,7 @@ def calculate_ensemble_mean(tif_list):
     profile_out = profiles_list[0].copy()
     profile_out.update(dtype=ensemble_mean.dtype.name,
                        nodata=np.nan)
-    # TODO change output directory
+    # TODO change output directory and make it dynamic (e.g. use tif list to inform output file name)
     with rasterio.open('/Users/alexsweeney/Desktop/test/test-fnc-ensemble-mean.tif', 'w', **profile_out) as dst:
         dst.write(ensemble_mean)
 
