@@ -1,21 +1,20 @@
 import numpy as np
 import rasterio
+import os
+import sys
 from dotenv import load_dotenv
 load_dotenv()
 utils_path = os.path.join(os.path.abspath(os.getenv('PROCESSING_DIR')), 'utils')
 if utils_path not in sys.path:
    sys.path.append(utils_path)
 import util_files
-import os
 import urllib.request
 from urllib.parse import urlsplit
 import re
-import sys
-
 
 # script to process the individual model outputs from GAEZv4 Suitability Index tifs and compute ENSEMBLE mean tifs
 
-# rough outline of processing steps
+# define calculate ensemble mean
 def calculate_ensemble_mean(tif_list, output_tif_name):
     ''' Calculates the ensemble mean from a collection of tif files and save it as a tif file
 
@@ -24,6 +23,8 @@ def calculate_ensemble_mean(tif_list, output_tif_name):
             output_tif_name (string): name for newly generated tif, e.g. 'ensemble_rcp4p5_2020sH_suHg_rcw_edit'
 
     '''
+    # TODO add download steps in here?
+
     # read in tifs using rasterio
     tif_arrays_list = []
     profiles_list = []
@@ -175,11 +176,13 @@ rcp8p5_2050sH_suHr_rcd_list = [
 
 '''
 Calculate ensemble means from individual model runs for rice.
+
 URLs were obtained from GAEZv4 data portal: https://gaez-data-portal-hqfao.hub.arcgis.com/pages/data-viewer 
 Under Theme 4: Suitability and Attainable Yield
     Sub-theme: Suitability Index
     Variable name: Suitability index range (0-10000); current cropland in grid cell
 '''
+
 # name of dataset
 dataset_name = 'foo_067_rw0_crop_suitability_class'
 
