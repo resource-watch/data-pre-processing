@@ -1,5 +1,11 @@
 import numpy as np
 import rasterio
+from dotenv import load_dotenv
+load_dotenv()
+utils_path = os.path.join(os.path.abspath(os.getenv('PROCESSING_DIR')), 'utils')
+if utils_path not in sys.path:
+   sys.path.append(utils_path)
+import util_files
 import os
 import urllib.request
 from urllib.parse import urlsplit
@@ -10,10 +16,13 @@ import sys
 # script to process the individual model outputs from GAEZv4 Suitability Index tifs and compute ENSEMBLE mean tifs
 
 # rough outline of processing steps
-def calculate_ensemble_mean(tif_list):
-    '''
-    Calculate the ensemble mean from a collection of tif files
-    Return a newly created tif that is the ensemble mean of the 5 input tifs
+def calculate_ensemble_mean(tif_list, output_tif_name):
+    ''' Calculates the ensemble mean from a collection of tif files and save it as a tif file
+
+        Parameters:
+            tif_list (list): list of tifs to process
+            output_tif_name (string): name for newly generated tif, e.g. 'ensemble_rcp4p5_2020sH_suHg_rcw_edit'
+
     '''
     # read in tifs using rasterio
     tif_arrays_list = []
@@ -47,8 +56,7 @@ def calculate_ensemble_mean(tif_list):
     profile_out = profiles_list[0].copy()
     profile_out.update(dtype=ensemble_mean.dtype.name,
                        nodata=np.nan)
-    # TODO change output directory and make it dynamic (e.g. use tif list to inform output file name)
-    with rasterio.open('/Users/alexsweeney/Desktop/test/test-fnc-ensemble-mean.tif', 'w', **profile_out) as dst:
+    with rasterio.open(os.path.join(data_dir, output_tif_name+'.tif'), 'w', **profile_out) as dst:
         dst.write(ensemble_mean)
 
     src.close()
@@ -172,9 +180,12 @@ Under Theme 4: Suitability and Attainable Yield
     Sub-theme: Suitability Index
     Variable name: Suitability index range (0-10000); current cropland in grid cell
 '''
+# name of dataset
+dataset_name = 'foo_067_rw0_crop_suitability_class'
 
-
+# prep directory for processed tifs
+data_dir = util_files.prep_dirs(dataset_name)
 
 # calculate 2020s RCP4.5 for wetland rice
-calculate_ensemble_mean(rcw_2020s_rcp45_list)
+calculate_ensemble_mean(rcp4p5_2020sH_suHg_rcw_list, output_tif_name='ensemble_rcp4p5_2020sH_suHg_rcw_edit')
 
