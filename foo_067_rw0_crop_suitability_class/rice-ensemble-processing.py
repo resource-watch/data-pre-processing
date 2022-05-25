@@ -35,6 +35,13 @@ def calculate_ensemble_mean(tif_list, output_tif_name):
             tif_arrays_list.append(array)
             profiles_list.append(profile)
 
+    # define the mask array as defined in the profile info of the geotifs nodata = -9
+    nodata_mask_array = []
+    for (tifs, profiles) in zip(tif_arrays_list, profiles_list):
+        nd = (tifs == profiles.get('nodata'))
+        nodata_mask_array.append(nd)
+    '''
+    # old way
     # create a nodata mask as defined in the profile info of the geotifs nodata = -9
     # this assumes there are 5 tifs to average
     nodata_mask = np.any((tif_arrays_list[0] == profiles_list[0].get('nodata'),
@@ -43,11 +50,17 @@ def calculate_ensemble_mean(tif_list, output_tif_name):
                           tif_arrays_list[3] == profiles_list[3].get('nodata'),
                           tif_arrays_list[4] == profiles_list[4].get('nodata')),
                          axis=0)
-
+    
     # calculate the mean of all the models to create an ENSEMBLE mean
     # this assumes there are 5 tifs to average
     ensemble_mean = np.mean((tif_arrays_list[0], tif_arrays_list[1], tif_arrays_list[2],
                              tif_arrays_list[3], tif_arrays_list[4]), axis=0)
+'''
+    # create a nodata mask
+    nodata_mask = np.any(nodata_mask_array, axis=0)
+
+    # calculate the mean of all the models to create an ENSEMBLE mean
+    ensemble_mean = np.mean(tif_arrays_list, axis=0)
 
     # replace nodata pixels with np.nan
     ensemble_mean[nodata_mask] = np.nan
@@ -80,97 +93,97 @@ rcp4p5_2020sH_suHg_rcw_list = [
 ]
 # 2020s, RCP 8.5
 rcp8p5_2020sH_suHg_rcw_list = [
-	'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/NorESM1-M/rcp8p5/2020sH/suHg_rcw.tif',
-	'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/MIROC-ESM-CHEM/rcp8p5/2020sH/suHg_rcw.tif',
-	'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/IPSL-CM5A-LR/rcp8p5/2020sH/suHg_rcw.tif',
-	'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/HadGEM2-ES/rcp8p5/2020sH/suHg_rcw.tif',
-	'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/GFDL-ESM2M/rcp8p5/2020sH/suHg_rcw.tif'
+    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/NorESM1-M/rcp8p5/2020sH/suHg_rcw.tif',
+    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/MIROC-ESM-CHEM/rcp8p5/2020sH/suHg_rcw.tif',
+    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/IPSL-CM5A-LR/rcp8p5/2020sH/suHg_rcw.tif',
+    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/HadGEM2-ES/rcp8p5/2020sH/suHg_rcw.tif',
+    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/GFDL-ESM2M/rcp8p5/2020sH/suHg_rcw.tif'
 ]
 # 2050s, RCP 4.5
 rcp4p5_2050sH_suHg_rcw_list = [
-	'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/NorESM1-M/rcp4p5/2050sH/suHg_rcw.tif',
-	'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/MIROC-ESM-CHEM/rcp4p5/2050sH/suHg_rcw.tif',
-	'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/IPSL-CM5A-LR/rcp4p5/2050sH/suHg_rcw.tif',
-	'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/HadGEM2-ES/rcp4p5/2050sH/suHg_rcw.tif',
-	'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/GFDL-ESM2M/rcp4p5/2050sH/suHg_rcw.tif'
+    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/NorESM1-M/rcp4p5/2050sH/suHg_rcw.tif',
+    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/MIROC-ESM-CHEM/rcp4p5/2050sH/suHg_rcw.tif',
+    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/IPSL-CM5A-LR/rcp4p5/2050sH/suHg_rcw.tif',
+    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/HadGEM2-ES/rcp4p5/2050sH/suHg_rcw.tif',
+    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/GFDL-ESM2M/rcp4p5/2050sH/suHg_rcw.tif'
 ]
 # 2050s, RCP 8.5
 rcp8p5_2050sH_suHg_rcw_list = [
-	'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/NorESM1-M/rcp8p5/2050sH/suHg_rcw.tif',
-	'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/MIROC-ESM-CHEM/rcp8p5/2050sH/suHg_rcw.tif',
-	'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/IPSL-CM5A-LR/rcp8p5/2050sH/suHg_rcw.tif',
-	'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/HadGEM2-ES/rcp8p5/2050sH/suHg_rcw.tif',
-	'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/GFDL-ESM2M/rcp8p5/2050sH/suHg_rcw.tif'
+    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/NorESM1-M/rcp8p5/2050sH/suHg_rcw.tif',
+    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/MIROC-ESM-CHEM/rcp8p5/2050sH/suHg_rcw.tif',
+    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/IPSL-CM5A-LR/rcp8p5/2050sH/suHg_rcw.tif',
+    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/HadGEM2-ES/rcp8p5/2050sH/suHg_rcw.tif',
+    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/GFDL-ESM2M/rcp8p5/2050sH/suHg_rcw.tif'
 ]
 ########################
 # wetland rice - rainfed
 ########################
 # 2020s, RCP 4.5
 rcp4p5_2020sH_suHr_rcw_list = [
-	'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/NorESM1-M/rcp4p5/2020sH/suHr_rcw.tif',
-	'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/MIROC-ESM-CHEM/rcp4p5/2020sH/suHr_rcw.tif',
-	'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/IPSL-CM5A-LR/rcp4p5/2020sH/suHr_rcw.tif',
-	'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/HadGEM2-ES/rcp4p5/2020sH/suHr_rcw.tif',
-	'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/GFDL-ESM2M/rcp4p5/2020sH/suHr_rcw.tif'
+    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/NorESM1-M/rcp4p5/2020sH/suHr_rcw.tif',
+    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/MIROC-ESM-CHEM/rcp4p5/2020sH/suHr_rcw.tif',
+    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/IPSL-CM5A-LR/rcp4p5/2020sH/suHr_rcw.tif',
+    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/HadGEM2-ES/rcp4p5/2020sH/suHr_rcw.tif',
+    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/GFDL-ESM2M/rcp4p5/2020sH/suHr_rcw.tif'
 ]
 # 2020s, RCP 8.5
 rcp8p5_2020sH_suHr_rcw_list = [
-	'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/NorESM1-M/rcp8p5/2020sH/suHr_rcw.tif',
-	'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/MIROC-ESM-CHEM/rcp8p5/2020sH/suHr_rcw.tif',
-	'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/IPSL-CM5A-LR/rcp8p5/2020sH/suHr_rcw.tif',
-	'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/HadGEM2-ES/rcp8p5/2020sH/suHr_rcw.tif',
-	'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/GFDL-ESM2M/rcp8p5/2020sH/suHr_rcw.tif'
+    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/NorESM1-M/rcp8p5/2020sH/suHr_rcw.tif',
+    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/MIROC-ESM-CHEM/rcp8p5/2020sH/suHr_rcw.tif',
+    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/IPSL-CM5A-LR/rcp8p5/2020sH/suHr_rcw.tif',
+    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/HadGEM2-ES/rcp8p5/2020sH/suHr_rcw.tif',
+    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/GFDL-ESM2M/rcp8p5/2020sH/suHr_rcw.tif'
 ]
 # 2050s, RCP 4.5
 rcp4p5_2050sH_suHr_rcw_list = [
-	'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/NorESM1-M/rcp4p5/2050sH/suHr_rcw.tif',
-	'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/MIROC-ESM-CHEM/rcp4p5/2050sH/suHr_rcw.tif',
-	'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/IPSL-CM5A-LR/rcp4p5/2050sH/suHr_rcw.tif',
-	'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/HadGEM2-ES/rcp4p5/2050sH/suHr_rcw.tif',
-	'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/GFDL-ESM2M/rcp4p5/2050sH/suHr_rcw.tif'
+    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/NorESM1-M/rcp4p5/2050sH/suHr_rcw.tif',
+    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/MIROC-ESM-CHEM/rcp4p5/2050sH/suHr_rcw.tif',
+    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/IPSL-CM5A-LR/rcp4p5/2050sH/suHr_rcw.tif',
+    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/HadGEM2-ES/rcp4p5/2050sH/suHr_rcw.tif',
+    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/GFDL-ESM2M/rcp4p5/2050sH/suHr_rcw.tif'
 ]
 # 2050s, RCP 8.5
 rcp8p5_2050sH_suHr_rcw_list = [
-	'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/NorESM1-M/rcp8p5/2050sH/suHr_rcw.tif',
-	'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/MIROC-ESM-CHEM/rcp8p5/2050sH/suHr_rcw.tif',
-	'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/IPSL-CM5A-LR/rcp8p5/2050sH/suHr_rcw.tif',
-	'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/HadGEM2-ES/rcp8p5/2050sH/suHr_rcw.tif',
-	'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/GFDL-ESM2M/rcp8p5/2050sH/suHr_rcw.tif'
+    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/NorESM1-M/rcp8p5/2050sH/suHr_rcw.tif',
+    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/MIROC-ESM-CHEM/rcp8p5/2050sH/suHr_rcw.tif',
+    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/IPSL-CM5A-LR/rcp8p5/2050sH/suHr_rcw.tif',
+    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/HadGEM2-ES/rcp8p5/2050sH/suHr_rcw.tif',
+    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/GFDL-ESM2M/rcp8p5/2050sH/suHr_rcw.tif'
 ]
 ########################
 # dryland rice - rainfed
 ########################
 # 2020s, RCP 4.5
 rcp4p5_2020sH_suHr_rcd_list = [
-	'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/NorESM1-M/rcp4p5/2020sH/suHr_rcd.tif',
-	'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/MIROC-ESM-CHEM/rcp4p5/2020sH/suHr_rcd.tif',
-	'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/IPSL-CM5A-LR/rcp4p5/2020sH/suHr_rcd.tif',
-	'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/HadGEM2-ES/rcp4p5/2020sH/suHr_rcd.tif',
-	'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/GFDL-ESM2M/rcp4p5/2020sH/suHr_rcd.tif'
+    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/NorESM1-M/rcp4p5/2020sH/suHr_rcd.tif',
+    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/MIROC-ESM-CHEM/rcp4p5/2020sH/suHr_rcd.tif',
+    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/IPSL-CM5A-LR/rcp4p5/2020sH/suHr_rcd.tif',
+    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/HadGEM2-ES/rcp4p5/2020sH/suHr_rcd.tif',
+    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/GFDL-ESM2M/rcp4p5/2020sH/suHr_rcd.tif'
 ]
 # 2020s, RCP 8.5
 rcp8p5_2020sH_suHr_rcd_list = [
-	'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/NorESM1-M/rcp8p5/2020sH/suHr_rcd.tif',
-	'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/MIROC-ESM-CHEM/rcp8p5/2020sH/suHr_rcd.tif',
-	'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/IPSL-CM5A-LR/rcp8p5/2020sH/suHr_rcd.tif',
-	'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/HadGEM2-ES/rcp8p5/2020sH/suHr_rcd.tif',
-	'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/GFDL-ESM2M/rcp8p5/2020sH/suHr_rcd.tif'
+    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/NorESM1-M/rcp8p5/2020sH/suHr_rcd.tif',
+    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/MIROC-ESM-CHEM/rcp8p5/2020sH/suHr_rcd.tif',
+    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/IPSL-CM5A-LR/rcp8p5/2020sH/suHr_rcd.tif',
+    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/HadGEM2-ES/rcp8p5/2020sH/suHr_rcd.tif',
+    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/GFDL-ESM2M/rcp8p5/2020sH/suHr_rcd.tif'
 ]
 # 2050s, RCP 4.5
 rcp4p5_2050sH_suHr_rcd_list = [
-	'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/NorESM1-M/rcp4p5/2050sH/suHr_rcd.tif',
-	'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/MIROC-ESM-CHEM/rcp4p5/2050sH/suHr_rcd.tif',
-	'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/IPSL-CM5A-LR/rcp4p5/2050sH/suHr_rcd.tif',
-	'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/HadGEM2-ES/rcp4p5/2050sH/suHr_rcd.tif',
-	'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/GFDL-ESM2M/rcp4p5/2050sH/suHr_rcd.tif'
+    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/NorESM1-M/rcp4p5/2050sH/suHr_rcd.tif',
+    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/MIROC-ESM-CHEM/rcp4p5/2050sH/suHr_rcd.tif',
+    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/IPSL-CM5A-LR/rcp4p5/2050sH/suHr_rcd.tif',
+    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/HadGEM2-ES/rcp4p5/2050sH/suHr_rcd.tif',
+    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/GFDL-ESM2M/rcp4p5/2050sH/suHr_rcd.tif'
 ]
 # 2050s, RCP 8.5
 rcp8p5_2050sH_suHr_rcd_list = [
-	'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/NorESM1-M/rcp8p5/2050sH/suHr_rcd.tif',
-	'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/MIROC-ESM-CHEM/rcp8p5/2050sH/suHr_rcd.tif',
-	'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/IPSL-CM5A-LR/rcp8p5/2050sH/suHr_rcd.tif',
-	'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/HadGEM2-ES/rcp8p5/2050sH/suHr_rcd.tif',
-	'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/GFDL-ESM2M/rcp8p5/2050sH/suHr_rcd.tif'
+    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/NorESM1-M/rcp8p5/2050sH/suHr_rcd.tif',
+    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/MIROC-ESM-CHEM/rcp8p5/2050sH/suHr_rcd.tif',
+    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/IPSL-CM5A-LR/rcp8p5/2050sH/suHr_rcd.tif',
+    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/HadGEM2-ES/rcp8p5/2050sH/suHr_rcd.tif',
+    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/GFDL-ESM2M/rcp8p5/2050sH/suHr_rcd.tif'
 ]
 
 
