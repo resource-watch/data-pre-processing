@@ -14,6 +14,13 @@ import re
 
 # script to process the individual model outputs from GAEZv4 Suitability Index tifs and compute ENSEMBLE mean tifs
 
+# define dataset name
+dataset_name = 'foo_067_rw0_crop_suitability_class'
+
+# create a new sub-directory within your specified dir called 'data'
+# within this directory, create files to store raw and processed data
+data_dir = util_files.prep_dirs(dataset_name)
+
 # define calculate ensemble mean
 def calculate_ensemble_mean(tif_list, output_tif_name):
     ''' Calculates the ensemble mean from a collection of tif files and save it as a tif file
@@ -23,19 +30,38 @@ def calculate_ensemble_mean(tif_list, output_tif_name):
             output_tif_name (string): name for newly generated tif, e.g. 'ensemble_rcp4p5_2020sH_suHg_rcw_edit'
 
     '''
-    # TODO add download steps in here?
+    # create a new sub-directory within your specified data dir called 'raw_model_data'
+    # within this directory, create files to store raw individual model data
+    raw_data_dir = os.path.join(data_dir, 'raw_model_data')
+    if not os.path.exists(raw_data_dir):
+        os.mkdir(raw_data_dir)
+
+    # download tifs into raw data directory, and retain unique path information contained in URLs to use as filename
+    raw_data_file = []
+    for url in tif_list:
+        # split URL to access path info
+        s = urlsplit(url)
+        # swap "/" for "-" in the path
+        r = re.sub("/", "-", s.path)
+        # remove the beginning portion of path which is common to all urls
+        p = r.replace("-data.gaezdev.aws.fao.org-res05-", "")
+        # create a new path and filename
+        filename = os.path.join(raw_data_dir, p)
+        # download data and save with new filename in data_dir
+        d = urllib.request.urlretrieve(url, filename)
+        raw_data_file.append(d[0])
 
     # read in tifs using rasterio
     tif_arrays_list = []
     profiles_list = []
-    for t in tif_list:
-        with rasterio.open(t) as src:
+    for file in raw_data_file:
+        with rasterio.open(file) as src:
             array = src.read()
             profile = src.profile
             tif_arrays_list.append(array)
             profiles_list.append(profile)
 
-    # define the mask array as defined in the profile info of the geotifs nodata = -9
+    # define the mask array as defined in the profile info of the raster: nodata = -9
     nodata_mask_array = []
     for (tifs, profiles) in zip(tif_arrays_list, profiles_list):
         nd = (tifs == profiles.get('nodata'))
@@ -73,6 +99,8 @@ def calculate_ensemble_mean(tif_list, output_tif_name):
         dst.write(ensemble_mean)
 
     src.close()
+
+    return raw_data_file
 
 
 '''
@@ -195,12 +223,6 @@ Under Theme 4: Suitability and Attainable Yield
     Variable name: Suitability index range (0-10000); current cropland in grid cell
 '''
 
-# name of dataset
-dataset_name = 'foo_067_rw0_crop_suitability_class'
-
-# prep directory for processed tifs
-data_dir = util_files.prep_dirs(dataset_name)
-
 # calculate 2020s RCP4.5 for wetland rice
-calculate_ensemble_mean(rcp4p5_2020sH_suHg_rcw_list, output_tif_name='ensemble_rcp4p5_2020sH_suHg_rcw_edit')
+calculate_ensemble_mean(rcp4p5_2020sH_suHg_rcw_list, output_tif_name='ENSEMBLE_rcp4p5_2020sH_suHg_rcw_edit')
 
