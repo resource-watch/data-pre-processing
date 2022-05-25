@@ -30,8 +30,8 @@ def calculate_ensemble_mean(tif_list, output_tif_name):
             output_tif_name (string): name for newly generated tif, e.g. 'ensemble_rcp4p5_2020sH_suHg_rcw_edit'
 
     '''
-    # create a new sub-directory within your specified data dir called 'raw_model_data'
-    # within this directory, create files to store raw individual model data
+    # prep directory to store raw individual model data
+    # create a new sub-directory within your specified data dir called 'raw_model_data' to store files
     raw_data_dir = os.path.join(data_dir, 'raw_model_data')
     if not os.path.exists(raw_data_dir):
         os.mkdir(raw_data_dir)
@@ -66,22 +66,7 @@ def calculate_ensemble_mean(tif_list, output_tif_name):
     for (tifs, profiles) in zip(tif_arrays_list, profiles_list):
         nd = (tifs == profiles.get('nodata'))
         nodata_mask_array.append(nd)
-    '''
-    # old way
-    # create a nodata mask as defined in the profile info of the geotifs (nodata = -9)
-    # this assumes there are 5 tifs to average
-    nodata_mask = np.any((tif_arrays_list[0] == profiles_list[0].get('nodata'),
-                          tif_arrays_list[1] == profiles_list[1].get('nodata'),
-                          tif_arrays_list[2] == profiles_list[2].get('nodata'),
-                          tif_arrays_list[3] == profiles_list[3].get('nodata'),
-                          tif_arrays_list[4] == profiles_list[4].get('nodata')),
-                         axis=0)
-    
-    # calculate the mean of all the models to create an ENSEMBLE mean
-    # this assumes there are 5 tifs to average
-    ensemble_mean = np.mean((tif_arrays_list[0], tif_arrays_list[1], tif_arrays_list[2],
-                             tif_arrays_list[3], tif_arrays_list[4]), axis=0)
-    '''
+
     # create a nodata mask
     nodata_mask = np.any(nodata_mask_array, axis=0)
 
@@ -104,9 +89,15 @@ def calculate_ensemble_mean(tif_list, output_tif_name):
 
 
 '''
-Lists of tif URLs to process
+Process data
 
+Calculate ensemble means from individual model runs for wetland and drylan rice.
+URLs were obtained from GAEZv4 data portal: https://gaez-data-portal-hqfao.hub.arcgis.com/pages/data-viewer 
+Under Theme 4: Suitability and Attainable Yield
+    Sub-theme: Suitability Index
+    Variable name: Suitability index range (0-10000); current cropland in grid cell
 '''
+
 ########################
 # wetland rice - gravity irrigation
 ########################
@@ -116,32 +107,44 @@ rcp4p5_2020sH_suHg_rcw_list = [
     'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/MIROC-ESM-CHEM/rcp4p5/2020sH/suHg_rcw.tif',
     'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/IPSL-CM5A-LR/rcp4p5/2020sH/suHg_rcw.tif',
     'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/HadGEM2-ES/rcp4p5/2020sH/suHg_rcw.tif',
-    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/GFDL-ESM2M/rcp4p5/2020sH/suHg_rcw.tif'
-]
+    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/GFDL-ESM2M/rcp4p5/2020sH/suHg_rcw.tif']
+
+# calculate ensemble mean: 2020s RCP4.5 for wetland rice - gravity irrigation
+calculate_ensemble_mean(rcp4p5_2020sH_suHg_rcw_list, output_tif_name='ENSEMBLE_rcp4p5_2020sH_suHg_rcw_edit')
+
 # 2020s, RCP 8.5
 rcp8p5_2020sH_suHg_rcw_list = [
     'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/NorESM1-M/rcp8p5/2020sH/suHg_rcw.tif',
     'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/MIROC-ESM-CHEM/rcp8p5/2020sH/suHg_rcw.tif',
     'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/IPSL-CM5A-LR/rcp8p5/2020sH/suHg_rcw.tif',
     'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/HadGEM2-ES/rcp8p5/2020sH/suHg_rcw.tif',
-    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/GFDL-ESM2M/rcp8p5/2020sH/suHg_rcw.tif'
-]
+    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/GFDL-ESM2M/rcp8p5/2020sH/suHg_rcw.tif']
+
+# calculate ensemble mean: 2020s RCP8.5 for wetland rice - gravity irrigation
+calculate_ensemble_mean(rcp8p5_2020sH_suHg_rcw_list, output_tif_name='ENSEMBLE_rcp8p5_2020sH_suHg_rcw_edit')
+
 # 2050s, RCP 4.5
 rcp4p5_2050sH_suHg_rcw_list = [
     'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/NorESM1-M/rcp4p5/2050sH/suHg_rcw.tif',
     'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/MIROC-ESM-CHEM/rcp4p5/2050sH/suHg_rcw.tif',
     'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/IPSL-CM5A-LR/rcp4p5/2050sH/suHg_rcw.tif',
     'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/HadGEM2-ES/rcp4p5/2050sH/suHg_rcw.tif',
-    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/GFDL-ESM2M/rcp4p5/2050sH/suHg_rcw.tif'
-]
+    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/GFDL-ESM2M/rcp4p5/2050sH/suHg_rcw.tif']
+
+# calculate ensemble mean: 2050s RCP4.5 for wetland rice - gravity irrigation
+calculate_ensemble_mean(rcp4p5_2050sH_suHg_rcw_list, output_tif_name='ENSEMBLE_rcp4p5_2050sH_suHg_rcw_edit')
+
 # 2050s, RCP 8.5
 rcp8p5_2050sH_suHg_rcw_list = [
     'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/NorESM1-M/rcp8p5/2050sH/suHg_rcw.tif',
     'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/MIROC-ESM-CHEM/rcp8p5/2050sH/suHg_rcw.tif',
     'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/IPSL-CM5A-LR/rcp8p5/2050sH/suHg_rcw.tif',
     'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/HadGEM2-ES/rcp8p5/2050sH/suHg_rcw.tif',
-    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/GFDL-ESM2M/rcp8p5/2050sH/suHg_rcw.tif'
-]
+    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/GFDL-ESM2M/rcp8p5/2050sH/suHg_rcw.tif']
+
+# calculate ensemble mean: 2050s RCP8.5 for wetland rice - gravity irrigation
+calculate_ensemble_mean(rcp8p5_2050sH_suHg_rcw_list, output_tif_name='ENSEMBLE_rcp8p5_2050sH_suHg_rcw_edit')
+
 ########################
 # wetland rice - rainfed
 ########################
@@ -151,32 +154,44 @@ rcp4p5_2020sH_suHr_rcw_list = [
     'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/MIROC-ESM-CHEM/rcp4p5/2020sH/suHr_rcw.tif',
     'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/IPSL-CM5A-LR/rcp4p5/2020sH/suHr_rcw.tif',
     'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/HadGEM2-ES/rcp4p5/2020sH/suHr_rcw.tif',
-    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/GFDL-ESM2M/rcp4p5/2020sH/suHr_rcw.tif'
-]
+    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/GFDL-ESM2M/rcp4p5/2020sH/suHr_rcw.tif']
+
+# calculate ensemble mean: 2020s RCP4.5 for wetland rice - rainfed
+calculate_ensemble_mean(rcp4p5_2020sH_suHr_rcw_list, output_tif_name='ENSEMBLE_rcp4p5_2020sH_suHr_rcw_edit')
+
 # 2020s, RCP 8.5
 rcp8p5_2020sH_suHr_rcw_list = [
     'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/NorESM1-M/rcp8p5/2020sH/suHr_rcw.tif',
     'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/MIROC-ESM-CHEM/rcp8p5/2020sH/suHr_rcw.tif',
     'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/IPSL-CM5A-LR/rcp8p5/2020sH/suHr_rcw.tif',
     'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/HadGEM2-ES/rcp8p5/2020sH/suHr_rcw.tif',
-    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/GFDL-ESM2M/rcp8p5/2020sH/suHr_rcw.tif'
-]
+    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/GFDL-ESM2M/rcp8p5/2020sH/suHr_rcw.tif']
+
+# calculate ensemble mean: 2020s RCP8.5 for wetland rice - rainfed
+calculate_ensemble_mean(rcp8p5_2020sH_suHr_rcw_list, output_tif_name='ENSEMBLE_rcp8p5_2020sH_suHr_rcw_edit')
+
 # 2050s, RCP 4.5
 rcp4p5_2050sH_suHr_rcw_list = [
     'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/NorESM1-M/rcp4p5/2050sH/suHr_rcw.tif',
     'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/MIROC-ESM-CHEM/rcp4p5/2050sH/suHr_rcw.tif',
     'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/IPSL-CM5A-LR/rcp4p5/2050sH/suHr_rcw.tif',
     'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/HadGEM2-ES/rcp4p5/2050sH/suHr_rcw.tif',
-    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/GFDL-ESM2M/rcp4p5/2050sH/suHr_rcw.tif'
-]
+    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/GFDL-ESM2M/rcp4p5/2050sH/suHr_rcw.tif']
+
+# calculate ensemble mean: 2050s RCP4.5 for wetland rice - rainfed
+calculate_ensemble_mean(rcp4p5_2050sH_suHr_rcw_list, output_tif_name='ENSEMBLE_rcp4p5_2050sH_suHr_rcw_edit')
+
 # 2050s, RCP 8.5
 rcp8p5_2050sH_suHr_rcw_list = [
     'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/NorESM1-M/rcp8p5/2050sH/suHr_rcw.tif',
     'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/MIROC-ESM-CHEM/rcp8p5/2050sH/suHr_rcw.tif',
     'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/IPSL-CM5A-LR/rcp8p5/2050sH/suHr_rcw.tif',
     'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/HadGEM2-ES/rcp8p5/2050sH/suHr_rcw.tif',
-    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/GFDL-ESM2M/rcp8p5/2050sH/suHr_rcw.tif'
-]
+    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/GFDL-ESM2M/rcp8p5/2050sH/suHr_rcw.tif']
+
+# calculate ensemble mean: 2050s RCP8.5 for wetland rice - rainfed
+calculate_ensemble_mean(rcp8p5_2050sH_suHr_rcw_list, output_tif_name='ENSEMBLE_rcp8p5_2050sH_suHr_rcw_edit')
+
 ########################
 # dryland rice - rainfed
 ########################
@@ -186,43 +201,40 @@ rcp4p5_2020sH_suHr_rcd_list = [
     'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/MIROC-ESM-CHEM/rcp4p5/2020sH/suHr_rcd.tif',
     'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/IPSL-CM5A-LR/rcp4p5/2020sH/suHr_rcd.tif',
     'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/HadGEM2-ES/rcp4p5/2020sH/suHr_rcd.tif',
-    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/GFDL-ESM2M/rcp4p5/2020sH/suHr_rcd.tif'
-]
+    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/GFDL-ESM2M/rcp4p5/2020sH/suHr_rcd.tif']
+
+# calculate ensemble mean: 2020s RCP4.5 for dryland rice - rainfed
+calculate_ensemble_mean(rcp4p5_2020sH_suHr_rcd_list, output_tif_name='ENSEMBLE_rcp4p5_2020sH_suHr_rcd_edit')
+
 # 2020s, RCP 8.5
 rcp8p5_2020sH_suHr_rcd_list = [
     'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/NorESM1-M/rcp8p5/2020sH/suHr_rcd.tif',
     'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/MIROC-ESM-CHEM/rcp8p5/2020sH/suHr_rcd.tif',
     'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/IPSL-CM5A-LR/rcp8p5/2020sH/suHr_rcd.tif',
     'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/HadGEM2-ES/rcp8p5/2020sH/suHr_rcd.tif',
-    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/GFDL-ESM2M/rcp8p5/2020sH/suHr_rcd.tif'
-]
+    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/GFDL-ESM2M/rcp8p5/2020sH/suHr_rcd.tif']
+
+# calculate ensemble mean: 2020s RCP8.5 for dryland rice - rainfed
+calculate_ensemble_mean(rcp8p5_2020sH_suHr_rcd_list, output_tif_name='ENSEMBLE_rcp8p5_2020sH_suHr_rcd_edit')
+
 # 2050s, RCP 4.5
 rcp4p5_2050sH_suHr_rcd_list = [
     'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/NorESM1-M/rcp4p5/2050sH/suHr_rcd.tif',
     'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/MIROC-ESM-CHEM/rcp4p5/2050sH/suHr_rcd.tif',
     'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/IPSL-CM5A-LR/rcp4p5/2050sH/suHr_rcd.tif',
     'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/HadGEM2-ES/rcp4p5/2050sH/suHr_rcd.tif',
-    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/GFDL-ESM2M/rcp4p5/2050sH/suHr_rcd.tif'
-]
+    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/GFDL-ESM2M/rcp4p5/2050sH/suHr_rcd.tif']
+
+# calculate ensemble mean: 2050s RCP4.5 for dryland rice - rainfed
+calculate_ensemble_mean(rcp4p5_2050sH_suHr_rcd_list, output_tif_name='ENSEMBLE_rcp4p5_2050sH_suHr_rcd_edit')
+
 # 2050s, RCP 8.5
 rcp8p5_2050sH_suHr_rcd_list = [
     'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/NorESM1-M/rcp8p5/2050sH/suHr_rcd.tif',
     'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/MIROC-ESM-CHEM/rcp8p5/2050sH/suHr_rcd.tif',
     'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/IPSL-CM5A-LR/rcp8p5/2050sH/suHr_rcd.tif',
     'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/HadGEM2-ES/rcp8p5/2050sH/suHr_rcd.tif',
-    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/GFDL-ESM2M/rcp8p5/2050sH/suHr_rcd.tif'
-]
+    'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/GFDL-ESM2M/rcp8p5/2050sH/suHr_rcd.tif']
 
-
-'''
-Calculate ensemble means from individual model runs for rice.
-
-URLs were obtained from GAEZv4 data portal: https://gaez-data-portal-hqfao.hub.arcgis.com/pages/data-viewer 
-Under Theme 4: Suitability and Attainable Yield
-    Sub-theme: Suitability Index
-    Variable name: Suitability index range (0-10000); current cropland in grid cell
-'''
-
-# calculate 2020s RCP4.5 for wetland rice
-calculate_ensemble_mean(rcp4p5_2020sH_suHg_rcw_list, output_tif_name='ENSEMBLE_rcp4p5_2020sH_suHg_rcw_edit')
-
+# calculate ensemble mean: 2050s RCP8.5 for dryland rice - rainfed
+calculate_ensemble_mean(rcp8p5_2050sH_suHr_rcd_list, output_tif_name='ENSEMBLE_rcp8p5_2050sH_suHr_rcd_edit')
