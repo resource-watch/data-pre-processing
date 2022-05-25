@@ -42,7 +42,7 @@ def calculate_ensemble_mean(tif_list, output_tif_name):
         nodata_mask_array.append(nd)
     '''
     # old way
-    # create a nodata mask as defined in the profile info of the geotifs nodata = -9
+    # create a nodata mask as defined in the profile info of the geotifs (nodata = -9)
     # this assumes there are 5 tifs to average
     nodata_mask = np.any((tif_arrays_list[0] == profiles_list[0].get('nodata'),
                           tif_arrays_list[1] == profiles_list[1].get('nodata'),
@@ -55,7 +55,7 @@ def calculate_ensemble_mean(tif_list, output_tif_name):
     # this assumes there are 5 tifs to average
     ensemble_mean = np.mean((tif_arrays_list[0], tif_arrays_list[1], tif_arrays_list[2],
                              tif_arrays_list[3], tif_arrays_list[4]), axis=0)
-'''
+    '''
     # create a nodata mask
     nodata_mask = np.any(nodata_mask_array, axis=0)
 
@@ -65,8 +65,7 @@ def calculate_ensemble_mean(tif_list, output_tif_name):
     # replace nodata pixels with np.nan
     ensemble_mean[nodata_mask] = np.nan
 
-    # save ensemble_mean to a tif file
-    # Write the ENSEMBLE mean as a geotiff file
+    # write the ENSEMBLE mean to a geotiff file
     profile_out = profiles_list[0].copy()
     profile_out.update(dtype=ensemble_mean.dtype.name,
                        nodata=np.nan)
