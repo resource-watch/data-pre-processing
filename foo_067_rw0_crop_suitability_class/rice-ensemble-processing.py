@@ -11,25 +11,39 @@ import util_files
 import urllib.request
 from urllib.parse import urlsplit
 import re
+import logging
 
-# script to process the individual model outputs from GAEZv4 Suitability Index tifs and compute ENSEMBLE mean tifs
+'''
+Script to process the individual model outputs from GAEZv4 Suitability Index tifs and compute ENSEMBLE mean tifs
+'''
+# Set up logging
+# Get the top-level logger object
+logger = logging.getLogger()
+for handler in logger.handlers: logger.removeHandler(handler)
+logger.setLevel(logging.INFO)
+# make it print to the console
+console = logging.StreamHandler()
+logger.addHandler(console)
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
 # define dataset name
 dataset_name = 'foo_067_rw0_crop_suitability_class'
+
+logger.info('Executing script to calculate ensemble means for: ' + dataset_name)
 
 # create a new sub-directory within your specified dir called 'data'
 # within this directory, create files to store raw and processed data
 data_dir = util_files.prep_dirs(dataset_name)
 
+
 # define calculate ensemble mean
 def calculate_ensemble_mean(tif_list, output_tif_name):
-    ''' Calculates the ensemble mean from a collection of tif files and save it as a tif file
+    """Calculates the ensemble mean from a collection of tif files and save it as a tif file
 
         Parameters:
             tif_list (list): list of tifs to process
             output_tif_name (string): name for newly generated tif, e.g. 'ensemble_rcp4p5_2020sH_suHg_rcw_edit'
-
-    '''
+    """
     # prep directory to store raw individual model data
     # create a new sub-directory within your specified data dir called 'raw_model_data' to store files
     raw_data_dir = os.path.join(data_dir, 'raw_model_data')
@@ -111,6 +125,7 @@ rcp4p5_2020sH_suHg_rcw_list = [
 
 # calculate ensemble mean: 2020s RCP4.5 for wetland rice - gravity irrigation
 calculate_ensemble_mean(rcp4p5_2020sH_suHg_rcw_list, output_tif_name='ENSEMBLE_rcp4p5_2020sH_suHg_rcw_edit')
+logger.info('ENSEMBLE tif created')
 
 # 2020s, RCP 8.5
 rcp8p5_2020sH_suHg_rcw_list = [
@@ -122,6 +137,7 @@ rcp8p5_2020sH_suHg_rcw_list = [
 
 # calculate ensemble mean: 2020s RCP8.5 for wetland rice - gravity irrigation
 calculate_ensemble_mean(rcp8p5_2020sH_suHg_rcw_list, output_tif_name='ENSEMBLE_rcp8p5_2020sH_suHg_rcw_edit')
+logger.info('ENSEMBLE tif created')
 
 # 2050s, RCP 4.5
 rcp4p5_2050sH_suHg_rcw_list = [
@@ -133,6 +149,7 @@ rcp4p5_2050sH_suHg_rcw_list = [
 
 # calculate ensemble mean: 2050s RCP4.5 for wetland rice - gravity irrigation
 calculate_ensemble_mean(rcp4p5_2050sH_suHg_rcw_list, output_tif_name='ENSEMBLE_rcp4p5_2050sH_suHg_rcw_edit')
+logger.info('ENSEMBLE tif created')
 
 # 2050s, RCP 8.5
 rcp8p5_2050sH_suHg_rcw_list = [
@@ -144,6 +161,7 @@ rcp8p5_2050sH_suHg_rcw_list = [
 
 # calculate ensemble mean: 2050s RCP8.5 for wetland rice - gravity irrigation
 calculate_ensemble_mean(rcp8p5_2050sH_suHg_rcw_list, output_tif_name='ENSEMBLE_rcp8p5_2050sH_suHg_rcw_edit')
+logger.info('ENSEMBLE tif created')
 
 ########################
 # wetland rice - rainfed
@@ -158,6 +176,7 @@ rcp4p5_2020sH_suHr_rcw_list = [
 
 # calculate ensemble mean: 2020s RCP4.5 for wetland rice - rainfed
 calculate_ensemble_mean(rcp4p5_2020sH_suHr_rcw_list, output_tif_name='ENSEMBLE_rcp4p5_2020sH_suHr_rcw_edit')
+logger.info('ENSEMBLE tif created')
 
 # 2020s, RCP 8.5
 rcp8p5_2020sH_suHr_rcw_list = [
@@ -169,6 +188,7 @@ rcp8p5_2020sH_suHr_rcw_list = [
 
 # calculate ensemble mean: 2020s RCP8.5 for wetland rice - rainfed
 calculate_ensemble_mean(rcp8p5_2020sH_suHr_rcw_list, output_tif_name='ENSEMBLE_rcp8p5_2020sH_suHr_rcw_edit')
+logger.info('ENSEMBLE tif created')
 
 # 2050s, RCP 4.5
 rcp4p5_2050sH_suHr_rcw_list = [
@@ -180,6 +200,7 @@ rcp4p5_2050sH_suHr_rcw_list = [
 
 # calculate ensemble mean: 2050s RCP4.5 for wetland rice - rainfed
 calculate_ensemble_mean(rcp4p5_2050sH_suHr_rcw_list, output_tif_name='ENSEMBLE_rcp4p5_2050sH_suHr_rcw_edit')
+logger.info('ENSEMBLE tif created')
 
 # 2050s, RCP 8.5
 rcp8p5_2050sH_suHr_rcw_list = [
@@ -191,6 +212,7 @@ rcp8p5_2050sH_suHr_rcw_list = [
 
 # calculate ensemble mean: 2050s RCP8.5 for wetland rice - rainfed
 calculate_ensemble_mean(rcp8p5_2050sH_suHr_rcw_list, output_tif_name='ENSEMBLE_rcp8p5_2050sH_suHr_rcw_edit')
+logger.info('ENSEMBLE tif created')
 
 ########################
 # dryland rice - rainfed
@@ -205,6 +227,7 @@ rcp4p5_2020sH_suHr_rcd_list = [
 
 # calculate ensemble mean: 2020s RCP4.5 for dryland rice - rainfed
 calculate_ensemble_mean(rcp4p5_2020sH_suHr_rcd_list, output_tif_name='ENSEMBLE_rcp4p5_2020sH_suHr_rcd_edit')
+logger.info('ENSEMBLE tif created')
 
 # 2020s, RCP 8.5
 rcp8p5_2020sH_suHr_rcd_list = [
@@ -216,6 +239,7 @@ rcp8p5_2020sH_suHr_rcd_list = [
 
 # calculate ensemble mean: 2020s RCP8.5 for dryland rice - rainfed
 calculate_ensemble_mean(rcp8p5_2020sH_suHr_rcd_list, output_tif_name='ENSEMBLE_rcp8p5_2020sH_suHr_rcd_edit')
+logger.info('ENSEMBLE tif created')
 
 # 2050s, RCP 4.5
 rcp4p5_2050sH_suHr_rcd_list = [
@@ -227,6 +251,7 @@ rcp4p5_2050sH_suHr_rcd_list = [
 
 # calculate ensemble mean: 2050s RCP4.5 for dryland rice - rainfed
 calculate_ensemble_mean(rcp4p5_2050sH_suHr_rcd_list, output_tif_name='ENSEMBLE_rcp4p5_2050sH_suHr_rcd_edit')
+logger.info('ENSEMBLE tif created')
 
 # 2050s, RCP 8.5
 rcp8p5_2050sH_suHr_rcd_list = [
@@ -238,3 +263,4 @@ rcp8p5_2050sH_suHr_rcd_list = [
 
 # calculate ensemble mean: 2050s RCP8.5 for dryland rice - rainfed
 calculate_ensemble_mean(rcp8p5_2050sH_suHr_rcd_list, output_tif_name='ENSEMBLE_rcp8p5_2050sH_suHr_rcd_edit')
+logger.info('ENSEMBLE tif created')
