@@ -38,7 +38,7 @@ data_dir = util_files.prep_dirs(dataset_name)
 
 # define calculate ensemble mean
 def calculate_ensemble_mean(tif_list, output_tif_name):
-    """Calculates the ensemble mean from a collection of tif files and save it as a tif file
+    """Calculates the ensemble mean from a collection of tif files and saves it as a tif file
 
         Parameters:
             tif_list (list): list of tifs to process
@@ -61,7 +61,7 @@ def calculate_ensemble_mean(tif_list, output_tif_name):
         p = r.replace("-data.gaezdev.aws.fao.org-res05-", "")
         # create a new path and filename
         filename = os.path.join(raw_data_dir, p)
-        # download data and save with new filename in data_dir
+        # download data and save with new filename in raw data dir
         d = urllib.request.urlretrieve(url, filename)
         raw_data_file.append(d[0])
 
@@ -78,7 +78,7 @@ def calculate_ensemble_mean(tif_list, output_tif_name):
     # calculate the mean of all the models to create an ENSEMBLE mean
     ensemble_mean = np.mean(tif_arrays_list, axis=0)
 
-    # write the ENSEMBLE mean to a geotiff file, copying the profile information from one of the tifs
+    # write the ENSEMBLE mean to a geotiff file, copying the profile information from one of the original tifs
     profile_out = profiles_list[0].copy()
     profile_out.update(dtype=ensemble_mean.dtype.name)
     with rasterio.open(os.path.join(data_dir, output_tif_name+'.tif'), 'w', **profile_out) as dst:
@@ -92,7 +92,7 @@ def calculate_ensemble_mean(tif_list, output_tif_name):
 '''
 Process data
 
-Calculate ensemble means from individual model runs for wetland and drylan rice.
+Calculate ensemble means from individual model runs for wetland and dryland rice.
 URLs were obtained from GAEZv4 data portal: https://gaez-data-portal-hqfao.hub.arcgis.com/pages/data-viewer 
 Under Theme 4: Suitability and Attainable Yield
     Sub-theme: Suitability Index
