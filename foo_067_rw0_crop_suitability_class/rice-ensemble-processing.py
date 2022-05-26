@@ -65,7 +65,7 @@ def calculate_ensemble_mean(tif_list, output_tif_name):
         d = urllib.request.urlretrieve(url, filename)
         raw_data_file.append(d[0])
 
-    # read in tifs using rasterio, # nodata defined as: -9
+    # read in tifs using rasterio, nodata is defined as: -9 in profile
     tif_arrays_list = []
     profiles_list = []
     for file in raw_data_file:
@@ -78,7 +78,7 @@ def calculate_ensemble_mean(tif_list, output_tif_name):
     # calculate the mean of all the models to create an ENSEMBLE mean
     ensemble_mean = np.mean(tif_arrays_list, axis=0)
 
-    # write the ENSEMBLE mean to a geotiff file
+    # write the ENSEMBLE mean to a geotiff file, copying the profile information from one of the tifs
     profile_out = profiles_list[0].copy()
     profile_out.update(dtype=ensemble_mean.dtype.name)
     with rasterio.open(os.path.join(data_dir, output_tif_name+'.tif'), 'w', **profile_out) as dst:
