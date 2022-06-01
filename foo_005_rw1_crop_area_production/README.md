@@ -10,4 +10,4 @@ You can view the processed Crop Land Area and Production dataset [on Resource Wa
 
 You can also download the original dataset [from the source website](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/PRFF8V&version=4.0).
 
-###### Note: This dataset processing was done by [Eduardo Castillero Reyes](https://wrimexico.org/profile/eduardo-castillero-reyes), and QC'd by [Amelia Snyder](https://www.wri.org/profile/amelia-snyder).
+###### Note: This dataset processing was done by [Eduardo Castillero Reyes](https://wrimexico.org/profile/eduardo-castillero-reyes), updates made by [Alex Sweeney](https://github.com/alxswny), and QC'd by [Chris Rowe](https://www.wri.org/profile/chris-rowe) and [Weiqi Zhou](https://www.wri.org/profile/weiqi-zhou).
