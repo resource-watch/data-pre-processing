@@ -42,8 +42,8 @@ Download data and save to your data directory
 # within this directory, create files to store raw and processed data
 data_dir = util_files.prep_dirs(dataset_name)
 
-# create a list of processed rice ensemble tifs
-# note: these were created from the rice-ensemble-processing.py script and there should be a total of 12 files
+# create a list of rice ensemble tifs
+# note: these were created from the rice_ensemble_processing.py script and there should be a total of 12 files
 raw_rice_ensemble_file = []
 # list contents of data directory and use fnmatch to find rice ensemble files
 files_list = os.listdir(data_dir)
@@ -83,7 +83,7 @@ url_list = [
             'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/ENSEMBLE/rcp4p5/2050sH/suHr_cof.tif',
             'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/ENSEMBLE/rcp8p5/2050sH/suHr_cof.tif',
         # rice tifs
-            # NOTE - historical tifs for wetland/dryland rice; have to manually compute ENSEMBLEs
+            # NOTE - these are historical tifs for wetland/dryland rice only; have to manually compute ENSEMBLEs (see rice_ensemble_processing.py)
             # wetland rice - gravity irrigation
             'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/CRUTS32/Hist/8110H/suHg_rcw.tif',
             # wetland rice - rainfed
@@ -109,8 +109,8 @@ for url in url_list:
     raw_data_file.append(d[0])
 
 # add rice ensembles to list of raw data files
-for rref in raw_rice_ensemble_file:
-    raw_data_file.append(rref)
+for rr in raw_rice_ensemble_file:
+    raw_data_file.append(rr)
 
 '''
 Process data
