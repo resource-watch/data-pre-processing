@@ -38,16 +38,19 @@ Download data and save to your data directory
 
 Dataset files can be downloaded at the following link:
 https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/PRFF8V&version=4.0
-Two zipfiles were downloaded belonging to harvest and production areas were downloaded through the source's API:
+Three zipfiles were downloaded belonging to harvested area, production, and yield were downloaded through the source's API:
 
 Global production area: 
 https://dataverse.harvard.edu/api/access/datafile/:persistentId/?persistentId=doi:10.7910/DVN/PRFF8V/NTMZGU
 Global harvest area: 
 https://dataverse.harvard.edu/api/access/datafile/:persistentId/?persistentId=doi:10.7910/DVN/PRFF8V/33PNTG
+Global yield:
+https://dataverse.harvard.edu/api/access/datafile/:persistentId/?persistentId=doi:10.7910/DVN/PRFF8V/Y1OQRN
 '''
 
 url_list = ['https://dataverse.harvard.edu/api/access/datafile/:persistentId/?persistentId=doi:10.7910/DVN/PRFF8V/NTMZGU',
-            'https://dataverse.harvard.edu/api/access/datafile/:persistentId/?persistentId=doi:10.7910/DVN/PRFF8V/33PNTG']
+            'https://dataverse.harvard.edu/api/access/datafile/:persistentId/?persistentId=doi:10.7910/DVN/PRFF8V/33PNTG',
+            'https://dataverse.harvard.edu/api/access/datafile/:persistentId/?persistentId=doi:10.7910/DVN/PRFF8V/Y1OQRN']
 
 # download the data from the source
 raw_data_file = [os.path.join(data_dir,os.path.basename(url)) for url in url_list]
@@ -55,7 +58,7 @@ for url, file in zip(url_list, raw_data_file):
      urllib.request.urlretrieve(url, file)
 
 # Unzip raw data
-# Only using four crops: maize,rice, wheat and soybean
+# Only using six crops: maize, rice, wheat, soybean, coffee (arabica and robusta), and cotton
 # Only extracting the tif files that encompass all technologies (check source metadata)
 
 # Create a list with files of interest
@@ -64,10 +67,23 @@ tif_list = [
     'spam2010V2r0_global_H_RICE_A.tif',
     'spam2010V2r0_global_H_WHEA_A.tif',
     'spam2010V2r0_global_H_SOYB_A.tif',
+    'spam2010V2r0_global_H_ACOF_A.tif',
+    'spam2010V2r0_global_H_RCOF_A.tif',
+    'spam2010V2r0_global_H_COTT_A.tif',
     'spam2010V2r0_global_P_SOYB_A.tif',
     'spam2010V2r0_global_P_WHEA_A.tif',
     'spam2010V2r0_global_P_RICE_A.tif',
-    'spam2010V2r0_global_P_MAIZ_A.tif'
+    'spam2010V2r0_global_P_MAIZ_A.tif',
+    'spam2010V2r0_global_P_ACOF_A.tif',
+    'spam2010V2r0_global_P_RCOF_A.tif',
+    'spam2010V2r0_global_P_COTT_A.tif',
+    'spam2010V2r0_global_Y_MAIZ_A.tif',
+    'spam2010V2r0_global_Y_RICE_A.tif',
+    'spam2010V2r0_global_Y_WHEA_A.tif',
+    'spam2010V2r0_global_Y_SOYB_A.tif',
+    'spam2010V2r0_global_Y_ACOF_A.tif',
+    'spam2010V2r0_global_Y_RCOF_A.tif',
+    'spam2010V2r0_global_Y_COTT_A.tif'
 ]
 # Create list to append location of files of interest
 unzipped_list = []
@@ -90,7 +106,6 @@ processed_data_files = [os.path.join(data_dir, dataset_name + '_' +file[5:])for 
 for raw, processed  in zip(raw_data_file_unzipped, processed_data_files):
     cmd = ['gdalwarp', raw, processed]
     subprocess.call(cmd)
-
 
 '''
 Upload processed data to Google Earth Engine
