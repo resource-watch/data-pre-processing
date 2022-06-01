@@ -17,6 +17,7 @@ import subprocess
 import zipfile
 from zipfile import ZipFile
 import fnmatch
+import itertools
 
 # Set up logging
 # Get the top-level logger object
@@ -43,12 +44,12 @@ data_dir = util_files.prep_dirs(dataset_name)
 
 # create a list of processed rice ensemble tifs
 # note: these were created from the rice-ensemble-processing.py script and there should be a total of 12 files
-rice_ensemble_files = []
+raw_rice_ensemble_file = []
 # list contents of data directory and use fnmatch to find rice ensemble files
 files_list = os.listdir(data_dir)
 for file in files_list:
-    if fnmatch.fnmatch(file, '*_rc*_edit.tif'):
-        rice_ensemble_files.append(file)
+    if fnmatch.fnmatch(file, 'ENSEMBLE_*_rc*.tif'):
+        raw_rice_ensemble_file.append(os.path.join(data_dir, file))
 
 # list of urls from data source
 # urls downloaded from GAEZv4 data portal: https://gaez-data-portal-hqfao.hub.arcgis.com/pages/data-viewer
@@ -107,21 +108,22 @@ for url in url_list:
     d = urllib.request.urlretrieve(url, filename)
     raw_data_file.append(d[0])
 
+# add rice ensembles to list of raw data files
+for rref in raw_rice_ensemble_file:
+    raw_data_file.append(rref)
+
 '''
 Process data
 '''
 # generate names for processed tif files
 processed_data_file = [x[:-4]+'_edit'+x[-4:] for x in raw_data_file]
 
-# add rice ensemble files to processed tif files list
-processed_data_file.append(rice_ensemble_files)
+# rename the tif file and process with gdal
+for raw, processed in zip(raw_data_file, processed_data_file):
+    # set nodata to -9 (as defined by source in tif)
+    cmd = 'gdalwarp -dstnodata -9 {} {}'.format(raw, processed)
+    subprocess.check_output(cmd, shell=True)
 
-# TODO mismatched number of raw and processed files due to creation of ensembles for rice
-# rename the tif file
-# for raw, processed in zip(raw_data_file, processed_data_file):
-    # set nodata to 255
-#   cmd = 'gdalwarp -dstnodata 255 {} {}'.format(raw, processed)  # TODO change value of nodata
-#    subprocess.check_output(cmd, shell=True)
 
 '''
 Commenting out block of code for script testing
