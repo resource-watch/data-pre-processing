@@ -14,7 +14,7 @@ import netCDF4
 import numpy as np
 import matplotlib.pyplot as plt
 import xarray as xr
-import rioxarray as rio
+import rasterio
 
 
 # dataset name
@@ -25,10 +25,13 @@ dataset_name = 'cli_079_rw0_universal_thermal_climate_index'
    # loop through bands and get mean daily UTCI in C
    # loop through daily mean UTCI files and get a monthly average
 
+'''
+Download data
+'''
+
 # create a new sub-directory within your specified dir called 'data'
 # within this directory, create files to store raw and processed data
-data_dir = '/Users/alexsweeney/Desktop/data-dir/utci/'  # change for PR
-    #util_files.prep_dirs(dataset_name)
+data_dir = util_files.prep_dirs(dataset_name)
 
 # 1. get data and download to local machine
 # access CDS API - more info here: https://cds.climate.copernicus.eu/api-how-to
@@ -68,11 +71,9 @@ with ZipFile('/Users/alexsweeney/Desktop/data-dir/utci/download.zip', 'r') as zi
     zip_obj.extractall(data_dir)
     zip_obj.close()
 
-# read in multiple files from data_dir and process
-for file in raw_data_file:
-    f = netCDF4.Dataset(os.path.join(data_dir, file), 'r')
-    # TODO add in processing steps
-    print(file)
+'''
+Process Data
+'''
 
 '''Single netCDF for testing purposes
 # use netcdf4 module to read in data
@@ -80,7 +81,12 @@ filename = '/Users/alexsweeney/Documents/WRI/data/universal-thermal-climate-inde
 f = netCDF4.Dataset(filename, 'r')
 '''
 
-# TODO read data to numpy array and calc daily average
+# open files
+for file in data_dir:
+    f = netCDF4.Dataset(os.path.join(data_dir, file), 'r')
+
+
+# TODO read data to numpy array and calc daily average -- create a loop for this
 # 2. Read data into numpy array and calc daily average, and save to file (?)
 # access the utci variable
 raw_utci = f.variables['utci'][:]  # dimensions should be (24, 601, 1440)
@@ -90,9 +96,35 @@ utci_degc = np.subtract(raw_utci, 273.15)  # should have same dimensions but now
 daily_utci_degc = np.mean(utci_degc, axis=0)  # new dimensions should be (1, 601, 1440) because we collapsed the time into 1
 
 
+
+
 # TODO 3. calc monthly from the daily numpy arrays
 # next step would be to average all days for a monthly average
 # Create a function with the above steps (converting kelvin to celsius), averaging the hours into 1 24 hour (daily) average, potentially converting to monthly average
+def calculate_monhtly_mean(set_of_rasters):
+    """ Utility to calculate the monthly mean of a set of rasters
+    """
+    for file in raw_data_file:
+
+        # TODO add in processing steps for 1 month of files
+        # access the utci variable
+        raw_utci = f.variables['utci'][:]  # dimensions should be (24, 601, 1440)
+        # convert kelvin to celsius (subtract 273.15)
+        utci_degc = np.subtract(raw_utci, 273.15)  # should have same dimensions but now in degrees C
+        # get daily average, use numpy mean to get the average value across the 24 hours (bands)
+        daily_utci_degc = np.mean(utci_degc, axis=0)  # new dimensions should be (1, 601, 1440) because we collapsed the time into 1
+        print(file)
+
+
 
 # 4. Save processed to geotiffs for upload - numpy to geotiff (libraries that can be used = rasterio, gdal)
 # Convert to a geotiff and save file
+# write the ENSEMBLE mean to a geotiff file, copying the profile information from one of the original tifs
+with rasterio.open(os.path.join(data_dir, 'test_daily_utci_degc.tif'),
+                   'w',
+                   driver='GTiff',
+                   height=601,
+                   width=1440,
+                   count=1,
+                   dtype=daily_utci_degc.dtype) as dst:
+    dst.write(daily_utci_degc)
