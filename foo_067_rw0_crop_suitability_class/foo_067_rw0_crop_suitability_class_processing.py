@@ -124,12 +124,8 @@ for raw, processed in zip(raw_data_file, processed_data_file):
     cmd = 'gdalwarp -dstnodata -9 {} {}'.format(raw, processed)
     subprocess.check_output(cmd, shell=True)
 
-
 '''
-Commenting out block of code for script testing
-
-'''
-# Upload processed data to Google Earth Engine  # TODO remove comment for PR
+Upload processed data to Google Earth Engine
 '''
 # set up uploading chunk size
 # the default setting requires an uploading speed at 10MB/min. Reduce the chunk size, if the network condition is not good.
@@ -184,7 +180,7 @@ util_cloud.gcs_remove(gcs_uris, gcs_bucket=gcsBucket)
 logger.info('Files deleted from Google Cloud Storage.')
 
 '''
-# Upload original data and processed data to Amazon S3 storage  # TODO remove comment for PR
+Upload original data and processed data to Amazon S3 storage
 '''
 # initialize AWS variables
 aws_bucket = 'wri-projects'
@@ -210,4 +206,3 @@ with ZipFile(processed_data_dir,'w') as zipped:
 # Upload processed data file to S3
 uploaded = util_cloud.aws_upload(processed_data_dir, aws_bucket, s3_prefix + os.path.basename(processed_data_dir))
 
-'''
