@@ -6,13 +6,13 @@ if utils_path not in sys.path:
 import util_files
 import util_cloud
 import urllib
+import zipfile
 from zipfile import ZipFile
 import ee
 import subprocess
 from google.cloud import storage
 import logging
-import requests
-import json
+
 
 # Set up logging
 # Get the top-level logger object
@@ -95,13 +95,13 @@ for index,element in enumerate(raw_data_file):
                 unzipped_list.append(file)
                 zf.extract(file,data_dir)
 # Create path to unzipped files
-raw_data_file_unzipped = [os.path.join(data_dir,os.path.basename(file)) for file in unzipped_list]
+raw_data_file_unzipped = [os.path.join(data_dir, os.path.basename(file)) for file in unzipped_list]
 
 '''
 Process data
 '''
 # generate names for tif files
-processed_data_files = [os.path.join(data_dir, dataset_name + '_' +file[5:])for file in raw_data_file_unzipped]
+processed_data_files = [os.path.join(data_dir, dataset_name + '_' +file[5:]) for file in raw_data_file_unzipped]
 # rename the tif file
 for raw, processed  in zip(raw_data_file_unzipped, processed_data_files):
     cmd = ['gdalwarp', raw, processed]
@@ -116,7 +116,7 @@ gcsClient = storage.Client(os.environ.get("CLOUDSDK_CORE_PROJECT"))
 gcsBucket = gcsClient.bucket(os.environ.get("GEE_STAGING_BUCKET"))
 
 # upload files to Google Cloud Storagecd 
-gcs_uris= util_cloud.gcs_upload(processed_data_files, dataset_name, gcs_bucket=gcsBucket)
+gcs_uris = util_cloud.gcs_upload(processed_data_files, dataset_name, gcs_bucket=gcsBucket)
 
 logger.info('Uploading processed data to Google Earth Engine.')
 # initialize ee and eeUtil modules for uploading to Google Earth Engine
@@ -172,7 +172,7 @@ print('Uploading original data to S3.')
 raw_data_dir = os.path.join(data_dir, dataset_name+'.zip')
 with ZipFile(raw_data_dir,'w') as zipped:
     for file in raw_data_file_unzipped:
-        zipped.write(file, os.path.basename(file))
+        zipped.write(file, os.path.basename(file), compress_type=zipfile.ZIP_DEFLATED)
 
 # Upload raw data file to S3
 uploaded = util_cloud.aws_upload(raw_data_dir, aws_bucket, s3_prefix + os.path.basename(raw_data_dir))
@@ -182,7 +182,7 @@ logger.info('Uploading processed data to S3.')
 processed_data_dir = os.path.join(data_dir, dataset_name+'_edit.zip')
 with ZipFile(processed_data_dir,'w') as zipped:
     for file in processed_data_files:
-        zipped.write(file, os.path.basename(file))
+        zipped.write(file, os.path.basename(file), compress_type=zipfile.ZIP_DEFLATED)
 
 # Upload processed data file to S3
 uploaded = util_cloud.aws_upload(processed_data_dir, aws_bucket, s3_prefix + os.path.basename(processed_data_dir))
