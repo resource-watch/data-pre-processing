@@ -11,7 +11,7 @@ Below, we describe the steps used to reformat the raster so that it is formatted
    3. Saves the average of the models to a new GeoTIFF that has "ensemble" in the beginning of its name.
 2. Run the [foo_067_rw0_global_crop_suitability_class_processing.py](https://github.com/resource-watch/data-pre-processing/blob/master/foo_067_rw0_global_crop_suitability_class/foo_067_rw0_global_crop_suitability_class_processing.py) script.
    1. This script downloads historic GeoTiffs for all crops, and ensemble GeoTIFFS for cotton and coffee from the source.
-   2. Adds in the ensemble GeoTIFFs that were created from rice_ensemble_processing.py for bulk upload.
+   2. Adds in the ensemble GeoTIFFs that were created from [rice_ensemble_processing.py](https://github.com/resource-watch/data-pre-processing/blob/master/foo_067_rw0_global_crop_suitability_class/rice_ensemble_processing.py) for bulk upload.
    3. Upload files to GEE.
 
 Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/foo_067_rw0_global_crop_suitability_class/foo_067_rw0_global_crop_suitability_class_processing.py) for more details on this processing.
