@@ -5,7 +5,7 @@ This dataset is provided as a series of GeoTIFF files from the data provider to 
 
 To display these data on Resource Watch, each GeoTIFF was translated into the appropriate projection for web display and uploaded to Google Earth Engine.
 
-Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/ocn_027a_rw0_nitrogen_plumes/ocn_027a_rw0_nitrogen_plumes_processing.py)) for more details on this processing.
+Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/ocn_027a_rw0_nitrogen_plumes/ocn_027a_rw0_nitrogen_plumes_processing.py) for more details on this processing.
 
 You can view the processed Wastewater Plumes in Coastal Areas dataset [on Resource Watch](https://resourcewatch.org/data/explore/11804f04-d9c7-47b9-8d27-27ce6ed6c042).
 
