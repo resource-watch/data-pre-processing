@@ -3,7 +3,7 @@ This file describes the data pre-processing that was done to [the ERA5-HEAT (Hum
 
 Data was downloaded via the Copernicus Climate Data Store (CDS) API.
 
-Below, we describe the steps used to {describe how you changed the data, e.g., "combine shapefiles for each continent into one global table on Carto"}.
+Below, we describe the steps used to reformat the raster so that it is formatted correctly for upload to Google Earth Engine.
 
 1. Download netCDF's via CDS API
 2. Remove dots in filenames and replace with underscores

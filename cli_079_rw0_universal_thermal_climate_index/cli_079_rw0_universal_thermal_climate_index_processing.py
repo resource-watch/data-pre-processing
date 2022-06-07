@@ -24,6 +24,10 @@ Download data
 # within this directory, create files to store raw and processed data
 data_dir = util_files.prep_dirs(dataset_name)
 
+# declare months and years to download data for
+months = ['01', '02']
+years = ['2022']
+
 # 1. get data and download to local machine
 # access CDS API - more info here: https://cds.climate.copernicus.eu/api-how-to
 c = cdsapi.Client()
@@ -34,9 +38,9 @@ c.retrieve(
         'variable': 'universal_thermal_climate_index',
         'version': '1_1',
         'product_type': 'consolidated_dataset',
-        'year': '2022',
+        'year': years, #*years
         'month': [
-            '01', #'02',
+            *months,
         ],
         'day': [
             '01', '02', '03',
@@ -83,7 +87,6 @@ raw_data_file = [os.path.abspath(os.path.join(data_dir, file)) for file in os.li
 '''
 Process Data
 '''
-
 # open netcdf files and calculate daily mean
 daily_mean_tifs = []
 for file in raw_data_file:
@@ -111,7 +114,7 @@ for file in raw_data_file:
 
 def find_same_month(file_list, target_year, target_month):
     """Utility for finding all files of the same month and year to process
-        Params:
+       Params:
             file_list (list): list of files to look through
             target_year (string): year to find files for - YYYY format
             target_month (string): month to find files for - MM format
@@ -126,31 +129,54 @@ def find_same_month(file_list, target_year, target_month):
     return target_month_list
 
 
-# get list of tifs that are in the target year and month
-month_list = find_same_month(daily_mean_tifs, target_year='2022', target_month='01')
+def calculate_monthly_mean(tif_list, output_directory, output_filename):
+    """Utility to calculate the monthly mean from a list of tifs
+       Params:
+            tif_list (list): list of daily tif files to process
+            output_directory (string): directory to save new tif to
+            output_filename (string): filename for the newly created tif
 
-# TODO calculate the monthly mean from these tifs
-# read in monthly tifs using rasterio
-daily_mean_arrays_list = []
-profiles_list = []
-for d in month_list:
-    with rasterio.open(d) as src:
-        array = src.read()
-        profile = src.profile
-        daily_mean_arrays_list.append(array)
-        profiles_list.append(profile)
+       Returns: monthly mean tif file saved to directory
+    """
+    # read in daily mean tifs using rasterio
+    daily_mean_arrays_list = []
+    profiles_list = []
+    for file in tif_list:
+        with rasterio.open(file) as src:
+            array = src.read()
+            profile = src.profile
+            daily_mean_arrays_list.append(array)
+            profiles_list.append(profile)
 
-# calculate the monthly mean from the daily means
-monthly_mean = np.mean(daily_mean_arrays_list, axis=0)
+    # calculate the monthly mean from the daily means
+    monthly_mean = np.mean(daily_mean_arrays_list, axis=0)
 
-# write the monthly mean to a geotiff file, copying the profile information from one of the original tifs
-profile_out = profiles_list[0].copy()
-profile_out.update(dtype=monthly_mean.dtype.name)
-with rasterio.open(os.path.join(data_dir, '2022_01_monthly_mean.tif'), 'w', **profile_out) as dst:
-    dst.write(monthly_mean)
+    # write the monthly mean to a geotiff file, copying the profile information from one of the original tif files
+    profile_out = profiles_list[0].copy()
+    profile_out.update(dtype=monthly_mean.dtype.name)
+    with rasterio.open(os.path.join(output_directory, output_filename), 'w', **profile_out) as dst:
+        dst.write(monthly_mean)
 
-src.close()
+    src.close()
 
-# TODO create list of names for processed data files
-#processed_data_file = []
 
+# calculate monthly mean and save as a new tif file
+processed_data_file = []
+for year in years:
+    print(year)
+    for month in months:
+        print(month)
+        # call function to match all the daily mean tifs together and process by month
+        process_month = find_same_month(daily_mean_tifs, year, month)
+        print(process_month)
+        # call function to calculate the monthly means
+        calculate_monthly_mean(process_month, data_dir, 'monthly_mean_utci_edit_'+year+'_'+month)
+
+
+# generate names for processed tif files
+processed_data_file = [mm for mm in os.listdir(data_dir)
+                       if fnmatch.fnmatch(mm, 'monthly_mean_utci_edit_*')]
+
+'''
+Upload processed data to Google Earth Engine
+'''
