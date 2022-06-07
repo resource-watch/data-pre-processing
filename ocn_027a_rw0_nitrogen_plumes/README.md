@@ -1,0 +1,14 @@
+## Wastewater Plumes in Coastal Areas Dataset Pre-processing
+This file describes the data pre-processing that was done to [the Global Inputs and Impacts from of Human Sewage in Coastal Ecosystems]([{learn more link}](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0258898)) for [display on Resource Watch]({link to dataset's metadata page on Resource Watch}).
+
+This dataset is provided as a series of GeoTIFF files from the data provider to the Resource Watch data team.
+
+To display these data on Resource Watch, each GeoTIFF was translated into the appropriate projection for web display and uploaded to Google Earth Engine.
+
+Please see the [Python script]({link to Python script on Github}) for more details on this processing.
+
+You can view the processed {Resource Watch public title} dataset [on Resource Watch]({link to dataset's metadata page on Resource Watch}).
+
+You can also download the original dataset [directly through Resource Watch]({s3 link if available}), or [from the source website]({download from source link}).
+
+###### Note: This dataset processing was done by [Claire Hemmerly]({link to WRI bio page}), and QC'd by [{name}]({link to WRI bio page}).
