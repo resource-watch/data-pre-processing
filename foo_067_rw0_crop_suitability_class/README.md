@@ -3,7 +3,7 @@ This file describes the data pre-processing that was done to the [Crop Suitabili
 
 The source provided the data in multiple TIFF files available for download via URL. The TIFFs show crop suitability index for multiple timeframes and input technologies. Only files encompassing cotton, coffee, and rice were downloaded.
 
-Below, we describe the steps used to reformat the table so that it is formatted correctly for upload to Google Earth Engine.
+Below, we describe the steps used to reformat the raster so that it is formatted correctly for upload to Google Earth Engine.
 
 1. Run the rice_ensemble_processing.py script first.
    1. This script downloads wetland and dryland rice GeoTIFFS that were produced from various climate models from the source.
