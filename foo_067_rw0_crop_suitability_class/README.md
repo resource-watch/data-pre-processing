@@ -5,7 +5,7 @@ The source provided the data in multiple TIFF files available for download via U
 
 Below, we describe the steps used to reformat the raster so that it is formatted correctly for upload to Google Earth Engine.
 
-1. Run the rice_ensemble_processing.py script first.
+1. Run the [rice_ensemble_processing.py](https://github.com/resource-watch/data-pre-processing/blob/master/foo_067_rw0_global_crop_suitability_class/rice_ensemble_processing.py) script first.
    1. This script downloads wetland and dryland rice GeoTIFFS that were produced from various climate models from the source.
    2. It computes the average of the input GeoTIFFS. This is done for each timeframe, RCP scenario, watering regime, and crop.
    3. Saves the average of the models to a new GeoTIFF that has "ensemble" in the beginning of its name.
