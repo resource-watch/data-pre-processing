@@ -38,9 +38,10 @@ Download data
 # within this directory, create files to store raw and processed data
 data_dir = util_files.prep_dirs(dataset_name)
 
-# declare years and months to download data for (note: data is large -- files for 2021 + 2022 are 13G total)
-years = ['2022']
-months = ['01', '02', '12'] #'03', '04', '05', '06', '07', '08', '09', '10', '11', '12']
+# declare years and months to download data for
+# NOTE: data is large -- files for 2021 + 2022 are 13G total and take a long time to download
+years = ['2021', '2022']
+months = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12']
 
 # access CDS API to download UTCI data; for more info see: https://cds.climate.copernicus.eu/api-how-to
 c = cdsapi.Client()
