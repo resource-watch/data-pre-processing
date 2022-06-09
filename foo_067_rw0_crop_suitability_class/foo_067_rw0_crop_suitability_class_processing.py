@@ -9,13 +9,15 @@ utils_path = os.path.join(os.path.abspath(os.getenv('PROCESSING_DIR')), 'utils')
 if utils_path not in sys.path:
    sys.path.append(utils_path)
 import util_files
-import util_cloud
+# import util_cloud
 import logging
 import subprocess
-from google.cloud import storage
-import ee
+# from google.cloud import storage
+# import ee
 import zipfile
 from zipfile import ZipFile
+import fnmatch
+import itertools
 
 # Set up logging
 # Get the top-level logger object
@@ -40,45 +42,54 @@ Download data and save to your data directory
 # within this directory, create files to store raw and processed data
 data_dir = util_files.prep_dirs(dataset_name)
 
+# create a list of rice ensemble tifs
+# note: these were created from the rice_ensemble_processing.py script and there should be a total of 12 files
+raw_rice_ensemble_file = []
+# list contents of data directory and use fnmatch to find rice ensemble files
+files_list = os.listdir(data_dir)
+for file in files_list:
+    if fnmatch.fnmatch(file, 'ENSEMBLE_*_rc*.tif'):
+        raw_rice_ensemble_file.append(os.path.join(data_dir, file))
+
 # list of urls from data source
-# urls downloaded from https://gaez-data-portal-hqfao.hub.arcgis.com/pages/data-viewer
+# urls downloaded from GAEZv4 data portal: https://gaez-data-portal-hqfao.hub.arcgis.com/pages/data-viewer
 # under Theme 4: Suitability and Attainable Yield
+# sub-theme: Suitability Index / Variable name: Suitability index range (0-10000); current cropland in grid cell
 url_list = [
         # cotton tifs
             # irrigation
-            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/CRUTS32/Hist/8110H/scHi_cot.tif',
-            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/ENSEMBLE/rcp4p5/2020sH/scHi_cot.tif',
-            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/ENSEMBLE/rcp8p5/2020sH/scHi_cot.tif',
-            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/ENSEMBLE/rcp4p5/2050sH/scHi_cot.tif',
-            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/ENSEMBLE/rcp8p5/2050sH/scHi_cot.tif',
+            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/CRUTS32/Hist/8110H/suHi_cot.tif',
+            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/ENSEMBLE/rcp4p5/2020sH/suHi_cot.tif',
+            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/ENSEMBLE/rcp8p5/2020sH/suHi_cot.tif',
+            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/ENSEMBLE/rcp4p5/2050sH/suHi_cot.tif',
+            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/ENSEMBLE/rcp8p5/2050sH/suHi_cot.tif',
             # rainfed
-            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/CRUTS32/Hist/8110H/scHr_cot.tif',
-            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/ENSEMBLE/rcp4p5/2020sH/scHr_cot.tif',
-            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/ENSEMBLE/rcp8p5/2020sH/scHr_cot.tif',
-            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/ENSEMBLE/rcp8p5/2050sH/scHr_cot.tif',
-            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/ENSEMBLE/rcp4p5/2050sH/scHr_cot.tif',
+            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/CRUTS32/Hist/8110H/suHr_cot.tif',
+            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/ENSEMBLE/rcp4p5/2020sH/suHr_cot.tif',
+            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/ENSEMBLE/rcp8p5/2020sH/suHr_cot.tif',
+            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/ENSEMBLE/rcp4p5/2050sH/suHr_cot.tif',
+            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/ENSEMBLE/rcp8p5/2050sH/suHr_cot.tif',
         # coffee tifs
             # irrigation
-            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/CRUTS32/Hist/8110H/scHi_cof.tif',
-            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/ENSEMBLE/rcp4p5/2020sH/scHi_cof.tif',
-            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/ENSEMBLE/rcp8p5/2020sH/scHi_cof.tif',
-            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/ENSEMBLE/rcp4p5/2050sH/scHi_cof.tif',
-            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/ENSEMBLE/rcp8p5/2050sH/scHi_cof.tif',
+            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/CRUTS32/Hist/8110H/suHi_cof.tif',
+            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/ENSEMBLE/rcp4p5/2020sH/suHi_cof.tif',
+            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/ENSEMBLE/rcp8p5/2020sH/suHi_cof.tif',
+            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/ENSEMBLE/rcp4p5/2050sH/suHi_cof.tif',
+            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/ENSEMBLE/rcp8p5/2050sH/suHi_cof.tif',
             # rainfed
-            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/CRUTS32/Hist/8110H/scHr_cof.tif',
-            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/ENSEMBLE/rcp4p5/2020sH/scHr_cof.tif',
-            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/ENSEMBLE/rcp8p5/2020sH/scHr_cof.tif',
-            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/ENSEMBLE/rcp4p5/2050sH/scHr_cof.tif',
-            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/ENSEMBLE/rcp8p5/2050sH/scHr_cof.tif',
+            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/CRUTS32/Hist/8110H/suHr_cof.tif',
+            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/ENSEMBLE/rcp4p5/2020sH/suHr_cof.tif',
+            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/ENSEMBLE/rcp8p5/2020sH/suHr_cof.tif',
+            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/ENSEMBLE/rcp4p5/2050sH/suHr_cof.tif',
+            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/ENSEMBLE/rcp8p5/2050sH/suHr_cof.tif',
         # rice tifs
-            # NOTE - only have historical tifs for wetland/dryland rice - contacting GAEZ team to see if they can
-            # deliver ENSEMBLE tifs for future time periods.
+            # NOTE - these are historical tifs for wetland/dryland rice only; have to manually compute ENSEMBLEs (see rice_ensemble_processing.py)
             # wetland rice - gravity irrigation
-            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/CRUTS32/Hist/8110H/scHg_rcw.tif',
+            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/CRUTS32/Hist/8110H/suHg_rcw.tif',
             # wetland rice - rainfed
-            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/CRUTS32/Hist/8110H/scHr_rcw.tif',
+            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/CRUTS32/Hist/8110H/suHr_rcw.tif',
             # dryland rice - rainfed
-            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/CRUTS32/Hist/8110H/scHr_rcd.tif'
+            'https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/res05/CRUTS32/Hist/8110H/suHr_rcd.tif'
         ]
 
 # download tifs and rename as they are downloaded because some have the same name when downloaded
@@ -97,16 +108,20 @@ for url in url_list:
     d = urllib.request.urlretrieve(url, filename)
     raw_data_file.append(d[0])
 
+# add rice ensembles to list of raw data files
+for rr in raw_rice_ensemble_file:
+    raw_data_file.append(rr)
+
 '''
 Process data
 '''
 # generate names for processed tif files
 processed_data_file = [x[:-4]+'_edit'+x[-4:] for x in raw_data_file]
 
-# rename the tif file
+# rename the tif file and process with gdal
 for raw, processed in zip(raw_data_file, processed_data_file):
-    # set nodata to 255
-    cmd = 'gdalwarp -dstnodata 255 {} {}'.format(raw, processed)
+    # set nodata to -9 (as defined by source in tif)
+    cmd = 'gdalwarp -dstnodata -9 {} {}'.format(raw, processed)
     subprocess.check_output(cmd, shell=True)
 
 '''
@@ -190,3 +205,4 @@ with ZipFile(processed_data_dir,'w') as zipped:
 
 # Upload processed data file to S3
 uploaded = util_cloud.aws_upload(processed_data_dir, aws_bucket, s3_prefix + os.path.basename(processed_data_dir))
+
