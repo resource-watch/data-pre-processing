@@ -40,6 +40,7 @@ data_dir = util_files.prep_dirs(dataset_name)
 
 # declare years and months to download data for
 # NOTE: data is large -- files for 2021 + 2022 are 13G total and takes awhile to download ( on the order of a couple of hours for everything)
+# years list = '2021' and '2022'
 years = ['2021']
 # 2021 months list = ['05', '06', '07', '08', '09', '10', '11', '12']
 # 2022 months list = ['01', '02', '03', '04']
