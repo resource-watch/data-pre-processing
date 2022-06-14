@@ -39,9 +39,11 @@ Download data
 data_dir = util_files.prep_dirs(dataset_name)
 
 # declare years and months to download data for
-# NOTE: data is large -- files for 2021 + 2022 are 13G total and take a long time to download
-years = ['2021', '2022']
-months = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12']
+# NOTE: data is large -- files for 2021 + 2022 are 13G total and takes awhile to download ( on the order of a couple of hours for everything)
+years = ['2021']
+# 2021 months list = ['05', '06', '07', '08', '09', '10', '11', '12']
+# 2022 months list = ['01', '02', '03', '04']
+months = ['05', '06', '07', '08', '09', '10', '11', '12']
 
 # access CDS API to download UTCI data; for more info see: https://cds.climate.copernicus.eu/api-how-to
 c = cdsapi.Client()
@@ -183,12 +185,9 @@ def calculate_monthly_mean(tif_list, output_directory, output_filename):
 # calculate monthly mean and save as a new tif file
 processed_data_file = []
 for year in years:
-    print(year)  # check
     for month in months:
-        print(month)  # check
         # call function to match all the daily mean tifs together and process by month
         process_month = find_same_month(daily_mean_tifs, year, month)
-        print(process_month)  # check
         # call function to calculate the monthly means
         if len(process_month) > 0:
             calculate_monthly_mean(process_month, data_dir, 'monthly_mean_utci_edit_'+year+'_'+month)
