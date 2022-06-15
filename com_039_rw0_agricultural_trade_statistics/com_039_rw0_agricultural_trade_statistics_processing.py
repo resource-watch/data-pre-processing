@@ -1,3 +1,4 @@
+from cmath import nan
 import pandas as pd
 import requests
 import os
@@ -76,8 +77,8 @@ df.columns = df.columns.str.replace(' ', '_')
 # create a new column 'datetime' to store years as datetime objects
 df['datetime'] = [datetime(x, 1, 1) for x in df.year]
 
-# remove rows without value ('Data not available' in column 'flag_description')
-df = df[df['flag_description'] != 'Data not available']
+# remove rows without value
+df = df[~df['value'].isnull()]
 
 # replace all NaN with None
 df = df.where((pd.notnull(df)), None)

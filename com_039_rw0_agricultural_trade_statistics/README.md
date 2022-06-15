@@ -10,7 +10,7 @@ Below, we describe the steps used to reformat the table so that it is formatted 
 3. Rename 'area' column to 'country'.
 4. Remove whitespaces, parentheses, and add underscores from column headers.
 5. Convert years in the 'year' column to datetime onjects and store them in a new column 'datetime'.
-6. Remove rows have 'Data not available' in column 'flag_description'.
+6. Remove rows without value.
 7. Replace NaN in table with None.
 
 Please see the [Python script](https://github.com/resource-watch/data-pre-processing/blob/master/com_039_rw0_agricultural_trade_statistics/com_039_rw0_agricultural_trade_statistics_processing.py) for more details on this processing.
