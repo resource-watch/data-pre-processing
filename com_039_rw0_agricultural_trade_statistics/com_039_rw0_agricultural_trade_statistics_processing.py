@@ -41,9 +41,8 @@ data_dir = util_files.prep_dirs(dataset_name)
 '''
 Download data and save to your data directory
 '''
-
 # insert the url used to download the data from the source website
-url = 'https://fenixservices.fao.org/faostat/api/v1/en/data/TCL?area=5000%3E&area_cs=FAO&element=2910%2C2920%2C2610%2C2620&item=656%2C657%2C767%2C768%2C28%2C27&item_cs=FAO&year=1990%2C1991%2C1992%2C1993%2C1994%2C1995%2C1996%2C1997%2C1998%2C1999%2C2000%2C2001%2C2002%2C2003%2C2004%2C2005%2C2006%2C2007%2C2008%2C2009%2C2010%2C2011%2C2012%2C2013%2C2014%2C2015%2C2016%2C2017%2C2018%2C2019%2C2020&show_codes=true&show_unit=true&show_flags=true&show_notes=true&null_values=false&output_type=csv'
+url = 'https://fenixservices.fao.org/faostat/api/v1/en/data/TCL?area=5000%3E&area_cs=FAO&element=2910%2C2920%2C2610%2C2620&item=656%2C657%2C767%2C768%2C28%2C31%2C27&item_cs=FAO&year=1990%2C1991%2C1992%2C1993%2C1994%2C1995%2C1996%2C1997%2C1998%2C1999%2C2000%2C2001%2C2002%2C2003%2C2004%2C2005%2C2006%2C2007%2C2008%2C2009%2C2010%2C2011%2C2012%2C2013%2C2014%2C2015%2C2016%2C2017%2C2018%2C2019%2C2020&show_codes=true&show_unit=true&show_flags=true&show_notes=true&null_values=false&output_type=csv'
 
 # create a new sub-directory within your specified dir called 'data'
 # within this directory, create files to store raw and processed data
