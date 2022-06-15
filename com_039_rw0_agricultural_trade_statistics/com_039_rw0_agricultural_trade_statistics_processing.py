@@ -5,7 +5,7 @@ import sys
 import io
 from datetime import datetime
 from dotenv import load_dotenv
-load_dotenv()
+load_dotenv('/home/weiqi_tori/GitHub/cred/.env')
 utils_path = os.path.join(os.path.abspath(os.getenv('PROCESSING_DIR')), 'utils')
 if utils_path not in sys.path:
    sys.path.append(utils_path)
@@ -75,6 +75,9 @@ df.columns = df.columns.str.replace(' ', '_')
 
 # create a new column 'datetime' to store years as datetime objects
 df['datetime'] = [datetime(x, 1, 1) for x in df.year]
+
+# remove rows without value ('Data not available' in column 'flag_description')
+df = df[df['flag_description'] != 'Data not available']
 
 # replace all NaN with None
 df = df.where((pd.notnull(df)), None)
