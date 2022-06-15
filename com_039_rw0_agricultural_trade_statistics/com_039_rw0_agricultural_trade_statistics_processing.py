@@ -5,7 +5,7 @@ import sys
 import io
 from datetime import datetime
 from dotenv import load_dotenv
-load_dotenv('/home/weiqi_tori/GitHub/cred/.env')
+load_dotenv()
 utils_path = os.path.join(os.path.abspath(os.getenv('PROCESSING_DIR')), 'utils')
 if utils_path not in sys.path:
    sys.path.append(utils_path)
