@@ -9,15 +9,14 @@ utils_path = os.path.join(os.path.abspath(os.getenv('PROCESSING_DIR')), 'utils')
 if utils_path not in sys.path:
    sys.path.append(utils_path)
 import util_files
-# import util_cloud
+import util_cloud
 import logging
 import subprocess
-# from google.cloud import storage
-# import ee
+from google.cloud import storage
+import ee
 import zipfile
 from zipfile import ZipFile
 import fnmatch
-import itertools
 
 # Set up logging
 # Get the top-level logger object
@@ -146,7 +145,7 @@ auth = ee.ServiceAccountCredentials(os.getenv('GEE_SERVICE_ACCOUNT'), os.getenv(
 ee.Initialize(auth)
 
 # set pyramiding policy for GEE upload
-pyramiding_policy = 'MODE' #check
+pyramiding_policy = 'MEAN' #check
 
 # create an image collection where we will put the processed data files in GEE
 image_collection = f'projects/resource-watch-gee/{dataset_name}'
