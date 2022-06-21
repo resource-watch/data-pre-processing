@@ -17,4 +17,4 @@ Please see the [Python script](https://github.com/resource-watch/data-pre-proces
 
 You can also download the original dataset [from the source website]({https://cds.climate.copernicus.eu/cdsapp#!/dataset/derived-utci-historical?tab=form}).
 
-###### Note: This dataset processing was done by [Alex Sweeney]({https://github.com/alxswny}), and QC'd by [Weiqi Zhou](https://www.wri.org/profile/weiqi-zhou).
+###### Note: This dataset processing was done by [Alex Sweeney](https://github.com/alxswny), and QC'd by [Weiqi Zhou](https://www.wri.org/profile/weiqi-zhou).
