@@ -67,7 +67,7 @@ gdf = gpd.read_file(shapes)
 for col in gdf.columns[1:9]:
     gdf[col] = gdf[col].fillna(0).astype('int')
 
-# convert geometrey from esri 54009 to epsg 4326 for display on carto
+# convert geometry from esri 54009 to epsg 4326 for display on carto
 transformer = pyproj.Transformer.from_crs('esri:54009', 'epsg:4326', always_xy=True).transform
 for i in range(len(gdf['geometry'])):
     polygon = gdf['geometry'][i]

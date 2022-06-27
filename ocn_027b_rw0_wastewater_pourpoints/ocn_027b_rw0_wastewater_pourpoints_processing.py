@@ -67,7 +67,7 @@ gdf = gpd.read_file(shapes)
 for col in gdf.columns[1:9]:
     gdf[col] = gdf[col].fillna(0).astype('int')
 
-# conver geometrey from esri 54009 to epsg 4326 for display on carto
+# convert geometry from esri 54009 to epsg 4326 for display on carto
 transformer = pyproj.Transformer.from_crs('esri:54009', 'epsg:4326')
 lon, lat = transformer.transform(gdf['geometry'].x, gdf['geometry'].y)
 gdf['geometry'] = [Point(xy) for xy in zip(lat, lon)]
