@@ -119,23 +119,23 @@ bgpd = gpd.GeoDataFrame(country, geometry='the_geom', crs=4326)
 
 
 # Load raster data (crop suitability class tifs)
-data_dir = '/Users/alexsweeney/Documents/github-repos/data-pre-processing/foo_067_rw0_crop_suitability_class/data'
+data_dir = '/Users/alexsweeney/Documents/github-repos/data-pre-processing/foo_067_rw0_crop_suitability_class/data/'
 
 coffee_rasters = []
 for filename in os.listdir(data_dir):
     if fnmatch.fnmatch(filename, '*cof*_edit.tif'):
-        coffee_rasters.append(filename)
-        print(filename)
+        coffee_rasters.append(os.path.join(data_dir, filename))
+        print(coffee_rasters)
 
 all_stats = []
-for raster in coffee_rasters:
-    with rasterio.open(raster) as src:
+for tif in coffee_rasters:
+    with rasterio.open(tif) as src:
         array = src.read(1)
         trans = src.transform
         profile = src.profile
-    print(raster)
-    rc = reclassify_raster(raster)
-    zs = calculate_zonal_stats(raster, bgpd, rc)
+    print(tif)
+    rc = reclassify_raster(tif)
+    zs = calculate_zonal_stats(tif, bgpd, rc)
     all_stats.append(zs)
 
 print(all_stats)
