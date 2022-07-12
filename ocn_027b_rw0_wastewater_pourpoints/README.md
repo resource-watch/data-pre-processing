@@ -14,6 +14,6 @@ Please see the [Python script](https://github.com/resource-watch/data-pre-proces
 
 You can view the processed Wastewater Inputs to Coastal Areas dataset [on Resource Watch](https://resourcewatch.org/data/explore/5bf349ec-3b14-4021-a7d4-fc4b8104bd74).
 
-You can also download the original dataset [directly through Resource Watch](http://wri-public-data.s3.amazonaws.com/resourcewatch/raster/ocn_027b_rw0_wastewater_pourpoints.zip), or [from the source website](https://knb.ecoinformatics.org/view/urn%3Auuid%3Ac7bdc77e-6c7d-46b6-8bfc-a66491119d07).
+You can also download the original dataset [directly through Resource Watch](https://wri-public-data.s3.amazonaws.com/resourcewatch/ocn_027b_rw0_wastewater_pourpoints.zip), or [from the source website](https://knb.ecoinformatics.org/view/urn%3Auuid%3Ac7bdc77e-6c7d-46b6-8bfc-a66491119d07).
 
 ###### Note: This dataset processing was done by Claire Hemmerly, and QC'd by [Chris Rowe](https://www.wri.org/profile/chris-rowe).
