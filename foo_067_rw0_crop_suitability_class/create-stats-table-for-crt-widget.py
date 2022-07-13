@@ -1,14 +1,10 @@
 import pandas as pd
 import geopandas as gpd
-#import rasterio as rio
 import requests
 import json
-#from shapely.geometry import mapping
 import xarray as xr
-#import rioxarray as rxr
 import rasterio
 import numpy as np
-#import rasterstats
 import os
 from rasterstats import zonal_stats
 import fnmatch
@@ -146,6 +142,10 @@ def process_stats(raster_list):
 
     return final_df
 
+
+'''
+Begin processing data
+'''
 
 # Load raster data (crop suitability class tifs)
 data_dir = '/Users/alexsweeney/Documents/github-repos/data-pre-processing/foo_067_rw0_crop_suitability_class/data/'
