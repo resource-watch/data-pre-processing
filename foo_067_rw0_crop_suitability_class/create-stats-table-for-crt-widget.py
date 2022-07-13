@@ -102,21 +102,19 @@ def reclass_and_calculate_zonal_stats(raster_list, admin):
                 8: 'high',
                 9: 'very high'}
 
-        zonal_results = zonal_stats(admin['the_geom'],  ## TODO add admin to function requirements
+        zonal_results = zonal_stats(admin['the_geom'],
                                     raster_classes,
                                     cmap=cmap,
                                     affine=trans,
                                     categorical=True,
                                     category_map=cmap,
                                     nodata=1)
-        print(zonal_results)  # TODO remove
         # add raster info to zonal stats dictionary
         zonal_results[0]['raster'] = year + '_' + scenario + '_' + tech + '_' + crop
         # add country info to zonal stats dictionary
         zonal_results[0]['country'] = admin['name_0'][0]
         # add zonal_results to all_stats list
         all_stats.append(zonal_results)
-        print(all_stats)  # TODO remove
 
     ## add zonal stats to pandas dataframe ##
     # create an empty dataframe list
@@ -135,11 +133,6 @@ def reclass_and_calculate_zonal_stats(raster_list, admin):
         df_list.append(df_name)
         # union all of the dataframes together
         final_df = pd.concat(df_list, axis=0)
-        # add the country name to the dataframe  # TODO remove?
-        #final_df.insert(loc=0, column='country',
-                       # value=admin['name_0'])  ## TODO make sure this is in final function args
-        # add ISO code to the dataframe  # TODO remove?
-        #final_df.insert(loc=0, column='ISO3', value=admin['gid_0'])  ## TODO make sure this is in final function args
 
     return final_df
 
@@ -161,7 +154,7 @@ for filename in os.listdir(data_dir):
 # create an empty list to collect final dfs
 coffee_df_list = []
 
-# list of countries to get stats on
+# list of countries to get stats on  # TODO add country list in
 country_list = ['Argentina', 'Colombia', 'India']
 
 # calculate zonal statistics of crop suitability rasters by country and add to a dataframe, and create a dataframe list
@@ -169,15 +162,15 @@ for country in country_list:
     print(country)
     url = "https://wri-rw.carto.com/api/v2/sql?q=SELECT cartodb_id, gid_0, name_0, the_geom, the_geom_webmercator FROM gadm36_0 WHERE name_0 = '" + country + "'"
     response = requests.get(url)
-    boundaries = json.loads(response.content.decode('utf-8'))
+    data = json.loads(response.content.decode('utf-8'))
     # prep country vector data for processing, use json_normalize to extract data in correct format
-    admin = pd.json_normalize(boundaries, "rows")
+    admin_boundaries = pd.json_normalize(data, "rows")
     # convert geom columns from WKB to a geoseries using geopandas
-    geom = gpd.GeoSeries.from_wkb(admin['the_geom'], crs=4326)
+    geom = gpd.GeoSeries.from_wkb(admin_boundaries['the_geom'], crs=4326)
     # append converted columns to pandas dataframe, country
-    admin['the_geom'] = geom
+    admin_boundaries['the_geom'] = geom
     # convert country pandas df to geopandas df
-    bgpd = gpd.GeoDataFrame(admin, geometry='the_geom', crs=4326)
+    bgpd = gpd.GeoDataFrame(admin_boundaries, geometry='the_geom', crs=4326)
     # calculate stats
     stats = reclass_and_calculate_zonal_stats(coffee_rasters, bgpd)
     coffee_df_list.append(stats)
