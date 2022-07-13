@@ -1,5 +1,6 @@
 import geopandas as gpd
 import os
+import glob
 import pyproj
 from shapely.geometry import Point
 import urllib.request
@@ -60,8 +61,11 @@ Process data
 '''
 
 # load in the polygon shapefile
-shapes = os.path.join(raw_data_file_unzipped, 'effluent_N_pourpoints_all.shp')
-gdf = gpd.read_file(shapes)
+shapefile = os.path.join(raw_data_file_unzipped, 'effluent_N_pourpoints_all.shp')
+gdf = gpd.read_file(shapefile)
+
+# create a path to save the processed shapefile later
+processed_data_file = os.path.join(data_dir, dataset_name+'_edit.shp')
 
 # convert the data type of columns to integer 
 for col in gdf.columns[1:9]:
@@ -72,6 +76,18 @@ transformer = pyproj.Transformer.from_crs('esri:54009', 'epsg:4326')
 lon, lat = transformer.transform(gdf['geometry'].x, gdf['geometry'].y)
 gdf['geometry'] = [Point(xy) for xy in zip(lat, lon)]
 gdf['geometry'] = gdf['geometry'].set_crs(epsg=4326)
+
+# create an index column to use as cartodb_id
+gdf['cartodb_id'] = gdf.index
+
+# rename columns to match names in carto
+gdf.columns = [x.lower().replace(' ', '_') for x in gdf.columns]
+
+# reorder the columns
+gdf = gdf[['cartodb_id'] + list(gdf)[:-1]]
+
+# save processed dataset to shapefile
+gdf.to_file(processed_data_file, driver='ESRI Shapefile')
 
 
 '''
@@ -108,5 +124,16 @@ with ZipFile(raw_data_dir,'w') as zip:
 
 # Upload raw data file to S3
 uploaded = util_cloud.aws_upload(raw_data_dir, aws_bucket, s3_prefix+os.path.basename(raw_data_dir))
+
+# Copy the processed data into a zipped file to upload to S3
+processed_data_dir = os.path.join(data_dir, dataset_name+'_edit.zip')
+# find all the necessary components of the shapefiles
+processed_data_files = glob.glob(os.path.join(data_dir, dataset_name + '_edit.*'))
+with ZipFile(processed_data_dir,'w') as zip:
+    for file in processed_data_files:
+        zip.write(file, os.path.basename(file))
+
+# Upload processed data file to S3
+uploaded = util_cloud.aws_upload(processed_data_dir, aws_bucket, s3_prefix+os.path.basename(processed_data_dir))
 
 

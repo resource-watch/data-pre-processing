@@ -159,7 +159,7 @@ for i in range(len(data_dict['tifs'])):
 Upload original data and processed data to Amazon S3 storage
 '''
 # initialize AWS variables
-aws_bucket = 'wri-public-data'
+aws_bucket = 'wri-projects'
 s3_prefix = 'resourcewatch/raster/'
 
 # Copy the raw data into a zipped file to upload to S3
@@ -170,7 +170,7 @@ raw_data_dir = os.path.join(data_dir, dataset_name+'.zip')
 with ZipFile(raw_data_dir,'w') as zip:
      raw_data_files = data_dict['raw_data_file']
      for raw_data_file in raw_data_files:
-        zip.write(raw_data_file, os.path.basename(raw_data_file))
+        zip.write(raw_data_file, os.path.basename(raw_data_file),compress_type= zipfile.ZIP_DEFLATED)
 
 # Upload raw data file to S3
 uploaded = util_cloud.aws_upload(raw_data_dir, aws_bucket, s3_prefix + os.path.basename(raw_data_dir))
