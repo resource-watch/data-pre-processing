@@ -73,13 +73,13 @@ def reclass_and_calculate_zonal_stats(raster_list, admin):
         ## export raster to tif file for QA/QC ##
         # Define the profile to write to a geotiff file
         # write the reclassified data to a geotiff file, copying the profile information from the original tif
-        profile_out = profile.copy()
-        profile_out.update(nodata=1)
+        #profile_out = profile.copy()
+        #profile_out.update(nodata=1)
 
         # write to Geotiff
-        with rasterio.open(os.path.join(data_dir, scenario + year + tech + crop + '_rc.tif'), 'w',
-                           **profile_out) as dst:
-            dst.write(raster_classes, 1)
+        #with rasterio.open(os.path.join(data_dir, scenario + year + tech + crop + '_rc.tif'), 'w',
+        #                   **profile_out) as dst:
+        #    dst.write(raster_classes, 1)
 
         ## calculate zonal stats ##
         # define the categories for the zonal stats to calculate
@@ -93,14 +93,14 @@ def reclass_and_calculate_zonal_stats(raster_list, admin):
         # Not Suitable = ns
         # Not cultivated = nc
         cmap = {1: 'ocean',
-                2: year + '_' + scenario + '_' + tech + '_' + crop + '_' + 'nc',
-                3: year + '_' + scenario + '_' + tech + '_' + crop + '_' + 'ns',
-                4: year + '_' + scenario + '_' + tech + '_' + crop + '_' + 'vm',
-                5: year + '_' + scenario + '_' + tech + '_' + crop + '_' + 'mar',
-                6: year + '_' + scenario + '_' + tech + '_' + crop + '_' + 'mod',
-                7: year + '_' + scenario + '_' + tech + '_' + crop + '_' + 'g',
-                8: year + '_' + scenario + '_' + tech + '_' + crop + '_' + 'h',
-                9: year + '_' + scenario + '_' + tech + '_' + crop + '_' + 'vh'}
+                2: 'not cultivated',
+                3: 'not suitable',
+                4: 'very marginal',
+                5: 'marginal',
+                6: 'moderate',
+                7: 'good',
+                8: 'high',
+                9: 'very high'}
 
         zonal_results = zonal_stats(admin['the_geom'],  ## TODO add admin to function requirements
                                     raster_classes,
@@ -109,7 +109,14 @@ def reclass_and_calculate_zonal_stats(raster_list, admin):
                                     categorical=True,
                                     category_map=cmap,
                                     nodata=1)
+        print(zonal_results)  # TODO remove
+        # add raster info to zonal stats dictionary
+        zonal_results[0]['raster'] = year + '_' + scenario + '_' + tech + '_' + crop
+        # add country info to zonal stats dictionary
+        zonal_results[0]['country'] = admin['name_0'][0]
+        # add zonal_results to all_stats list
         all_stats.append(zonal_results)
+        print(all_stats)  # TODO remove
 
     ## add zonal stats to pandas dataframe ##
     # create an empty dataframe list
@@ -122,15 +129,17 @@ def reclass_and_calculate_zonal_stats(raster_list, admin):
         df_name = 'df' + i
         # create a pandas dataframe to collect the zonal stats for each raster iteration
         df_name = pd.DataFrame(all_stats[index])
+        # use melt to convert from long-form to wide-form
+        df_name = pd.melt(df_name, id_vars=['raster', 'country'])
         # add the dataframe to the dataframe list
         df_list.append(df_name)
-        # union all of the dataframes together (will append on right side)
-        final_df = pd.concat(df_list, axis=1)
-        # add the country name to the dataframe
-        final_df.insert(loc=0, column='country',
-                        value=admin['name_0'])  ## TODO make sure this is in final function args
-        # add ISO code to the dataframe
-        final_df.insert(loc=0, column='ISO3', value=admin['gid_0'])  ## TODO make sure this is in final function args
+        # union all of the dataframes together
+        final_df = pd.concat(df_list, axis=0)
+        # add the country name to the dataframe  # TODO remove?
+        #final_df.insert(loc=0, column='country',
+                       # value=admin['name_0'])  ## TODO make sure this is in final function args
+        # add ISO code to the dataframe  # TODO remove?
+        #final_df.insert(loc=0, column='ISO3', value=admin['gid_0'])  ## TODO make sure this is in final function args
 
     return final_df
 
@@ -177,4 +186,5 @@ print(coffee_df_list)
 
 # concatenate the final DFs (union, e.g. stack on top of one another)
 coffee_stats_df = pd.concat(coffee_df_list, axis=0)
+# TODO rename column variable to 'suitability_class'
 coffee_stats_df
