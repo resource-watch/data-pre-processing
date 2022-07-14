@@ -137,6 +137,26 @@ def reclass_and_calculate_zonal_stats(raster_list, admin):
     return final_df
 
 
+def get_country_geom(country):
+    """
+    # TODO docstrings
+    """
+    # send data request
+    url = "https://wri-rw.carto.com/api/v2/sql?q=SELECT cartodb_id, gid_0, name_0, the_geom, the_geom_webmercator FROM gadm36_0 WHERE name_0 = '" + country + "'"
+    response = requests.get(url)
+    data = json.loads(response.content.decode('utf-8'))
+    # prep country vector data for processing, use json_normalize to extract data into Pandas DF
+    admin_boundaries = pd.json_normalize(data, "rows")
+    # convert geom column from WKB to a geoseries using geopandas
+    geom = gpd.GeoSeries.from_wkb(admin_boundaries['the_geom'], crs=4326)
+    # append converted geom column to pandas dataframe
+    admin_boundaries['the_geom'] = geom
+    # convert pandas df to geopandas df
+    boundaries_gpd = gpd.GeoDataFrame(admin_boundaries, geometry='the_geom', crs=4326)
+
+    return boundaries_gpd
+
+
 # Define data dir
 # Load raster data (crop suitability class tifs)
 data_dir = '/Users/alexsweeney/Documents/github-repos/data-pre-processing/foo_067_rw0_crop_suitability_class/data/'
@@ -150,34 +170,131 @@ coffee_rasters = []
 for filename in os.listdir(data_dir):
     if fnmatch.fnmatch(filename, '*cof*_edit.tif'):
         coffee_rasters.append(os.path.join(data_dir, filename))
+print(coffee_rasters)  # TODO remove
 
 # create an empty list to collect final dfs
 coffee_df_list = []
 
-# list of countries to get stats on  # TODO add country list in
-country_list = ['Argentina', 'Colombia', 'India']
+# coffee country list (based off of countries with SPAM 2010 production values > 0)
+#testing_country_list = ['Argentina', 'Colombia', 'India']
+coffee_country_list = ['Belize', 'Bolivia', 'Brazil', 'Burundi', 'Cameroon', 'China', 'Colombia', 'Costa Rica', 'Cuba',
+                       'Democratic Republic of the Congo', 'Dominica', 'Dominican Republic', 'Ecuador', 'El Salvador', 'Ethiopia',
+                       'Guadeloupe', 'Guatemala', 'Haiti', 'Honduras', 'India', 'Indonesia', 'Jamaica', 'Kenya', 'Malawi', 'Malaysia',
+                       'Martinique', 'Mexico', 'Mozambique', 'Myanmar',  'Nepal', 'Nicaragua', 'Panama', 'Papua New Guinea', 'Paraguay',
+                       'Peru', 'Puerto Rico', 'Rwanda', 'Sao Tome and Principe', 'Saint Vincent and the Grenadines', 'Suriname',
+                       'Tanzania', 'Timor-Leste', 'Tonga', 'Uganda', 'United States', 'Venezuela', 'Vietnam', 'Yemen', 'Zambia', 'Zimbabwe']
 
 # calculate zonal statistics of crop suitability rasters by country and add to a dataframe, and create a dataframe list
-for country in country_list:
-    print(country)
-    url = "https://wri-rw.carto.com/api/v2/sql?q=SELECT cartodb_id, gid_0, name_0, the_geom, the_geom_webmercator FROM gadm36_0 WHERE name_0 = '" + country + "'"
-    response = requests.get(url)
-    data = json.loads(response.content.decode('utf-8'))
-    # prep country vector data for processing, use json_normalize to extract data in correct format
-    admin_boundaries = pd.json_normalize(data, "rows")
-    # convert geom columns from WKB to a geoseries using geopandas
-    geom = gpd.GeoSeries.from_wkb(admin_boundaries['the_geom'], crs=4326)
-    # append converted columns to pandas dataframe, country
-    admin_boundaries['the_geom'] = geom
-    # convert country pandas df to geopandas df
-    bgpd = gpd.GeoDataFrame(admin_boundaries, geometry='the_geom', crs=4326)
-    # calculate stats
+for country in coffee_country_list:
+    print(country)  # TODO remove
+    # get country geom from Carto Table
+    try:
+        bgpd = get_country_geom(country)
+    except:
+        print('!! No geometry for:', country)
+    # calculate zonal stats
     stats = reclass_and_calculate_zonal_stats(coffee_rasters, bgpd)
     coffee_df_list.append(stats)
 
-print(coffee_df_list)
-
 # concatenate the final DFs (union, e.g. stack on top of one another)
 coffee_stats_df = pd.concat(coffee_df_list, axis=0)
-# TODO rename column variable to 'suitability_class'
-coffee_stats_df
+# rename column 'variable' to 'crop_suitability_class'
+coffee_stats_df.rename({'variable': 'crop_suitability_class'}, axis=1, inplace=True)
+
+coffee_stats_df  # TODO remove
+
+'''
+Process cotton rasters
+'''
+
+# create a list of cotton rasters to process
+cotton_rasters = []
+for filename in os.listdir(data_dir):
+    if fnmatch.fnmatch(filename, '*cot*_edit.tif'):
+        cotton_rasters.append(os.path.join(data_dir, filename))
+print(cotton_rasters)  # TODO remove
+
+# create an empty list to collect final dfs
+cotton_df_list = []
+
+# cotton country list (based off of countries with SPAM 2010 production values > 0)
+cotton_country_list = ['Afghanistan', 'Albania', 'Algeria', 'Angola', 'Antigua and Barbuda', 'Argentina', 'Australia', 'Azerbaijan',
+                       'Bangladesh', 'Benin', 'Bolivia', 'Botswana', 'Brazil', 'Bulgaria', 'Burkina Faso', 'Burundi',  'Cote dIvoire',
+                       'Cambodia', 'Cameroon', 'Central African Republic', 'Chad', 'China', 'Colombia', 'Costa Rica', 'Democratic Republic of the Congo',
+                       'Ecuador', 'Egypt', 'El Salvador', 'Ethiopia', 'Gambia', 'Ghana', 'Greece', 'Grenada', 'Guatemala', 'Guinea',
+                       'Guinea-Bissau', 'Haiti', 'Honduras', 'India', 'Indonesia', 'Iran', 'Iraq', 'Israel', 'Kazakhstan', 'Kenya',
+                       'Kyrgyzstan', 'Laos', 'Macedonia', 'Madagascar', 'Malawi', 'Mali', 'Mexico', 'Montserrat', 'Morocco', 'Mozambique',
+                       'Myanmar', 'Nepal', 'Nicaragua', 'Niger', 'Nigeria', 'North Korea', 'Pakistan', 'Paraguay', 'Peru', 'Philippines',
+                       'Romania', 'Saint Kitts and Nevis', 'Senegal', 'Somalia', 'South Africa', 'South Korea', 'Spain', 'Sudan',
+                       'Swaziland', 'Syria', 'Tajikistan', 'Tanzania', 'Thailand', 'Togo', 'Tunisia', 'Turkey', 'Turkmenistan',
+                       'Uganda', 'United States', 'Uzbekistan', 'Venezuela', 'Vietnam', 'Yemen', 'Zambia', 'Zimbabwe']
+
+# calculate zonal statistics of crop suitability rasters by country and add to a dataframe, and create a dataframe list
+for country in cotton_country_list:
+    print(country)  # TODO remove
+    # get country geom from Carto Table
+    try:
+        bgpd = get_country_geom(country)
+    except:
+        print('!! No geometry for:', country)
+    # calculate zonal stats
+    stats = reclass_and_calculate_zonal_stats(cotton_rasters, bgpd)
+    cotton_df_list.append(stats)
+
+# concatenate the final DFs (union, e.g. stack on top of one another)
+cotton_stats_df = pd.concat(cotton_df_list, axis=0)
+# rename column 'variable' to 'crop_suitability_class'
+cotton_stats_df.rename({'variable': 'crop_suitability_class'}, axis=1, inplace=True)
+
+cotton_stats_df  # TODO remove
+
+'''
+Process rice rasters
+'''
+
+# create a list of cotton rasters to process
+rice_rasters = []
+for filename in os.listdir(data_dir):
+    if fnmatch.fnmatch(filename, '*rcw_edit.tif') or fnmatch.fnmatch(filename, '*rcd_edit.tif'):
+        rice_rasters.append(os.path.join(data_dir, filename))
+print(rice_rasters)  # TODO remove
+
+# create an empty list to collect final dfs
+rice_df_list = []
+
+# rice country list (based off of countries with SPAM 2010 production values > 0)
+rice_country_list = ['Afghanistan', 'Algeria', 'Angola', 'Argentina', 'Australia', 'Azerbaijan', 'Bangladesh', 'Belize', 'Benin',
+                     'Bhutan', 'Bolivia', 'Brazil', 'Brunei', 'Bulgaria', 'Burkina Faso', 'Burundi', 'Cote dIvoire', 'Cambodia',
+                     'Cameroon', 'Central African Republic', 'Chad', 'Chile', 'China', 'Colombia', 'Costa Rica', 'Cuba',
+                     'Democratic Republic of the Congo', 'Dominican Republic', 'Ecuador', 'Egypt', 'El Salvador', 'Ethiopia',
+                     'Fiji', 'France', 'French Guiana', 'Gabon', 'Gambia', 'Ghana', 'Greece', 'Guatemala', 'Guinea', 'Guinea-Bissau',
+                     'Guyana', 'Haiti', 'Honduras', 'Hungary', 'India', 'Indonesia', 'Iran', 'Iraq', 'Italy', 'Jamaica', 'Japan',
+                     'Kazakhstan', 'Kenya', 'Kyrgyzstan', 'Laos', 'Liberia', 'Macedonia', 'Madagascar', 'Malawi', 'Malaysia', 'Mali',
+                     'Mauritania', 'Mauritius', 'Mexico', 'Micronesia', 'Morocco', 'Mozambique', 'Myanmar', 'Nepal', 'Nicaragua',
+                     'Niger', 'Nigeria', 'North Korea', 'Pakistan', 'Panama', 'Papua New Guinea', 'Paraguay', 'Peru', 'Philippines',
+                     'Portugal', 'Republic of Congo', 'Romania', 'Russia', 'Rwanda', 'Senegal', 'Sierra Leone', 'Solomon Islands',
+                     'Somalia', 'South Africa', 'South Korea', 'Spain', 'Sri Lanka', 'Sudan', 'Suriname', 'Swaziland', 'Tajikistan',
+                     'Tanzania', 'Thailand', 'Timor-Leste', 'Togo', 'Trinidad and Tobago', 'Turkey', 'Turkmenistan', 'Uganda', 'Ukraine',
+                     'United States', 'Uruguay', 'Uzbekistan', 'Venezuela', 'Vietnam', 'Zambia', 'Zimbabwe']
+
+# calculate zonal statistics of crop suitability rasters by country and add to a dataframe, and create a dataframe list
+for country in rice_country_list:
+    print(country)  # TODO remove
+    # get country geom from Carto Table
+    try:
+        bgpd = get_country_geom(country)
+    except:
+        print('!! No geometry for:', country)
+    # calculate zonal stats
+    stats = reclass_and_calculate_zonal_stats(rice_rasters, bgpd)
+    rice_df_list.append(stats)
+
+# concatenate the final DFs (union, e.g. stack on top of one another)
+rice_stats_df = pd.concat(rice_df_list, axis=0)
+# rename column 'variable' to 'crop_suitability_class'
+rice_stats_df.rename({'variable': 'crop_suitability_class'}, axis=1, inplace=True)
+
+rice_stats_df  # TODO remove
+
+
+# Combine all dataframes at the end into 1 table?
