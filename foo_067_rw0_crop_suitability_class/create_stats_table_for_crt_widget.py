@@ -8,12 +8,26 @@ import numpy as np
 import os
 from rasterstats import zonal_stats
 import fnmatch
-#from dotenv import load_dotenv
-#load_dotenv()
-#utils_path = os.path.join(os.path.abspath(os.getenv('PROCESSING_DIR')), 'utils')
-#if utils_path not in sys.path:
-#   sys.path.append(utils_path)
+import sys
+from dotenv import load_dotenv
+load_dotenv()
+utils_path = os.path.join(os.path.abspath(os.getenv('PROCESSING_DIR')), 'utils')
+if utils_path not in sys.path:
+   sys.path.append(utils_path)
+import util_files
+import logging
 
+# Set up logging
+# Get the top-level logger object
+logger = logging.getLogger()
+for handler in logger.handlers: logger.removeHandler(handler)
+logger.setLevel(logging.INFO)
+# make it print to the console.
+console = logging.StreamHandler()
+logger.addHandler(console)
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+logger.info('Executing script for creating stats table based on crop suitability class rasters')
 
 def reclass_and_calculate_zonal_stats(raster_list, admin):
     """Reclassifies the supplied tif file from a continuous to a categorical raster
@@ -155,20 +169,21 @@ def get_country_geom(country_name):
     return boundaries_gpd
 
 
-# Define data dir
-# Load raster data (crop suitability class tifs)
-data_dir = '/Users/alexsweeney/Documents/github-repos/data-pre-processing/foo_067_rw0_crop_suitability_class/data/'
+# Define data dir for loading tif files
+# define dataset name
+dataset_name = 'foo_067_rw0_crop_suitability_class'
+data_dir = util_files.prep_dirs(dataset_name)
 
 '''
 Process coffee rasters
 '''
 
+logger.info('Processing coffee rasters')
 # create a list of coffee rasters to process
 coffee_rasters = []
 for filename in os.listdir(data_dir):
     if fnmatch.fnmatch(filename, '*cof*_edit.tif'):
         coffee_rasters.append(os.path.join(data_dir, filename))
-print(coffee_rasters)  # TODO remove
 
 # create an empty list to collect final dfs
 coffee_df_list = []
@@ -184,7 +199,6 @@ coffee_country_list = ['Belize', 'Bolivia', 'Brazil', 'Burundi', 'Cameroon', 'Ch
 
 # calculate zonal statistics of crop suitability rasters by country and add to a dataframe, and create a dataframe list
 for country in coffee_country_list:
-    print(country)  # TODO remove
     # get country geom from Carto Table
     try:
         bgpd = get_country_geom(country)
@@ -199,18 +213,16 @@ coffee_stats_df = pd.concat(coffee_df_list, axis=0)
 # rename column 'variable' to 'crop_suitability_class'
 coffee_stats_df.rename({'variable': 'crop_suitability_class'}, axis=1, inplace=True)
 
-coffee_stats_df  # TODO remove
-
 '''
 Process cotton rasters
 '''
 
+logger.info('Processing cotton rasters')
 # create a list of cotton rasters to process
 cotton_rasters = []
 for filename in os.listdir(data_dir):
     if fnmatch.fnmatch(filename, '*cot*_edit.tif'):
         cotton_rasters.append(os.path.join(data_dir, filename))
-print(cotton_rasters)  # TODO remove
 
 # create an empty list to collect final dfs
 cotton_df_list = []
@@ -229,7 +241,6 @@ cotton_country_list = ['Afghanistan', 'Albania', 'Algeria', 'Angola', 'Antigua a
 
 # calculate zonal statistics of crop suitability rasters by country and add to a dataframe, and create a dataframe list
 for country in cotton_country_list:
-    print(country)  # TODO remove
     # get country geom from Carto Table
     try:
         bgpd = get_country_geom(country)
@@ -244,18 +255,17 @@ cotton_stats_df = pd.concat(cotton_df_list, axis=0)
 # rename column 'variable' to 'crop_suitability_class'
 cotton_stats_df.rename({'variable': 'crop_suitability_class'}, axis=1, inplace=True)
 
-cotton_stats_df  # TODO remove
 
 '''
 Process rice rasters
 '''
 
-# create a list of cotton rasters to process
+logger.info('Processing rice rasters')
+# create a list of rice rasters to process
 rice_rasters = []
 for filename in os.listdir(data_dir):
     if fnmatch.fnmatch(filename, '*rcw_edit.tif') or fnmatch.fnmatch(filename, '*rcd_edit.tif'):
         rice_rasters.append(os.path.join(data_dir, filename))
-print(rice_rasters)  # TODO remove
 
 # create an empty list to collect final dfs
 rice_df_list = []
@@ -277,7 +287,6 @@ rice_country_list = ['Afghanistan', 'Algeria', 'Angola', 'Argentina', 'Australia
 
 # calculate zonal statistics of crop suitability rasters by country and add to a dataframe, and create a dataframe list
 for country in rice_country_list:
-    print(country)  # TODO remove
     # get country geom from Carto Table
     try:
         bgpd = get_country_geom(country)
@@ -292,8 +301,11 @@ rice_stats_df = pd.concat(rice_df_list, axis=0)
 # rename column 'variable' to 'crop_suitability_class'
 rice_stats_df.rename({'variable': 'crop_suitability_class'}, axis=1, inplace=True)
 
-rice_stats_df  # TODO remove
+'''
+Save dataframes as CSVs for upload to Carto
+'''
 
+logger.info('Creating CSVs')
 # save processed stats DFs to CSV
 # first concatenate them all
 # coffee
