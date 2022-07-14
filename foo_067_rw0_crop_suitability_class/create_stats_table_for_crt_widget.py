@@ -8,15 +8,20 @@ import numpy as np
 import os
 from rasterstats import zonal_stats
 import fnmatch
+#from dotenv import load_dotenv
+#load_dotenv()
+#utils_path = os.path.join(os.path.abspath(os.getenv('PROCESSING_DIR')), 'utils')
+#if utils_path not in sys.path:
+#   sys.path.append(utils_path)
 
 
 def reclass_and_calculate_zonal_stats(raster_list, admin):
-    """
-    TODO
+    """Reclassifies the supplied tif file from a continuous to a categorical raster
 
-    Args: raster_list: list of rasters to reclass and calculate stats on
-          admin: geopandas dataframe of admin boundaries
-              -- must have these columns: 'the_geom', 'name_0', and 'gid_0'
+        Parameters:
+            raster_list: list of rasters to reclass and calculate stats on
+            admin: admin boundary from GeoPandas DF to use as zonal stats summarizing unit. GeoPandas DF must have
+                these columns: 'the_geom', 'name_0'
     """
 
     # reclassify coffee rasters and calculate zonal statistics
@@ -70,28 +75,19 @@ def reclass_and_calculate_zonal_stats(raster_list, admin):
         else:
             crop = 'cotton'
 
-        ## export raster to tif file for QA/QC ##
+        ## export raster to tif file for QA/QC ##   # TODO remove
         # Define the profile to write to a geotiff file
         # write the reclassified data to a geotiff file, copying the profile information from the original tif
-        #profile_out = profile.copy()
-        #profile_out.update(nodata=1)
+        profile_out = profile.copy()
+        profile_out.update(nodata=1)
 
         # write to Geotiff
-        #with rasterio.open(os.path.join(data_dir, scenario + year + tech + crop + '_rc.tif'), 'w',
-        #                   **profile_out) as dst:
-        #    dst.write(raster_classes, 1)
+        with rasterio.open(os.path.join(data_dir, scenario + year + tech + crop + '_rc.tif'), 'w',
+                           **profile_out) as dst:
+            dst.write(raster_classes, 1)
 
         ## calculate zonal stats ##
         # define the categories for the zonal stats to calculate
-        # Very High = vh
-        # High = h
-        # Good = g
-        # Medium = med
-        # Moderate = mod
-        # Marginal = mar
-        # Very Marginal = vm
-        # Not Suitable = ns
-        # Not cultivated = nc
         cmap = {1: 'ocean',
                 2: 'not cultivated',
                 3: 'not suitable',
@@ -137,12 +133,14 @@ def reclass_and_calculate_zonal_stats(raster_list, admin):
     return final_df
 
 
-def get_country_geom(country):
-    """
-    # TODO docstrings
+def get_country_geom(country_name):
+    """Utility to request the country geometry from CARTO table
+
+        Parameters:
+            country_name (string): country name to get geometry for
     """
     # send data request
-    url = "https://wri-rw.carto.com/api/v2/sql?q=SELECT cartodb_id, gid_0, name_0, the_geom, the_geom_webmercator FROM gadm36_0 WHERE name_0 = '" + country + "'"
+    url = "https://wri-rw.carto.com/api/v2/sql?q=SELECT cartodb_id, gid_0, name_0, the_geom, the_geom_webmercator FROM gadm36_0 WHERE name_0 = '" + country_name + "'"
     response = requests.get(url)
     data = json.loads(response.content.decode('utf-8'))
     # prep country vector data for processing, use json_normalize to extract data into Pandas DF
@@ -296,5 +294,16 @@ rice_stats_df.rename({'variable': 'crop_suitability_class'}, axis=1, inplace=Tru
 
 rice_stats_df  # TODO remove
 
+# save processed stats DFs to CSV
+# first concatenate them all
+# coffee
+coffee_crop_suitability_class_stats = os.path.join(data_dir, 'crt_coffee_crop_suitability_class_zonal_stats.csv')
+coffee_stats_df.to_csv(coffee_crop_suitability_class_stats, index=False)
+# cotton
+cotton_crop_suitability_class_stats = os.path.join(data_dir, 'crt_cotton_crop_suitability_class_zonal_stats.csv')
+cotton_stats_df.to_csv(cotton_crop_suitability_class_stats, index=False)
+# rice
+rice_crop_suitability_class_stats = os.path.join(data_dir, 'crt_rice_crop_suitability_class_zonal_stats.csv')
+rice_stats_df.to_csv(rice_crop_suitability_class_stats, index=False)
 
-# Combine all dataframes at the end into 1 table?
+# 3 CSVs should now be saved to data_dir and uploaded to Carto DB
