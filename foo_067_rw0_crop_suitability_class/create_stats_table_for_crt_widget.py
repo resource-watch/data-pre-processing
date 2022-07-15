@@ -49,7 +49,7 @@ def reclass_and_calculate_zonal_stats(raster_list, admin):
 
         ## reclassify raster ##
         # define bins to reclassify raster data
-        classes = [-9, -1, 0, 1, 1001, 2501, 4001, 5551, 7001, 8501]
+        classes = [-9, -1, 0, 1, 1000.01, 2500.01, 4000.01, 5500.01, 7000.01, 8500.01]
         # apply the classes to the raster
         raster_classes = xr.apply_ufunc(np.digitize, array, classes)
 
