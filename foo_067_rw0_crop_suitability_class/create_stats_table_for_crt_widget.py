@@ -49,7 +49,7 @@ def reclass_and_calculate_zonal_stats(raster_list, admin):
 
         ## reclassify raster ##
         # define bins to reclassify raster data
-        classes = [-9, -1, 0, 1001, 2501, 4001, 5551, 7001, 8501]
+        classes = [-9, -1, 0, 1, 1001, 2501, 4001, 5551, 7001, 8501]
         # apply the classes to the raster
         raster_classes = xr.apply_ufunc(np.digitize, array, classes)
 
@@ -102,15 +102,16 @@ def reclass_and_calculate_zonal_stats(raster_list, admin):
 
         ## calculate zonal stats ##
         # define the categories for the zonal stats to calculate
-        cmap = {1: 'ocean',
-                2: 'not cultivated',
-                3: 'not suitable',
+        cmap = {1: 'Ocean',
+                2: 'No Cultivation',
+                3: 'Not suitable',
                 4: 'very marginal',
-                5: 'marginal',
-                6: 'moderate',
-                7: 'good',
-                8: 'high',
-                9: 'very high'}
+                5: 'Marginal',
+                6: 'Moderate',
+                7: 'Medium',
+                8: 'Good',
+                9: 'High',
+                10: 'Very High'}
 
         zonal_results = zonal_stats(admin['the_geom'],
                                     raster_classes,
