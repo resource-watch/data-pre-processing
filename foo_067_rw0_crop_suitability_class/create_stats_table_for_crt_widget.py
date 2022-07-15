@@ -17,6 +17,14 @@ if utils_path not in sys.path:
 import util_files
 import logging
 
+######
+# NOTE: this script requires that you run the other two scripts in this repo beforehand -- it relies on the tifs in your
+# data_dir. To run, follow these steps:
+    # 1. Run rice_ensemble_processing.py script
+    # 2. Run foo_067_rw0_crop_suitability_class_processing.py
+    # 3. Run create_stats_table_for_crt_widget.py
+######
+
 # Set up logging
 # Get the top-level logger object
 logger = logging.getLogger()
