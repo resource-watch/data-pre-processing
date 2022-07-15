@@ -316,7 +316,6 @@ Save dataframes as CSVs for upload to Carto
 
 logger.info('Creating CSVs')
 # save processed stats DFs to CSV
-# first concatenate them all
 # coffee
 coffee_crop_suitability_class_stats = os.path.join(data_dir, 'crt_coffee_crop_suitability_class_zonal_stats.csv')
 coffee_stats_df.to_csv(coffee_crop_suitability_class_stats, index=False)
