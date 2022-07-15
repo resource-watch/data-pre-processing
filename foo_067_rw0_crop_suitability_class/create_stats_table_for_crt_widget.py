@@ -104,8 +104,8 @@ def reclass_and_calculate_zonal_stats(raster_list, admin):
         # define the categories for the zonal stats to calculate
         cmap = {1: 'Ocean',
                 2: 'No Cultivation',
-                3: 'Not suitable',
-                4: 'very marginal',
+                3: 'Not Suitable',
+                4: 'Very Marginal',
                 5: 'Marginal',
                 6: 'Moderate',
                 7: 'Medium',
