@@ -97,17 +97,6 @@ def reclass_and_calculate_zonal_stats(raster_list, admin):
         else:
             crop = 'cotton'
 
-        ## export raster to tif file for QA/QC ##   # TODO remove
-        # Define the profile to write to a geotiff file
-        # write the reclassified data to a geotiff file, copying the profile information from the original tif
-        profile_out = profile.copy()
-        profile_out.update(nodata=1)
-
-        # write to Geotiff
-        with rasterio.open(os.path.join(data_dir, scenario + year + tech + crop + '_rc.tif'), 'w',
-                           **profile_out) as dst:
-            dst.write(raster_classes, 1)
-
         ## calculate zonal stats ##
         # define the categories for the zonal stats to calculate
         cmap = {1: 'Ocean',
@@ -150,7 +139,7 @@ def reclass_and_calculate_zonal_stats(raster_list, admin):
         df_name = pd.melt(df_name, id_vars=['raster', 'country'])
         # add the dataframe to the dataframe list
         df_list.append(df_name)
-        # union all of the dataframes together
+        # union all the dataframes together
         final_df = pd.concat(df_list, axis=0)
 
     return final_df
@@ -160,7 +149,7 @@ def get_country_geom(country_name):
     """Utility to request the country geometry from CARTO table
 
         Parameters:
-            country_name (string): country name to get geometry for
+            country_name (string): country name to get geometry for processing
     """
     # send data request
     url = "https://wri-rw.carto.com/api/v2/sql?q=SELECT cartodb_id, gid_0, name_0, the_geom, the_geom_webmercator FROM gadm36_0 WHERE name_0 = '" + country_name + "'"
