@@ -10,7 +10,7 @@ from rasterstats import zonal_stats
 import fnmatch
 import sys
 from dotenv import load_dotenv
-load_dotenv()
+load_dotenv('/home/chrowe/auth/.env')
 utils_path = os.path.join(os.path.abspath(os.getenv('PROCESSING_DIR')), 'utils')
 if utils_path not in sys.path:
    sys.path.append(utils_path)
@@ -307,10 +307,33 @@ logger.info('Creating CSVs')
 # create list of final dataframes
 final_stats_df_list = [coffee_stats_df, cotton_stats_df, rice_stats_df]
 # concatenate DFs together
-crop_suitability_class_stats_df = pd.concat(final_stats_df_list, axis=0)
+crop_suitability_class_stats_df = pd.concat(final_stats_df_list, axis=0).reset_index()
 
 # save final stats DF to CSV
 crop_suitability_class_stats = os.path.join(data_dir, 'crt_crop_suitability_class_zonal_stats.csv')
 crop_suitability_class_stats_df.to_csv(crop_suitability_class_stats, index=False)
 
 # 1 CSV should now be saved to data_dir and uploaded to Carto DB
+
+
+'''
+Upload processed data to Carto
+'''
+from cartoframes.auth import set_default_credentials
+from cartoframes import read_carto, to_carto, update_privacy_table, delete_table
+
+logger.info('Uploading processed data to Carto.')
+
+# authenticate carto account
+CARTO_USER = os.getenv('CARTO_WRI_RW_USER')
+CARTO_KEY = os.getenv('CARTO_WRI_RW_KEY')
+set_default_credentials(username=CARTO_USER, base_url="https://{user}.carto.com/".format(user=CARTO_USER),api_key=CARTO_KEY)
+
+
+# upload data frame to Carto
+to_carto(crop_suitability_class_stats_df, dataset_name + '_edit', if_exists='replace')
+
+# set privacy to 'link' so table is accessible but not published
+update_privacy_table(dataset_name + '_edit', 'link')
+
+
