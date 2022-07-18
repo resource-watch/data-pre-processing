@@ -304,15 +304,13 @@ Save dataframes as CSVs for upload to Carto
 '''
 
 logger.info('Creating CSVs')
-# save processed stats DFs to CSV
-# coffee
-coffee_crop_suitability_class_stats = os.path.join(data_dir, 'crt_coffee_crop_suitability_class_zonal_stats.csv')
-coffee_stats_df.to_csv(coffee_crop_suitability_class_stats, index=False)
-# cotton
-cotton_crop_suitability_class_stats = os.path.join(data_dir, 'crt_cotton_crop_suitability_class_zonal_stats.csv')
-cotton_stats_df.to_csv(cotton_crop_suitability_class_stats, index=False)
-# rice
-rice_crop_suitability_class_stats = os.path.join(data_dir, 'crt_rice_crop_suitability_class_zonal_stats.csv')
-rice_stats_df.to_csv(rice_crop_suitability_class_stats, index=False)
+# create list of final dataframes
+final_stats_df_list = [coffee_stats_df, cotton_stats_df, rice_stats_df]
+# concatenate DFs together
+crop_suitability_class_stats_df = pd.concat(final_stats_df_list, axis=0)
 
-# 3 CSVs should now be saved to data_dir and uploaded to Carto DB
+# save final stats DF to CSV
+crop_suitability_class_stats = os.path.join(data_dir, 'crt_crop_suitability_class_zonal_stats.csv')
+crop_suitability_class_stats_df.to_csv(crop_suitability_class_stats, index=False)
+
+# 1 CSV should now be saved to data_dir and uploaded to Carto DB
