@@ -10,7 +10,8 @@ from rasterstats import zonal_stats
 import fnmatch
 import sys
 from dotenv import load_dotenv
-load_dotenv('/home/chrowe/auth/.env')
+load_dotenv()
+
 utils_path = os.path.join(os.path.abspath(os.getenv('PROCESSING_DIR')), 'utils')
 if utils_path not in sys.path:
    sys.path.append(utils_path)
