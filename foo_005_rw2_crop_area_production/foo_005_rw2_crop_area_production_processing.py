@@ -1,5 +1,7 @@
 import os
 import sys
+import requests
+import urllib
 utils_path = os.path.join(os.path.abspath(os.getenv('PROCESSING_DIR')),'utils')
 if utils_path not in sys.path:
     sys.path.append(utils_path)
@@ -13,7 +15,6 @@ import subprocess
 from google.cloud import storage
 import logging
 
-
 # Set up logging
 # Get the top-level logger object
 logger = logging.getLogger()
@@ -26,7 +27,7 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 
 # name of asset on GEE where you want to upload data
 # this should be an asset name that is not currently in use
-dataset_name = 'foo_005_rw1_crop_area_production' #check
+dataset_name = 'foo_005_rw2_crop_area_production' #check
 
 logger.info('Executing script for dataset: ' + dataset_name)
 # create a new sub-directory within your specified dir called 'data'
@@ -37,53 +38,61 @@ data_dir = util_files.prep_dirs(dataset_name)
 Download data and save to your data directory
 
 Dataset files can be downloaded at the following link:
-https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/PRFF8V&version=4.0
+https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/SWPENT
 Three zipfiles were downloaded belonging to harvested area, production, and yield were downloaded through the source's API:
 
-Global production area: 
-https://dataverse.harvard.edu/api/access/datafile/:persistentId/?persistentId=doi:10.7910/DVN/PRFF8V/NTMZGU
+Global production: 
+https://dataverse.harvard.edu/api/access/datafile/10120890?gbrecs=true
 Global harvest area: 
-https://dataverse.harvard.edu/api/access/datafile/:persistentId/?persistentId=doi:10.7910/DVN/PRFF8V/33PNTG
+https://dataverse.harvard.edu/api/access/datafile/10120889?gbrecs=true
 Global yield:
-https://dataverse.harvard.edu/api/access/datafile/:persistentId/?persistentId=doi:10.7910/DVN/PRFF8V/Y1OQRN
+https://dataverse.harvard.edu/api/access/datafile/10120888?gbrecs=true
 '''
 
-url_list = ['https://dataverse.harvard.edu/api/access/datafile/:persistentId/?persistentId=doi:10.7910/DVN/PRFF8V/NTMZGU',
-            'https://dataverse.harvard.edu/api/access/datafile/:persistentId/?persistentId=doi:10.7910/DVN/PRFF8V/33PNTG',
-            'https://dataverse.harvard.edu/api/access/datafile/:persistentId/?persistentId=doi:10.7910/DVN/PRFF8V/Y1OQRN']
+url_list = ['https://dataverse.harvard.edu/api/access/datafile/10120889?gbrecs=true',
+            'https://dataverse.harvard.edu/api/access/datafile/10120890?gbrecs=true',
+            'https://dataverse.harvard.edu/api/access/datafile/10120888?gbrecs=true']
 
 # download the data from the source
-raw_data_file = [os.path.join(data_dir,os.path.basename(url)) for url in url_list]
+raw_data_file = [f'{os.path.join(data_dir,os.path.basename(urllib.parse.urlparse(url).path))}.zip' for url in url_list]
 for url, file in zip(url_list, raw_data_file):
-     urllib.request.urlretrieve(url, file)
+    print('Initiating download for ', file)
+    if not os.path.isfile(file):
+        r = requests.get(url, allow_redirects=True, timeout = 10)
+        if r.status_code != 200:
+            print('Error downloading file')
+            sys.exit(1)
+        with open(file, 'wb') as f:
+            for chunk in r.iter_content(chunk_size = 8192):
+                f.write(chunk)
 
 # Unzip raw data
-# Only using six crops: maize, rice, wheat, soybean, coffee (arabica and robusta), and cotton
+# Only using six crops: maize, rice, wheat, soybean, coffee, and cotton
 # Only extracting the tif files that encompass all technologies (check source metadata)
 
 # Create a list with files of interest
 tif_list = [
-    'spam2010V2r0_global_H_MAIZ_A.tif',
-    'spam2010V2r0_global_H_RICE_A.tif',
-    'spam2010V2r0_global_H_WHEA_A.tif',
-    'spam2010V2r0_global_H_SOYB_A.tif',
-    'spam2010V2r0_global_H_ACOF_A.tif',
-    'spam2010V2r0_global_H_RCOF_A.tif',
-    'spam2010V2r0_global_H_COTT_A.tif',
-    'spam2010V2r0_global_P_SOYB_A.tif',
-    'spam2010V2r0_global_P_WHEA_A.tif',
-    'spam2010V2r0_global_P_RICE_A.tif',
-    'spam2010V2r0_global_P_MAIZ_A.tif',
-    'spam2010V2r0_global_P_ACOF_A.tif',
-    'spam2010V2r0_global_P_RCOF_A.tif',
-    'spam2010V2r0_global_P_COTT_A.tif',
-    'spam2010V2r0_global_Y_MAIZ_A.tif',
-    'spam2010V2r0_global_Y_RICE_A.tif',
-    'spam2010V2r0_global_Y_WHEA_A.tif',
-    'spam2010V2r0_global_Y_SOYB_A.tif',
-    'spam2010V2r0_global_Y_ACOF_A.tif',
-    'spam2010V2r0_global_Y_RCOF_A.tif',
-    'spam2010V2r0_global_Y_COTT_A.tif'
+    'spam2020_v1r0_global_H_MAIZ_A.tif',
+    'spam2020_v1r0_global_H_RICE_A.tif',
+    'spam2020_v1r0_global_H_WHEA_A.tif',
+    'spam2020_v1r0_global_H_SOYB_A.tif',
+    'spam2020_v1r0_global_H_ACOF_A.tif',
+    'spam2020_v1r0_global_H_RCOF_A.tif',
+    'spam2020_v1r0_global_H_COTT_A.tif',
+    'spam2020_v1r0_global_P_SOYB_A.tif',
+    'spam2020_v1r0_global_P_WHEA_A.tif',
+    'spam2020_v1r0_global_P_RICE_A.tif',
+    'spam2020_v1r0_global_P_MAIZ_A.tif',
+    'spam2020_v1r0_global_P_ACOF_A.tif',
+    'spam2020_v1r0_global_P_RCOF_A.tif',
+    'spam2020_v1r0_global_P_COTT_A.tif',
+    'spam2020_v1r0_global_Y_MAIZ_A.tif',
+    'spam2020_v1r0_global_Y_RICE_A.tif',
+    'spam2020_v1r0_global_Y_WHEA_A.tif',
+    'spam2020_v1r0_global_Y_SOYB_A.tif',
+    'spam2020_v1r0_global_Y_ACOF_A.tif',
+    'spam2020_v1r0_global_Y_RCOF_A.tif',
+    'spam2020_v1r0_global_Y_COTT_A.tif'
 ]
 # Create list to append location of files of interest
 unzipped_list = []
@@ -91,17 +100,23 @@ unzipped_list = []
 for index,element in enumerate(raw_data_file):
     with ZipFile(raw_data_file[index], 'r') as zf:
         for file in zf.namelist():
-            if file in tif_list:
+            #print(file)
+            if os.path.basename(file) in tif_list:
                 unzipped_list.append(file)
                 zf.extract(file,data_dir)
+
+#print('unzipped_list', unzipped_list)
 # Create path to unzipped files
 raw_data_file_unzipped = [os.path.join(data_dir, os.path.basename(file)) for file in unzipped_list]
+#print('raw_data_file_unzipped', raw_data_file_unzipped)
 
 '''
 Process data
 '''
 # generate names for tif files
 processed_data_files = [os.path.join(data_dir, dataset_name + '_' +file[5:]) for file in raw_data_file_unzipped]
+#print('Processed data files', processed_data_files)
+
 # rename the tif file
 for raw, processed  in zip(raw_data_file_unzipped, processed_data_files):
     cmd = ['gdalwarp', raw, processed]
