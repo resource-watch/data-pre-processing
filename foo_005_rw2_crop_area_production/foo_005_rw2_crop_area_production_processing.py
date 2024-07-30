@@ -1,7 +1,6 @@
 import os
 import sys
 import requests
-import urllib
 utils_path = os.path.join(os.path.abspath(os.getenv('PROCESSING_DIR')),'utils')
 if utils_path not in sys.path:
     sys.path.append(utils_path)
@@ -38,7 +37,7 @@ data_dir = util_files.prep_dirs(dataset_name)
 Download data and save to your data directory
 
 Dataset files can be downloaded at the following link:
-https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/SWPENT
+https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/SWPENT&version=3.0
 Three zipfiles were downloaded belonging to harvested area, production, and yield were downloaded through the source's API:
 
 Global production: 
@@ -107,14 +106,14 @@ for index,element in enumerate(raw_data_file):
 
 #print('unzipped_list', unzipped_list)
 # Create path to unzipped files
-raw_data_file_unzipped = [os.path.join(data_dir, os.path.basename(file)) for file in unzipped_list]
+raw_data_file_unzipped = [os.path.join(data_dir, file) for file in unzipped_list]
 #print('raw_data_file_unzipped', raw_data_file_unzipped)
 
 '''
 Process data
 '''
 # generate names for tif files
-processed_data_files = [os.path.join(data_dir, dataset_name + '_' +file[5:]) for file in raw_data_file_unzipped]
+processed_data_files = [os.path.join(data_dir, dataset_name + '_' +os.path.basename(file)) for file in raw_data_file_unzipped]
 #print('Processed data files', processed_data_files)
 
 # rename the tif file
