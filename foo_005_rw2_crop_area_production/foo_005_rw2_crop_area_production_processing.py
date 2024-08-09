@@ -34,11 +34,11 @@ logger.info('Executing script for dataset: ' + dataset_name)
 data_dir = util_files.prep_dirs(dataset_name)
 
 '''
-Download data and save to your data directory
-
-Dataset files can be downloaded at the following link:
+Dataset files are available from the source at the following link:
 https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/SWPENT&version=3.0
-Three zipfiles were downloaded belonging to harvested area, production, and yield were downloaded through the source's API:
+
+Three zipfiles are downloaded belonging to harvested area, production, and
+yield were downloaded from the links below.
 
 Global production: 
 https://dataverse.harvard.edu/api/access/datafile/10120890?gbrecs=true
